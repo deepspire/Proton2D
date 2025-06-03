@@ -2,6 +2,7 @@
 #include "shape.hh"
 #include <SDL3_ttf/SDL_ttf.h>
 #include <string>
+#include "../logman.hh"
 
 namespace Proton
 {
@@ -16,7 +17,7 @@ namespace Proton
       font = TTF_OpenFont(fontPath.c_str(), fontSize);
       if (!font)
       {
-        SDL_Log("Failed to load font: %s", SDL_GetError());
+        Proton::Log("Failed to load font: ", SDL_GetError());
       }
       textRect.x = static_cast<float>(x);
       textRect.y = static_cast<float>(y);

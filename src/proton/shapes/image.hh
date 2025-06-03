@@ -15,7 +15,7 @@ namespace Proton
       SDL_Surface *image = IMG_Load(imagePath);
       if (image == nullptr)
       {
-        ProtonLog("Image wasn't loaded");
+        Proton::Log("Image wasn't loaded: ", SDL_GetError());
         return;
       }
 
@@ -34,7 +34,7 @@ namespace Proton
       this->imageTexture = SDL_CreateTextureFromSurface(this->randr, image);
       if (this->imageTexture == nullptr)
       {
-        ProtonLog("Image texture wasn't loaded");
+        Proton::Log("Image texture wasn't loaded", SDL_GetError());
         return;
       }
       SDL_DestroySurface(image);

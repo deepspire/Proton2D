@@ -1,5 +1,6 @@
 #pragma once
 #include "shape.hh"
+#include <cmath>
 #include <math.h>
 
 namespace Proton

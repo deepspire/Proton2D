@@ -6,7 +6,9 @@
 #include <SDL3/SDL_main.h>
 #include <SDL3/SDL_render.h>
 #include <SDL3_ttf/SDL_ttf.h>
+#include <thread>
 #include <iostream>
+#include "logman.hh"
 
 namespace Proton
 {
@@ -20,27 +22,27 @@ namespace Proton
       TTF_Init();
       if (ret < 0)
       {
-        std::cout << "Error: " << SDL_GetError() << std::endl;
+        Proton::Log("Error initializing SDL: ", SDL_GetError());
         return;
       }
       this->handle = SDL_CreateWindow(this->title.c_str(), w, h, 0);
 
       if (!this->handle)
       {
-        std::cout << "Error: " << SDL_GetError() << std::endl;
+        Proton::Log("Error creating window: ", SDL_GetError());
         return;
       }
 
       this->randr = SDL_CreateRenderer(this->handle, NULL);
       if (!this->randr)
       {
-        std::cout << "Error: " << SDL_GetError() << std::endl;
+        Proton::Log("Error initializing display: ", SDL_GetError());
         return;
       }
 
       SDL_SetRenderVSync(this->randr, 1);
 
-      std::cout << "Initializing done" << std::endl;
+      Proton::Log("display init is successful");
       this->isInit = true;
       this->currentScene = nullptr;
     }
@@ -50,6 +52,7 @@ namespace Proton
       if (this->currentScene != nullptr)
       {
         delete currentScene;
+        Proton::Log("Deleting previous scene...");
         // this->currentScene->clearScene(); // зачем чистить сцену если ее можно удалить
       }
 
@@ -89,12 +92,11 @@ namespace Proton
       SDL_Event e;
       bool isDone = false;
 
-      const int TARGET_FPS = 60; // а если у чела 60+ герц монитор то сосать
+      const int TARGET_FPS = 120;
       const Uint64 FRAME_DELAY = 1000 / TARGET_FPS;
 
       Uint64 lastFrameTime = SDL_GetTicks();
       float deltaTime = 0.0f;
-
       while (!isDone)
       {
         Uint64 frameStart = SDL_GetTicks();
@@ -143,7 +145,7 @@ namespace Proton
       }
     }
 
-    void summonError() { SDL_Log("Burger2D Display is not initialized"); }
+    void summonError() { Proton::Log("Init display first!"); }
 
     SDL_Window *handle;
     SDL_Renderer *randr;
