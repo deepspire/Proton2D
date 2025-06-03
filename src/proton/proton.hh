@@ -64,9 +64,11 @@ namespace Proton
       if (this->isInit)
       {
         this->renderStart();
-        delete currentScene;
+
+        delete this->currentScene;
         SDL_DestroyWindow(this->handle);
         SDL_DestroyRenderer(this->randr);
+        TTF_Quit();
         SDL_Quit();
       }
       else

@@ -14,6 +14,7 @@ namespace Proton
 
         ~ImageButton()
         {
+            delete this->image;
         }
 
         void setPosition(int x, int y) override

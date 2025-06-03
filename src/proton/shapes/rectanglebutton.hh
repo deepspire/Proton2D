@@ -14,6 +14,7 @@ namespace Proton
 
         ~RectangleButton()
         {
+            delete this->rectangle;
         }
 
         void setPosition(int x, int y) override

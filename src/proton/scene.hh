@@ -3,6 +3,7 @@
 #include <vector>
 #include "shapes/shape.hh"
 #include "shapes/buttonarea.hh"
+#include "shapes/textbox.hh"
 
 namespace Proton
 {
@@ -16,18 +17,24 @@ namespace Proton
         virtual ~Scene()
         {
             this->destroyObjectMassive();
-            buttons.clear();
+            this->buttons.clear();
         }
 
         void addObject(Shape *shape)
         {
-            objects.push_back(shape);
+            this->objects.push_back(shape);
         }
 
         void addButton(ButtonArea *button)
         {
-            buttons.push_back(button);
+            this->buttons.push_back(button);
             addObject(button);
+        }
+
+        void addTextBox(TextBox *textbox)
+        {
+            this->textboxes.push_back(textbox);
+            addObject(textbox);
         }
 
         void clearScene()
@@ -37,7 +44,7 @@ namespace Proton
 
         void paint()
         {
-            for (Shape *shape : objects)
+            for (Shape *shape : this->objects)
             {
                 shape->paint(this->render);
             }
@@ -45,7 +52,7 @@ namespace Proton
 
         void handleButtonClick(int mX, int mY)
         {
-            for (ButtonArea *button : buttons)
+            for (ButtonArea *button : this->buttons)
             {
                 if ((button->getX() <= mX && mX <= button->getX() + button->getW()) &&
                     (button->getY() <= mY && mY <= button->getY() + button->getH()))
@@ -53,10 +60,30 @@ namespace Proton
                     button->onClick();
                 }
             }
-        }
 
-        std::vector<Shape *> objects;
-        std::vector<ButtonArea *> buttons;
+            TextBox *clickedTextBox = nullptr;
+            for (TextBox *textbox : this->textboxes)
+            {
+                if ((textbox->getX() <= mX && mX <= textbox->getX() + textbox->getW()) &&
+                    (textbox->getY() <= mY && mY <= textbox->getY() + textbox->getH()))
+                {
+                    clickedTextBox = textbox;
+                    break;
+                }
+            }
+
+            if (this->focusedTextBox != nullptr && this->focusedTextBox != clickedTextBox)
+            {
+                this->focusedTextBox->setFocused(false);
+                this->focusedTextBox = nullptr;
+            }
+
+            if (clickedTextBox != nullptr && this->focusedTextBox != clickedTextBox)
+            {
+                this->focusedTextBox = clickedTextBox;
+                this->focusedTextBox->setFocused(true);
+            }
+        }
         SDL_Renderer *render;
 
     private:
@@ -68,5 +95,12 @@ namespace Proton
             }
             objects.clear();
         }
+
+        TextBox *focusedTextBox = nullptr;
+
+    protected:
+        std::vector<Shape *> objects;
+        std::vector<ButtonArea *> buttons;
+        std::vector<TextBox *> textboxes;
     };
 };
