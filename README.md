@@ -1,5 +1,5 @@
-# Burger2D
-Burger2D
+# Proton2D
+Proton2D
 
 ## Windows guide
 ### Requirements
