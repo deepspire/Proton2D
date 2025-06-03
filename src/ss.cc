@@ -38,7 +38,7 @@ SecondScene::SecondScene(Proton::Display *display)
     Proton::ImageButton *imagebutton = new Proton::ImageButton(this->render, 50, 150, 50, 50, "kachan.png");
     addButton(imagebutton);
 
-    textbox = new Proton::TextBox(this->render, display->getNativeWindow(), "Hello, TextBox!", 50, 250, "fonts/Roboto-Regular.ttf", 20, Proton::Color(255, 255, 255, 255), 60, 20);
+    textbox = new Proton::TextBox(this->render, display->getNativeWindow(), "Hello, TextBox!", 50, 250, "fonts/Roboto-Regular.ttf", 20, Proton::Color(255, 255, 255, 255));
     addTextBox(textbox);
 }
 

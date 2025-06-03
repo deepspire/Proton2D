@@ -8,11 +8,10 @@ namespace Proton
     public:
         TextBox(SDL_Renderer *renderer, SDL_Window *window, const std::string &text = "Label", int x = 0,
                 int y = 0, const std::string &fontPath = "fonts/Roboto-Regular.ttf",
-                int fontSize = 10, Color color = Color(255, 255, 255, 255),
-                int w = 20, int h = 20) : Text(renderer, text, x, y, fontPath, fontSize, color)
+                int fontSize = 10, Color color = Color(255, 255, 255, 255)) : Text(renderer, text, x, y, fontPath, fontSize, color)
         {
             this->window = window;
-            this->resize(w, h);
+            this->resize(this->textTexture->w, this->textTexture->h);
         }
 
         bool isFocused()
