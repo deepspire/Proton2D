@@ -33,11 +33,6 @@ namespace Proton
         TTF_CloseFont(this->font);
     }
 
-    void setVisible(bool a) override
-    {
-      this->isVisible = a;
-    }
-
     void setPosition(int x, int y) override
     {
       this->textRect.x = static_cast<float>(x);
@@ -98,7 +93,7 @@ namespace Proton
 
     virtual void paint() override
     {
-      if (textTexture && this->isVisible)
+      if (textTexture)
       {
         SDL_RenderTexture(this->render, textTexture, nullptr, &textRect);
       }

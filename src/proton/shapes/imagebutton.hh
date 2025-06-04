@@ -35,13 +35,7 @@ namespace Proton
 
         void paint() override
         {
-            if (this->isVisible)
-                image->paint();
-        }
-
-        void setVisible(bool a) override
-        {
-            this->isVisible = a;
+            image->paint();
         }
 
         void setFillColor([[maybe_unused]] Color color) override

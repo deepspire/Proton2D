@@ -33,11 +33,6 @@ namespace Proton
         {
         }
 
-        virtual void setVisible(bool a) override
-        {
-            this->visible = a;
-        }
-
         virtual void resize(int w, int h)
         {
             this->w = w;
@@ -48,8 +43,6 @@ namespace Proton
         int getY() { return y; }
         int getW() { return w; }
         int getH() { return h; }
-
-        bool visible;
     protected:
         int x, y, w, h;
     };

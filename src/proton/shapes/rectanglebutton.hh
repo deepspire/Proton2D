@@ -34,10 +34,7 @@ namespace Proton
 
         void paint() override
         {
-            if (visible)
-            {
-                rectangle->paint();
-            }
+            rectangle->paint();
         }
 
         void setFillColor(Color color) override

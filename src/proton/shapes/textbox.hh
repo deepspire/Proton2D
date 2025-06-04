@@ -162,11 +162,6 @@ namespace Proton
                 this->cursorVisible = !this->cursorVisible;
             }
         }
-        
-        void setVisible(bool a) override
-        {
-            this->isVisible = a;
-        }
 
         void paint() override
         {

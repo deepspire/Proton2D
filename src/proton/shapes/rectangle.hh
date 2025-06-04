@@ -21,12 +21,8 @@ namespace Proton
 
     void paint() override
     {
-      if (this->isVisible)
-      {
-        SDL_SetRenderDrawColor(this->render, color.getR(), color.getG(), color.getB(), color.getA());
-        SDL_RenderFillRect(this->render, &this->rect);
-      }
-     
+      SDL_SetRenderDrawColor(this->render, color.getR(), color.getG(), color.getB(), color.getA());
+      SDL_RenderFillRect(this->render, &this->rect);
     }
 
     void setFillColor(Color color) override { this->color = color; }
@@ -36,11 +32,6 @@ namespace Proton
       this->w = width;
       this->h = height;
       redefineRect();
-    }
-
-    void setVisible(bool a) override 
-    {
-      this->isVisible = a;
     }
 
     void setPosition(int x, int y) override

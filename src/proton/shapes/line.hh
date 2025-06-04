@@ -26,19 +26,11 @@ namespace Proton
       this->endY = dy + y;
     }
 
-    void setVisible(bool a) override
-    {
-      this->isVisible = a;
-    }
-
     void paint() override
     {
-      if (this->isVisible)
-      {
-        SDL_SetRenderDrawColor(this->render, fillColor.getR(), fillColor.getG(),
+      SDL_SetRenderDrawColor(this->render, fillColor.getR(), fillColor.getG(),
                               fillColor.getB(), fillColor.getA());
-        SDL_RenderLine(this->render, this->startX, this->startY, this->endX, this->endY);
-      }
+      SDL_RenderLine(this->render, this->startX, this->startY, this->endX, this->endY);
     }
 
     void setFillColor(Color color) override { this->fillColor = color; }

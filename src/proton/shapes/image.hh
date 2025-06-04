@@ -50,11 +50,6 @@ namespace Proton
       SDL_DestroyTexture(imageTexture);
     }
 
-    void setVisible(bool a) override
-    {
-      this->isVisible = a;
-    }
-
     void setFillColor([[maybe_unused]] Color c) override {}
 
     void resize(int width, int height)
@@ -73,8 +68,7 @@ namespace Proton
 
     void paint() override
     {
-      if (this->isVisible)
-        SDL_RenderTexture(this->render, imageTexture, NULL, &this->bounds);
+      SDL_RenderTexture(this->render, imageTexture, NULL, &this->bounds);
     }
 
   private:

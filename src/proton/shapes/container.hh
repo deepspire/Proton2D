@@ -16,15 +16,11 @@ namespace Proton
 
         void paint() override
         {
-            if (this->isVisible)
-            {
-                SDL_SetRenderClipRect(this->render, &this->containerRect);
-                for(Shape *shape: this->shapes) {
-                    shape->paint();
-                }
-                SDL_SetRenderClipRect(this->render, NULL);
+            SDL_SetRenderClipRect(this->render, &this->containerRect);
+            for(Shape *shape: this->shapes) {
+                shape->paint();
             }
-            
+            SDL_SetRenderClipRect(this->render, NULL);
         }
 
         void setFillColor(Color /*unused*/) override
@@ -35,11 +31,6 @@ namespace Proton
         void addObject(Shape* shape)
         {
             shapes.push_back(shape);
-        }
-
-        void setVisible(bool a) override
-        {
-            this->isVisible = a;
         }
 
         void clear()

@@ -60,7 +60,7 @@ void SecondScene::mouseDown()
     }
     else
     {
-        rect->setPosition(rand() % 200, rand() % 200);
+        rect->setPosition(rand() % 700, rand() % 500);
         //img->setPosition(rand() % 200, rand() % 200);
     }
 }
@@ -69,8 +69,9 @@ void SecondScene::keyPressed(Uint16 key)
 {
     if (key == SDLK_A)
     {
-        rect->setPosition(rand() % 200, rand() % 200);
-        text->setPosition(rand() % 200, rand() % 200);
+        rect->setVisible(!rect->getVisible());
+        rect->setPosition(rand() % 700, rand() % 500);
+        text->setPosition(rand() % 700, rand() % 500);
     }
 }
 void SecondScene::update([[maybe_unused]] Uint64 dt)

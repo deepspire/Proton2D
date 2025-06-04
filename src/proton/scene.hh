@@ -47,7 +47,10 @@ namespace Proton
             for (Shape *shape : this->objects)
             {
                 shape->update(dt);
-                shape->paint();
+                if (shape->getVisible())
+                {
+                    shape->paint();
+                }
             }
         }
 
