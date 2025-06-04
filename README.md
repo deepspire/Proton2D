@@ -28,7 +28,7 @@ now you can build! this command will build as release
 xmake
 ```
 
-project is not static so you need to add SDL's .dll in same folder as burger2d .exe
+project is not static so you need to add SDL's .dll in same folder as Proton2D.exe
 
 ## Base requirements
 - SDL3
