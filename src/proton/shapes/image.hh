@@ -24,6 +24,7 @@ namespace Proton
       this->width = width;
       this->height = height;
       this->path = imagePath;
+      this->isVisible = true;
       this->x = x;
       this->y = y;
       if (width == 0)
@@ -49,6 +50,11 @@ namespace Proton
       SDL_DestroyTexture(imageTexture);
     }
 
+    void setVisible(bool a) override
+    {
+      this->isVisible = a;
+    }
+
     void setFillColor([[maybe_unused]] Color c) override {}
 
     void resize(int width, int height)
@@ -67,7 +73,8 @@ namespace Proton
 
     void paint() override
     {
-      SDL_RenderTexture(this->render, imageTexture, NULL, &this->bounds);
+      if (this->isVisible)
+        SDL_RenderTexture(this->render, imageTexture, NULL, &this->bounds);
     }
 
   private:

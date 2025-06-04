@@ -22,6 +22,7 @@ namespace Proton
       }
       this->setPosition(x, y);
       createTexture();
+      this->isVisible = true;
     }
 
     ~Text() override
@@ -30,6 +31,11 @@ namespace Proton
         SDL_DestroyTexture(textTexture);
       if (this->font)
         TTF_CloseFont(this->font);
+    }
+
+    void setVisible(bool a) override
+    {
+      this->isVisible = a;
     }
 
     void setPosition(int x, int y) override
@@ -92,7 +98,7 @@ namespace Proton
 
     virtual void paint() override
     {
-      if (textTexture)
+      if (textTexture && this->isVisible)
       {
         SDL_RenderTexture(this->render, textTexture, nullptr, &textRect);
       }

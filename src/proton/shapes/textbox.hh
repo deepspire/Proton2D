@@ -18,6 +18,7 @@ namespace Proton
             this->render = render;
             this->scrollX = 0;
             this->adjustScrollX();
+            this->isVisible = true;
         }
 
         bool isFocused()
@@ -161,10 +162,15 @@ namespace Proton
                 this->cursorVisible = !this->cursorVisible;
             }
         }
+        
+        void setVisible(bool a) override
+        {
+            this->isVisible = a;
+        }
 
         void paint() override
         {
-            if (textTexture)
+            if (textTexture && this->isVisible)
             {
                 float textureW = this->textRect.w;
                 float textureH = this->textRect.h;

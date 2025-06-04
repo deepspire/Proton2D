@@ -49,9 +49,11 @@ namespace Proton
     virtual void paint() = 0;
     virtual void setFillColor(Color color) = 0;
     virtual void setPosition(int x, int y) = 0;
+    virtual void setVisible(bool a) = 0;
 
     virtual void update(float dt) {}
     virtual ~Shape() {}
+    bool isVisible;
   protected:
     SDL_Renderer *render;
   };

@@ -13,7 +13,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv)
     SetConsoleCP(CP_UTF8);
 #endif
 
-    Proton::Display display("Proton2D test application");
+    Proton::Display display("Proton2D test application", 700, 500);
     display.setScene(new Menu(&display));
     display.startRendering();
     return 0;

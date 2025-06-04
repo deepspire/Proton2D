@@ -8,11 +8,14 @@
 #include "proton/shapes/image.hh"
 #include "proton/shapes/rectanglebutton.hh"
 #include "proton/shapes/imagebutton.hh"
+#include "proton/shapes/container.hh"
 
 Proton::Rectangle *rect;
 Proton::Text *text;
 Proton::Image *img;
 Proton::TextBox *textbox;
+Proton::Container *cnt;
+Proton::Text *someContainerText;
 
 SecondScene::SecondScene(Proton::Display *display)
 {
@@ -40,6 +43,12 @@ SecondScene::SecondScene(Proton::Display *display)
 
     textbox = new Proton::TextBox(this->render, display->getNativeWindow(), "Hello, TextBox!", 50, 250, "fonts/Roboto-Regular.ttf", 20, Proton::Color(255, 255, 255, 255));
     addTextBox(textbox);
+
+    cnt = new Proton::Container(display, 50, 50, 200, 500);
+    someContainerText = new Proton::Text(this->render, "Качан", 30, 30, "fonts/Roboto-Regular.ttf", 150);
+    cnt->addObject(someContainerText);
+
+    addObject(cnt);
 }
 
 void SecondScene::mouseDown()

@@ -11,6 +11,7 @@ namespace Proton
         {
             this->image = new Image(render, imagePath, X, Y, W, H);
             this->render = render;
+            this->isVisible = true;
         }
 
         ~ImageButton()
@@ -34,7 +35,13 @@ namespace Proton
 
         void paint() override
         {
-            image->paint();
+            if (this->isVisible)
+                image->paint();
+        }
+
+        void setVisible(bool a) override
+        {
+            this->isVisible = a;
         }
 
         void setFillColor([[maybe_unused]] Color color) override

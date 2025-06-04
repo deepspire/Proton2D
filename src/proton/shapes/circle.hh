@@ -15,6 +15,7 @@ namespace Proton
       this->radius = radius;
       this->color = fillColor;
       this->render = render;
+      this->isVisible = true;
     }
 
     void setPosition(int x, int y) override
@@ -25,16 +26,24 @@ namespace Proton
 
     void paint() override
     {
-      SDL_SetRenderDrawColor(this->render, color.getR(), color.getG(), color.getB(),
-                             color.getA());
-      for (int dy = -radius; dy <= radius; dy++)
+      if (this->isVisible)
       {
-        int dx = (int)std::sqrt(radius * radius - dy * dy);
-        SDL_RenderLine(this->render, x - dx, y + dy, x + dx, y + dy);
-      }
+        SDL_SetRenderDrawColor(this->render, color.getR(), color.getG(), color.getB(),
+                             color.getA());
+        for (int dy = -radius; dy <= radius; dy++)
+        {
+          int dx = (int)std::sqrt(radius * radius - dy * dy);
+          SDL_RenderLine(this->render, x - dx, y + dy, x + dx, y + dy);
+        }
+      } 
     }
 
     void setFillColor(Color newColor) override { this->color = newColor; }
+
+    void setVisible(bool a) override
+    {
+      this->isVisible = a;
+    }
 
   private:
     Color color;
