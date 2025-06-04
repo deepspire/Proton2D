@@ -94,14 +94,14 @@ namespace Proton
       SDL_Event e;
       bool isDone = false;
 
-      const int TARGET_FPS = 120;
-      const Uint64 FRAME_DELAY = 1000 / TARGET_FPS;
+      /*const int TARGET_FPS = 120;
+      const Uint64 FRAME_DELAY = 1000 / TARGET_FPS;*/
 
       Uint64 lastFrameTime = SDL_GetTicks();
       float deltaTime = 0.0f;
       while (!isDone)
       {
-        Uint64 frameStart = SDL_GetTicks();
+        // Uint64 frameStart = SDL_GetTicks();
 
         while (SDL_PollEvent(&e))
         {
@@ -116,6 +116,11 @@ namespace Proton
             break;
           case SDL_EVENT_KEY_DOWN:
             this->currentScene->keyPressed(e.key.key);
+            this->currentScene->handleKeyDown(e);
+            break;
+          case SDL_EVENT_TEXT_INPUT:
+            this->currentScene->handleTextInput(e);
+            break;
           default:
             break;
           }
@@ -124,22 +129,22 @@ namespace Proton
         SDL_GetMouseState(&px, &py);
         pointerX = (int)px;
         pointerY = (int)py;
-        SDL_SetRenderDrawColor(this->randr, background.getR(), background.getG(),
+        SDL_SetRenderDrawColor(this->randr,
+                               background.getR(), background.getG(),
                                background.getB(), background.getA());
         SDL_RenderClear(this->randr);
 
-        this->currentScene->update(
-            deltaTime); // сначало обновляем объекты а потом уже их рисуем
-        this->currentScene->paint();
+        this->currentScene->update(deltaTime); // сначало обновляем объекты а потом уже их рисуем
+        this->currentScene->paint(deltaTime);
 
         SDL_RenderPresent(this->randr);
 
-        Uint64 frameTime = SDL_GetTicks() - frameStart;
+        /*Uint64 frameTime = SDL_GetTicks() - frameStart;
 
         if (frameTime < FRAME_DELAY)
         {
           SDL_Delay(FRAME_DELAY - frameTime);
-        }
+        }*/
 
         Uint64 currentTime = SDL_GetTicks();
         deltaTime = (currentTime - lastFrameTime) / 1000.0f;

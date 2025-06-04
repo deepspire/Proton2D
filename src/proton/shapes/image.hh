@@ -9,9 +9,11 @@ namespace Proton
   class Image : public Shape
   {
   public:
-    Image(SDL_Renderer *randr, const char *imagePath, int x = 0, int y = 0,
+    Image(SDL_Renderer *render, const char *imagePath, int x = 0, int y = 0,
           int width = 0, int height = 0)
     {
+      this->render = render;
+
       SDL_Surface *image = IMG_Load(imagePath);
       if (image == nullptr)
       {
@@ -22,7 +24,6 @@ namespace Proton
       this->width = width;
       this->height = height;
       this->path = imagePath;
-      this->randr = randr;
       this->x = x;
       this->y = y;
       if (width == 0)
@@ -31,7 +32,7 @@ namespace Proton
         this->height = image->h;
       this->recreateBounds();
 
-      this->imageTexture = SDL_CreateTextureFromSurface(this->randr, image);
+      this->imageTexture = SDL_CreateTextureFromSurface(this->render, image);
       if (this->imageTexture == nullptr)
       {
         Proton::Log("Image texture wasn't loaded", SDL_GetError());
@@ -48,7 +49,7 @@ namespace Proton
       SDL_DestroyTexture(imageTexture);
     }
 
-    void setFillColor(Color c) override {}
+    void setFillColor([[maybe_unused]] Color c) override {}
 
     void resize(int width, int height)
     {
@@ -64,9 +65,9 @@ namespace Proton
       this->recreateBounds();
     }
 
-    void paint(SDL_Renderer * /*unused*/) override
+    void paint() override
     {
-      SDL_RenderTexture(this->randr, imageTexture, NULL, &this->bounds);
+      SDL_RenderTexture(this->render, imageTexture, NULL, &this->bounds);
     }
 
   private:
@@ -79,6 +80,5 @@ namespace Proton
     SDL_FRect bounds;
     const char *path;
     SDL_Texture *imageTexture;
-    SDL_Renderer *randr;
   };
 }

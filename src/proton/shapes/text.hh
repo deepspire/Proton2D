@@ -1,7 +1,7 @@
 #pragma once
-#include "shape.hh"
 #include <SDL3_ttf/SDL_ttf.h>
 #include <string>
+#include "shape.hh"
 #include "../logman.hh"
 
 namespace Proton
@@ -9,13 +9,14 @@ namespace Proton
   class Text : public Shape
   {
   public:
-    Text(SDL_Renderer *renderer, const std::string &text = "Label", int x = 0,
+    Text(SDL_Renderer *render, const std::string &text = "Label", int x = 0,
          int y = 0, const std::string &fontPath = "fonts/Roboto-Regular.ttf",
          int fontSize = 10, Color color = Color(255, 255, 255, 255))
-        : renderer(renderer), labelText(text), fillColor(color)
+        :labelText(text), fillColor(color)
     {
-      font = TTF_OpenFont(fontPath.c_str(), fontSize);
-      if (!font)
+      this->render = render;
+      this->font = TTF_OpenFont(fontPath.c_str(), fontSize);
+      if (!this->font)
       {
         Proton::Log("Failed to load font: ", SDL_GetError());
       }
@@ -25,10 +26,10 @@ namespace Proton
 
     ~Text() override
     {
-      if (textTexture)
+      if (this->textTexture)
         SDL_DestroyTexture(textTexture);
-      if (font)
-        TTF_CloseFont(font);
+      if (this->font)
+        TTF_CloseFont(this->font);
     }
 
     void setPosition(int x, int y) override
@@ -47,44 +48,57 @@ namespace Proton
       this->h = h;
     }
 
-    int getX() {
+    int getX()
+    {
       return this->x;
     }
 
-    int getY() {
+    int getY()
+    {
       return this->y;
     }
 
-    int getW() {
+    int getW()
+    {
       return this->w;
     }
 
-    int getH() {
+    int getH()
+    {
       return this->h;
     }
 
     void setFillColor(Color newColor) override
     {
-      fillColor = newColor;
+      this->fillColor = newColor;
       createTexture();
     }
 
-    void setText(const std::string &text)
+    virtual void setText(const std::string &text)
     {
-      labelText = text;
+      this->labelText = text;
       createTexture();
     }
 
-    void paint(SDL_Renderer * /*unused*/) override
+    const std::string &getText()
+    {
+      return this->labelText;
+    }
+
+    int getTextLength()
+    {
+      return this->labelText.length();
+    }
+
+    virtual void paint() override
     {
       if (textTexture)
       {
-        SDL_RenderTexture(renderer, textTexture, nullptr, &textRect);
+        SDL_RenderTexture(this->render, textTexture, nullptr, &textRect);
       }
     }
 
   protected:
-    SDL_Renderer *renderer;
     TTF_Font *font = nullptr;
     std::string labelText;
     Color fillColor;
@@ -113,7 +127,7 @@ namespace Proton
         return;
       }
 
-      textTexture = SDL_CreateTextureFromSurface(renderer, surface);
+      textTexture = SDL_CreateTextureFromSurface(this->render, surface);
       if (!textTexture)
       {
         SDL_Log("SDL_CreateTextureFromSurface error: %s", SDL_GetError());

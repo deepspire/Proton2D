@@ -6,12 +6,13 @@ namespace Proton
   class Line : public Shape
   {
   public:
-    Line(int x1 = 0, int y1 = 0, int x2 = 5, int y2 = 5, Color color = Color())
+    Line(SDL_Renderer *render, int x1 = 0, int y1 = 0, int x2 = 5, int y2 = 5, [[maybe_unused]] Color color = Color())
     {
       this->startX = x1;
       this->startY = y1;
       this->endX = x2;
       this->endY = y2;
+      this->render = render;
     };
 
     void setPosition(int x, int y) override
@@ -24,11 +25,11 @@ namespace Proton
       this->endY = dy + y;
     }
 
-    void paint(SDL_Renderer *randr) override
+    void paint() override
     {
-      SDL_SetRenderDrawColor(randr, fillColor.getR(), fillColor.getG(),
+      SDL_SetRenderDrawColor(this->render, fillColor.getR(), fillColor.getG(),
                              fillColor.getB(), fillColor.getA());
-      SDL_RenderLine(randr, this->startX, this->startY, this->endX, this->endY);
+      SDL_RenderLine(this->render, this->startX, this->startY, this->endX, this->endY);
     }
 
     void setFillColor(Color color) override { this->fillColor = color; }

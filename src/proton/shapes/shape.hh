@@ -46,9 +46,13 @@ namespace Proton
   class Shape
   {
   public:
-    virtual void paint(SDL_Renderer *randr) = 0;
+    virtual void paint() = 0;
     virtual void setFillColor(Color color) = 0;
     virtual void setPosition(int x, int y) = 0;
+
+    virtual void update(float dt) {}
     virtual ~Shape() {}
+  protected:
+    SDL_Renderer *render;
   };
 }

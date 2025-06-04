@@ -19,7 +19,7 @@ namespace Proton
         {
         }
 
-        virtual void paint(SDL_Renderer *randr) override
+        virtual void paint() override
         {
         }
 
@@ -29,7 +29,7 @@ namespace Proton
             this->y = y;
         }
 
-        virtual void setFillColor(Color color) override
+        virtual void setFillColor([[maybe_unused]] Color color) override
         {
         }
 

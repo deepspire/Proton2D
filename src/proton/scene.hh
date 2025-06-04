@@ -42,11 +42,12 @@ namespace Proton
             this->destroyObjectMassive();
         }
 
-        void paint()
+        void paint(float dt)
         {
             for (Shape *shape : this->objects)
             {
-                shape->paint(this->render);
+                shape->update(dt);
+                shape->paint();
             }
         }
 
@@ -84,6 +85,46 @@ namespace Proton
                 this->focusedTextBox->setFocused(true);
             }
         }
+
+        void handleKeyDown(SDL_Event event)
+        {
+            if (this->focusedTextBox != nullptr)
+            {
+                switch (event.key.key)
+                {
+                case (SDLK_HOME):
+                    Log("SDLK_HOME");
+                    this->focusedTextBox->setCursorPosition(0);
+                    break;
+                case (SDLK_END):
+                    Log("SDLK_END");
+                    this->focusedTextBox->setCursorPosition(this->focusedTextBox->getTextLength());
+                    break;
+                case (SDLK_LEFT):
+                    Log("SDLK_LEFT");
+                    this->focusedTextBox->appendCursorLeft();
+                    break;
+                case (SDLK_RIGHT):
+                    Log("SDLK_RIGHT");
+                    this->focusedTextBox->appendCursorRight();
+                    break;
+                case (SDLK_BACKSPACE):
+                    Log("SDLK_BACKSPACE");
+                    this->focusedTextBox->removeAtCursor();
+                default:
+                    break;
+                }
+            }
+        }
+
+        void handleTextInput(SDL_Event event)
+        {
+            if (this->focusedTextBox != nullptr)
+            {
+                this->focusedTextBox->insertSymbol(event.text.text);
+            }
+        }
+
         SDL_Renderer *render;
 
     private:

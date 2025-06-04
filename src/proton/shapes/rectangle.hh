@@ -6,7 +6,7 @@ namespace Proton
   class Rectangle : public Shape
   {
   public:
-    Rectangle(int x = 0, int y = 0, int w = 10, int h = 10,
+    Rectangle(SDL_Renderer *render, int x = 0, int y = 0, int w = 10, int h = 10,
               Color color = Color())
     {
       this->x = x;
@@ -14,14 +14,15 @@ namespace Proton
       this->color = color;
       this->w = w;
       this->h = h;
+      this->render = render;
       redefineRect();
     }
 
-    void paint(SDL_Renderer *randr) override
+    void paint() override
     {
-      SDL_SetRenderDrawColor(randr, color.getR(), color.getG(), color.getB(),
+      SDL_SetRenderDrawColor(this->render, color.getR(), color.getG(), color.getB(),
                              color.getA());
-      SDL_RenderFillRect(randr, &this->rect);
+      SDL_RenderFillRect(this->render, &this->rect);
     }
 
     void setFillColor(Color color) override { this->color = color; }

@@ -6,7 +6,7 @@
 #include <windows.h>
 #endif
 
-int main(int argc, char **argv)
+int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv)
 {
 #ifdef _WIN32
     SetConsoleOutputCP(CP_UTF8);
