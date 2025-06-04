@@ -19,12 +19,16 @@ xmake will prefer to use msvc, to prevent this you need input this command
 ```pwsh
 xmake f --toolchain=mingw
 ```
+(if xmake couldn't find it then use this)
+```pwsh
+xmake f --toolchain=mingw --mingw=msys64_folder_path/mingw64
+```
 now you can build! this command will build as release
 ```pwsh
 xmake
 ```
 
-project not static so you need to add SDL's .dll in same folder as burger2d .exe
+project is not static so you need to add SDL's .dll in same folder as burger2d .exe
 
 ## Base requirements
 - SDL3
