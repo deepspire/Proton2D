@@ -10,16 +10,21 @@ namespace Proton
         Container(Display *display, int x, int y, int width, int height)
         {
             this->render = display->getRenderer();
+
+            // блять монслер так сложно было добавить поля x, y в конструкторе
+            this->x = x;
+            this->y = y;
+
             this->containerRect = {x, y, width, height};
             this->isVisible = true;
         }
 
-        void paint() override
+        void paint(int rX, int rY) override
         {
             SDL_SetRenderClipRect(this->render, &this->containerRect);
             for (Shape *shape : this->shapes)
             {
-                shape->paint();
+                shape->paint(this->x + rX, this->y + rY);
             }
             SDL_SetRenderClipRect(this->render, NULL);
         }
@@ -44,6 +49,8 @@ namespace Proton
 
         void setPosition(int x, int y) override
         {
+            this->x = x;
+            this->y = y;
             this->containerRect = {x, y, this->containerRect.w, this->containerRect.h};
         }
 

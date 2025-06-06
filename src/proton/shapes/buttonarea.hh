@@ -19,7 +19,7 @@ namespace Proton
         {
         }
 
-        virtual void paint() override
+        virtual void paint(int rX, int rY) override
         {
         }
 

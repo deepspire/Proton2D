@@ -22,7 +22,7 @@ SecondScene::SecondScene(Proton::Display *display)
     this->render = display->getRenderer();
     this->display = display;
     display->setBackground(Proton::Color(0, 0, 255));
-    rect = new Proton::Rectangle(this->render, 10, 10, 50, 50);
+    /*rect = new Proton::Rectangle(this->render, 10, 10, 50, 50);
     addObject(rect);
     addObject(new Proton::Rectangle(this->render, 110, 10, 50, 50, Proton::Color()));
     addObject(new Proton::Rectangle(this->render, 10, 100, 50, 50, Proton::Color()));
@@ -48,7 +48,16 @@ SecondScene::SecondScene(Proton::Display *display)
     someContainerText = new Proton::Text(this->render, "Качан", 30, 30, "fonts/Roboto-Regular.ttf", 150);
     cnt->addObject(someContainerText);
 
-    addObject(cnt);
+    addObject(cnt);*/
+
+    cnt = new Proton::Container(display, 0, 0, 200, 500);
+    cnt->addObject(new Proton::Rectangle(this->render, 0, 0, 30, 30, Proton::Color(255, 0, 0)));
+    cnt->addObject(new Proton::Circle(this->render, 35, 35, 10, Proton::Color(0, 255, 0)));
+    cnt->addObject(new Proton::Image(this->render, "kachan.png", 50, 50, 20, 20));
+    cnt->addObject(new Proton::Line(this->render, 0, 0, 30, 30));
+    cnt->addObject(new Proton::Text(this->render, "Huesos!", 70, 70));
+
+    this->addObject(cnt);
 }
 
 void SecondScene::mouseDown()
@@ -60,7 +69,7 @@ void SecondScene::mouseDown()
     }
     else
     {
-        rect->setPosition(rand() % 700, rand() % 500);
+        //rect->setPosition(rand() % 700, rand() % 500);
         //img->setPosition(rand() % 200, rand() % 200);
     }
 }
@@ -76,5 +85,5 @@ void SecondScene::keyPressed(Uint16 key)
 }
 void SecondScene::update([[maybe_unused]] Uint64 dt)
 {
-    //img->setPosition(this->display->pointerX, this->display->pointerY);
+    cnt->setPosition(this->display->pointerX, this->display->pointerY);
 }

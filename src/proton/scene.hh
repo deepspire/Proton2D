@@ -5,6 +5,8 @@
 #include "shapes/buttonarea.hh"
 #include "shapes/textbox.hh"
 
+#define ROOT_POSITION 0, 0
+
 namespace Proton
 {
     class Scene
@@ -49,7 +51,7 @@ namespace Proton
                 shape->update(dt);
                 if (shape->getVisible())
                 {
-                    shape->paint();
+                    shape->paint(ROOT_POSITION);
                 }
             }
         }

@@ -32,9 +32,9 @@ namespace Proton
             rectangle->resize(w, h);
         }
 
-        void paint() override
+        void paint(int rX, int rY) override
         {
-            rectangle->paint();
+            rectangle->paint(rX, rY);
         }
 
         void setFillColor(Color color) override

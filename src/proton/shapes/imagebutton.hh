@@ -33,9 +33,9 @@ namespace Proton
             image->resize(w, h);
         }
 
-        void paint() override
+        void paint(int rX, int rY) override
         {
-            image->paint();
+            image->paint(rX, rY);
         }
 
         void setFillColor([[maybe_unused]] Color color) override

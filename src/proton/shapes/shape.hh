@@ -46,34 +46,36 @@ namespace Proton
   class Shape
   {
   public:
-    virtual void paint() = 0;
-    virtual void paint(int x, int y) {} // if need to paint relative to anything
+    virtual void paint(int rX, int rY) = 0;
     virtual void setFillColor(Color color) = 0;
     virtual void setPosition(int x, int y) = 0;
 
-    void setVisible(bool a) 
+    void setVisible(bool a)
     {
       this->isVisible = a;
     }
 
-    bool getVisible() const {
+    bool getVisible() const
+    {
       return this->isVisible;
     }
 
-    int getX() const {
+    int getX() const
+    {
       return this->x;
     }
 
-    int getY() const {
+    int getY() const
+    {
       return this->y;
     }
 
     virtual void update(float dt) {}
     virtual ~Shape() {}
-    
+
   protected:
     SDL_Renderer *render;
-    bool isVisible;
-    int x, y;
+    bool isVisible = true;
+    int x, y = 0;
   };
 }

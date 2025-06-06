@@ -14,7 +14,7 @@ namespace Proton
                 int fontSize = 10, Color color = Color(255, 255, 255, 255)) : Text(render, text, x, y, fontPath, fontSize, color)
         {
             this->window = window;
-            this->resize(static_cast<int>(this->textRect.w), static_cast<int>(this->textRect.h));
+            this->resize(static_cast<int>(this->w), static_cast<int>(this->h));
             this->render = render;
             this->scrollX = 0;
             this->adjustScrollX();
@@ -163,12 +163,12 @@ namespace Proton
             }
         }
 
-        void paint() override
+        void paint(int rX, int rY) override
         {
             if (textTexture && this->isVisible)
             {
-                float textureW = this->textRect.w;
-                float textureH = this->textRect.h;
+                float textureW = this->w;
+                float textureH = this->h;
                 float srcW = textureW;
                 if (srcW > this->w)
                     srcW = this->w;
@@ -179,13 +179,12 @@ namespace Proton
                 SDL_FRect srcRect = {static_cast<float>(scrollX), 0, srcW, srcH};
 
                 SDL_FRect dstRect = {
-                    static_cast<float>(this->x),
-                    static_cast<float>(this->y + (this->h - srcH) / 2),
+                    static_cast<float>(this->x + rX),
+                    static_cast<float>(this->y + rY + (this->h - srcH) / 2),
                     srcW,
                     srcH
                 };
 
-                
                 SDL_RenderTexture(this->render, textTexture, &srcRect, &dstRect);
             }
 
@@ -220,7 +219,7 @@ namespace Proton
         
         void adjustScrollX()
         {
-            int textureW = static_cast<int>(this->textRect.w);
+            int textureW = static_cast<int>(this->w);
             int cursorPixelX = getCursorPixelPosition();
 
 

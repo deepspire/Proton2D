@@ -16,13 +16,17 @@ namespace Proton
       this->h = h;
       this->render = render;
       this->isVisible = true;
-      redefineRect();
     }
 
-    void paint() override
+    void paint(int rX, int rY) override
     {
+      float drawX = static_cast<float>(rX + this->x);
+      float drawY = static_cast<float>(rY + this->y);
+
+      SDL_FRect rectToRender = {drawX, drawY, (float)this->w, (float)this->h};
+
       SDL_SetRenderDrawColor(this->render, color.getR(), color.getG(), color.getB(), color.getA());
-      SDL_RenderFillRect(this->render, &this->rect);
+      SDL_RenderFillRect(this->render, &rectToRender);
     }
 
     void setFillColor(Color color) override { this->color = color; }
@@ -31,24 +35,16 @@ namespace Proton
     {
       this->w = width;
       this->h = height;
-      redefineRect();
     }
 
     void setPosition(int x, int y) override
     {
       this->x = x;
       this->y = y;
-      redefineRect();
     }
 
   private:
-    void redefineRect()
-    {
-      rect = {(float)this->x, (float)this->y, (float)this->w, (float)this->h};
-    }
-
     Color color;
     int w, h;
-    SDL_FRect rect;
   };
 }

@@ -66,9 +66,14 @@ namespace Proton
       this->recreateBounds();
     }
 
-    void paint() override
+    void paint(int rX, int rY) override
     {
-      SDL_RenderTexture(this->render, imageTexture, NULL, &this->bounds);
+      float drawX = static_cast<float>(rX + this->x);
+      float drawY = static_cast<float>(rY + this->y);
+
+      SDL_FRect rectToRender = {drawX, drawY, (float)this->width, (float)this->height};
+
+      SDL_RenderTexture(this->render, imageTexture, NULL, &rectToRender);
     }
 
   private:

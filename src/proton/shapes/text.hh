@@ -12,7 +12,7 @@ namespace Proton
     Text(SDL_Renderer *render, const std::string &text = "Label", int x = 0,
          int y = 0, const std::string &fontPath = "fonts/Roboto-Regular.ttf",
          int fontSize = 10, Color color = Color(255, 255, 255, 255))
-        :labelText(text), fillColor(color)
+        : labelText(text), fillColor(color)
     {
       this->render = render;
       this->font = TTF_OpenFont(fontPath.c_str(), fontSize);
@@ -35,16 +35,12 @@ namespace Proton
 
     void setPosition(int x, int y) override
     {
-      this->textRect.x = static_cast<float>(x);
-      this->textRect.y = static_cast<float>(y);
       this->x = x;
       this->y = y;
     }
 
     void resize(int w, int h)
     {
-      this->textRect.w = w;
-      this->textRect.h = h;
       this->w = w;
       this->h = h;
     }
@@ -81,11 +77,16 @@ namespace Proton
       return this->labelText.length();
     }
 
-    virtual void paint() override
+    virtual void paint(int rX, int rY) override
     {
       if (textTexture)
       {
-        SDL_RenderTexture(this->render, textTexture, nullptr, &textRect);
+        float drawX = static_cast<float>(rX + this->x);
+        float drawY = static_cast<float>(rY + this->y);
+
+        SDL_FRect rectToRender = {drawX, drawY, (float)this->w, (float)this->h};
+
+        SDL_RenderTexture(this->render, textTexture, nullptr, &rectToRender);
       }
     }
 
@@ -94,7 +95,6 @@ namespace Proton
     std::string labelText;
     Color fillColor;
     SDL_Texture *textTexture = nullptr;
-    SDL_FRect textRect = {0.f, 0.f, 0.f, 0.f};
     int w, h;
 
   private:
@@ -124,8 +124,8 @@ namespace Proton
         SDL_Log("SDL_CreateTextureFromSurface error: %s", SDL_GetError());
       }
 
-      textRect.w = static_cast<float>(surface->w);
-      textRect.h = static_cast<float>(surface->h);
+      this->w = static_cast<float>(surface->w);
+      this->h = static_cast<float>(surface->h);
 
       SDL_DestroySurface(surface);
     }

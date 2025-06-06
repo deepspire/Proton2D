@@ -24,14 +24,13 @@ namespace Proton
       this->y = y;
     }
 
-    void paint() override
+    void paint(int rX, int rY) override
     {
-      SDL_SetRenderDrawColor(this->render, color.getR(), color.getG(), color.getB(),
-                             color.getA());
+      SDL_SetRenderDrawColor(this->render, color.getR(), color.getG(), color.getB(), color.getA());
       for (int dy = -radius; dy <= radius; dy++)
       {
         int dx = (int)std::sqrt(radius * radius - dy * dy);
-        SDL_RenderLine(this->render, x - dx, y + dy, x + dx, y + dy);
+        SDL_RenderLine(this->render, (this->x + rX) - dx, (this->y + rY) + dy, (this->x + rX) + dx, (this->y + rY) + dy);
       }
     }
 
