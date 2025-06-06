@@ -6,7 +6,7 @@ namespace Proton
 {
     class Container : public Shape
     {
-        public:
+    public:
         Container(Display *display, int x, int y, int width, int height)
         {
             this->render = display->getRenderer();
@@ -17,7 +17,8 @@ namespace Proton
         void paint() override
         {
             SDL_SetRenderClipRect(this->render, &this->containerRect);
-            for(Shape *shape: this->shapes) {
+            for (Shape *shape : this->shapes)
+            {
                 shape->paint();
             }
             SDL_SetRenderClipRect(this->render, NULL);
@@ -25,17 +26,17 @@ namespace Proton
 
         void setFillColor(Color /*unused*/) override
         {
-
         }
 
-        void addObject(Shape* shape)
+        void addObject(Shape *shape)
         {
             shapes.push_back(shape);
         }
 
         void clear()
         {
-            for(Shape *shape: this->shapes) {
+            for (Shape *shape : this->shapes)
+            {
                 delete shape;
             }
             shapes.clear();
@@ -51,8 +52,8 @@ namespace Proton
             this->clear();
         }
 
-        private:
+    private:
         SDL_Rect containerRect;
-        std::vector<Shape*> shapes;
+        std::vector<Shape *> shapes;
     };
 }

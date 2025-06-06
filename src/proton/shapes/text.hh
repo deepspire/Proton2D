@@ -49,22 +49,12 @@ namespace Proton
       this->h = h;
     }
 
-    int getX()
-    {
-      return this->x;
-    }
-
-    int getY()
-    {
-      return this->y;
-    }
-
-    int getW()
+    int getW() const
     {
       return this->w;
     }
 
-    int getH()
+    int getH() const
     {
       return this->h;
     }
@@ -86,7 +76,7 @@ namespace Proton
       return this->labelText;
     }
 
-    int getTextLength()
+    int getTextLength() const
     {
       return this->labelText.length();
     }
@@ -105,7 +95,7 @@ namespace Proton
     Color fillColor;
     SDL_Texture *textTexture = nullptr;
     SDL_FRect textRect = {0.f, 0.f, 0.f, 0.f};
-    int x, y, w, h;
+    int w, h;
 
   private:
     void createTexture()

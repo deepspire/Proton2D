@@ -39,11 +39,10 @@ namespace Proton
             this->h = h;
         }
 
-        int getX() { return x; }
-        int getY() { return y; }
-        int getW() { return w; }
-        int getH() { return h; }
+        int getW() const { return this->w; }
+        int getH() const { return this->h; }
+
     protected:
-        int x, y, w, h;
+        int w, h;
     };
 };

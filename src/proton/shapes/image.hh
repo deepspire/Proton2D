@@ -77,7 +77,7 @@ namespace Proton
       this->bounds = {(float)this->x, (float)this->y, (float)this->width, (float)this->height};
     }
 
-    int x, y, width, height;
+    int width, height;
     SDL_FRect bounds;
     const char *path;
     SDL_Texture *imageTexture;

@@ -48,7 +48,7 @@ namespace Proton
     }
 
     Color color;
-    int x, y, w, h;
+    int w, h;
     SDL_FRect rect;
   };
 }

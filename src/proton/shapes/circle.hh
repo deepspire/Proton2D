@@ -39,6 +39,6 @@ namespace Proton
 
   private:
     Color color;
-    int x, y, radius;
+    int radius;
   };
 }

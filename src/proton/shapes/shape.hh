@@ -14,10 +14,10 @@ namespace Proton
       this->a = a;
     }
 
-    unsigned char getR() { return r; }
-    unsigned char getG() { return g; }
-    unsigned char getB() { return b; }
-    unsigned char getA() { return a; }
+    unsigned char getR() const { return this->r; }
+    unsigned char getG() const { return this->g; }
+    unsigned char getB() const { return this->b; }
+    unsigned char getA() const { return this->a; }
 
     void setR(unsigned char v)
     {
@@ -47,6 +47,7 @@ namespace Proton
   {
   public:
     virtual void paint() = 0;
+    virtual void paint(int x, int y) {} // if need to paint relative to anything
     virtual void setFillColor(Color color) = 0;
     virtual void setPosition(int x, int y) = 0;
 
@@ -55,8 +56,16 @@ namespace Proton
       this->isVisible = a;
     }
 
-    bool getVisible() {
+    bool getVisible() const {
       return this->isVisible;
+    }
+
+    int getX() const {
+      return this->x;
+    }
+
+    int getY() const {
+      return this->y;
     }
 
     virtual void update(float dt) {}
@@ -65,5 +74,6 @@ namespace Proton
   protected:
     SDL_Renderer *render;
     bool isVisible;
+    int x, y;
   };
 }
