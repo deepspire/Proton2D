@@ -7,10 +7,9 @@ namespace Proton
     class ImageButton : public ButtonArea
     {
     public:
-        ImageButton(SDL_Renderer *render, int X = 0, int Y = 0, int W = 10, int H = 10, const char *imagePath = "kachan.png") : ButtonArea(X, Y, W, H)
+        ImageButton(SDL_Texture* texture, int X = 0, int Y = 0, int W = 10, int H = 10) : ButtonArea(X, Y, W, H)
         {
-            this->image = new Image(render, imagePath, X, Y, W, H);
-            this->render = render;
+            this->image = new Image(texture, X, Y, W, H);
             this->isVisible = true;
         }
 
@@ -33,9 +32,9 @@ namespace Proton
             image->resize(w, h);
         }
 
-        void paint(int rX, int rY) override
+        void paint(SDL_Renderer *render, int rX, int rY) override
         {
-            image->paint(rX, rY);
+            image->paint(render, rX, rY);
         }
 
         void setFillColor([[maybe_unused]] Color color) override

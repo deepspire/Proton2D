@@ -1,76 +1,33 @@
-#include <SDL3/SDL_stdinc.h>
 #include "ss.hh"
-#include "menu.hh"
-#include "proton/shapes/rectangle.hh"
-#include "proton/shapes/line.hh"
-#include "proton/shapes/circle.hh"
-#include "proton/shapes/text.hh"
-#include "proton/shapes/image.hh"
-#include "proton/shapes/rectanglebutton.hh"
-#include "proton/shapes/imagebutton.hh"
-#include "proton/shapes/container.hh"
 
-Proton::Rectangle *rect;
-Proton::Text *text;
-Proton::Image *img;
-Proton::TextBox *textbox;
 Proton::Container *cnt;
-Proton::Text *someContainerText;
 
-SecondScene::SecondScene(Proton::Display *display)
+SecondScene::SecondScene(SDL_Renderer *render, SDL_Window *window) : Proton::Scene(render, window)
 {
-    this->render = display->getRenderer();
-    this->display = display;
-    display->setBackground(Proton::Color(0, 0, 255));
-    /*rect = new Proton::Rectangle(this->render, 10, 10, 50, 50);
-    addObject(rect);
-    addObject(new Proton::Rectangle(this->render, 110, 10, 50, 50, Proton::Color()));
-    addObject(new Proton::Rectangle(this->render, 10, 100, 50, 50, Proton::Color()));
-    addObject(new Proton::Rectangle(this->render, 60, 150, 50, 50, Proton::Color()));
-    addObject(new Proton::Rectangle(this->render, 110, 100, 50, 50, Proton::Color()));
-    addObject(new Proton::Line(0, 0, 500, 500));
-    addObject(new Proton::Circle(this->render, 250, 250, 50, Proton::Color(255, 0, 0)));
-    text = new Proton::Text(this->render, "Hello, world!", 50, 50, "fonts/Roboto-Regular.ttf", 40);
-    img = new Proton::Image(this->render, "kachan.png", 50, 50, 250, 120);
-    addObject(img);
-    addObject(text);
+    this->background = Proton::Color(0, 30, 180);
+    cnt = new Proton::Container(0, 0, 200, 500);
+    cnt->addObject(new Proton::Rectangle(0, 0, 30, 30, Proton::Color(255, 0, 0)));
+    cnt->addObject(new Proton::Circle(35, 35, 10, Proton::Color(0, 255, 0)));
+    cnt->addObject(new Proton::Image(Proton::ResourceManager::getInstance().getTexture(this->render, "kachan.png"), 50, 50, 20, 20));
+    cnt->addObject(new Proton::Line(0, 0, 30, 30));
+    cnt->addObject(new Proton::Text("Huesos!", 70, 70));
 
-    Proton::RectangleButton *button = new Proton::RectangleButton(this->render, 200, 0, 50, 50, Proton::Color(125, 125, 125));
-    addButton(button);
-
-    Proton::ImageButton *imagebutton = new Proton::ImageButton(this->render, 50, 150, 50, 50, "kachan.png");
-    addButton(imagebutton);
-
-    textbox = new Proton::TextBox(this->render, display->getNativeWindow(), "Hello, TextBox!", 50, 250, "fonts/Roboto-Regular.ttf", 20, Proton::Color(255, 255, 255, 255));
-    addTextBox(textbox);
-
-    cnt = new Proton::Container(display, 50, 50, 200, 500);
-    someContainerText = new Proton::Text(this->render, "Качан", 30, 30, "fonts/Roboto-Regular.ttf", 150);
-    cnt->addObject(someContainerText);
-
-    addObject(cnt);*/
-
-    cnt = new Proton::Container(display, 0, 0, 200, 500);
-    cnt->addObject(new Proton::Rectangle(this->render, 0, 0, 30, 30, Proton::Color(255, 0, 0)));
-    cnt->addObject(new Proton::Circle(this->render, 35, 35, 10, Proton::Color(0, 255, 0)));
-    cnt->addObject(new Proton::Image(this->render, "kachan.png", 50, 50, 20, 20));
-    cnt->addObject(new Proton::Line(this->render, 0, 0, 30, 30));
-    cnt->addObject(new Proton::Text(this->render, "Huesos!", 70, 70));
+    this->addTextBox(new Proton::TextBox(this->window, "Hello, TextBox!", 50, 250, "fonts/Roboto-Regular.ttf", 20, Proton::Color(255, 255, 255, 255)));
 
     this->addObject(cnt);
 }
 
-void SecondScene::mouseDown()
+void SecondScene::mouseDown(int x, int y)
 {
-    if (display->pointerX <= 100 && display->pointerY <= 100)
+    if (x <= 100 && y <= 100)
     {
-        Menu *menu = new Menu(display);
-        this->display->setScene(menu);
+        this->goNextScene = true;
+        this->nextScene = new Menu(this->render, this->window);
     }
     else
     {
-        //rect->setPosition(rand() % 700, rand() % 500);
-        //img->setPosition(rand() % 200, rand() % 200);
+        // rect->setPosition(rand() % 700, rand() % 500);
+        // img->setPosition(rand() % 200, rand() % 200);
     }
 }
 
@@ -78,12 +35,19 @@ void SecondScene::keyPressed(Uint16 key)
 {
     if (key == SDLK_A)
     {
-        rect->setVisible(!rect->getVisible());
-        rect->setPosition(rand() % 700, rand() % 500);
-        text->setPosition(rand() % 700, rand() % 500);
     }
 }
-void SecondScene::update([[maybe_unused]] Uint64 dt)
+
+Proton::Scene* SecondScene::update(float dt)
 {
-    cnt->setPosition(this->display->pointerX, this->display->pointerY);
+    for (Proton::Shape* shape : this->objects) {
+        shape->update(dt);
+    }
+
+    if (this->goNextScene)
+    {
+        return this->nextScene;
+    }
+
+    return this;
 }

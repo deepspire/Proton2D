@@ -3,51 +3,36 @@
 #include <iostream>
 #include "../logman.hh"
 #include "shape.hh"
+#include "../resourcemanager.hh"
 
 namespace Proton
 {
   class Image : public Shape
   {
   public:
-    Image(SDL_Renderer *render, const char *imagePath, int x = 0, int y = 0,
+    Image(SDL_Texture* texture, int x = 0, int y = 0,
           int width = 0, int height = 0)
     {
-      this->render = render;
-
-      SDL_Surface *image = IMG_Load(imagePath);
-      if (image == nullptr)
+      if (texture == nullptr)
       {
-        Proton::Log("Image wasn't loaded: ", SDL_GetError());
+        Proton::Log("у тебя два айкью????");
         return;
       }
+      this->imageTexture = texture;
 
       this->width = width;
       this->height = height;
-      this->path = imagePath;
       this->isVisible = true;
       this->x = x;
       this->y = y;
       if (width == 0)
-        this->width = image->w;
+        this->width = imageTexture->w;
       if (height == 0)
-        this->height = image->h;
-      this->recreateBounds();
-
-      this->imageTexture = SDL_CreateTextureFromSurface(this->render, image);
-      if (this->imageTexture == nullptr)
-      {
-        Proton::Log("Image texture wasn't loaded", SDL_GetError());
-        return;
-      }
-      SDL_DestroySurface(image);
-      
-      std::cout << "Image " << imagePath << " exported to engine" << std::endl;
+        this->height = imageTexture->h;
     }
 
     ~Image()
     {
-      std::cout << "Image " << this->path << " unloaded" << std::endl;
-      SDL_DestroyTexture(imageTexture);
     }
 
     void setFillColor([[maybe_unused]] Color c) override {}
@@ -56,35 +41,26 @@ namespace Proton
     {
       this->width = width;
       this->height = height;
-      this->recreateBounds();
     }
 
     void setPosition(int x, int y) override
     {
       this->x = x;
       this->y = y;
-      this->recreateBounds();
     }
 
-    void paint(int rX, int rY) override
+    void paint(SDL_Renderer *render, int rX, int rY) override
     {
       float drawX = static_cast<float>(rX + this->x);
       float drawY = static_cast<float>(rY + this->y);
 
       SDL_FRect rectToRender = {drawX, drawY, (float)this->width, (float)this->height};
 
-      SDL_RenderTexture(this->render, imageTexture, NULL, &rectToRender);
+      SDL_RenderTexture(render, imageTexture, NULL, &rectToRender);
     }
 
   private:
-    void recreateBounds()
-    {
-      this->bounds = {(float)this->x, (float)this->y, (float)this->width, (float)this->height};
-    }
-
     int width, height;
-    SDL_FRect bounds;
-    const char *path;
     SDL_Texture *imageTexture;
   };
 }

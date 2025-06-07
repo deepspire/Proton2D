@@ -8,13 +8,12 @@ namespace Proton
   class Circle : public Shape
   {
   public:
-    Circle(SDL_Renderer *render, int x = 0, int y = 0, int radius = 40, Color fillColor = Color())
+    Circle(int x = 0, int y = 0, int radius = 40, Color fillColor = Color())
     {
       this->x = x;
       this->y = y;
       this->radius = radius;
       this->color = fillColor;
-      this->render = render;
       this->isVisible = true;
     }
 
@@ -24,13 +23,13 @@ namespace Proton
       this->y = y;
     }
 
-    void paint(int rX, int rY) override
+    void paint(SDL_Renderer *render, int rX, int rY) override
     {
-      SDL_SetRenderDrawColor(this->render, color.getR(), color.getG(), color.getB(), color.getA());
+      SDL_SetRenderDrawColor(render, color.getR(), color.getG(), color.getB(), color.getA());
       for (int dy = -radius; dy <= radius; dy++)
       {
         int dx = (int)std::sqrt(radius * radius - dy * dy);
-        SDL_RenderLine(this->render, (this->x + rX) - dx, (this->y + rY) + dy, (this->x + rX) + dx, (this->y + rY) + dy);
+        SDL_RenderLine(render, (this->x + rX) - dx, (this->y + rY) + dy, (this->x + rX) + dx, (this->y + rY) + dy);
       }
     }
 

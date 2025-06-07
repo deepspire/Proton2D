@@ -14,7 +14,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv)
 #endif
 
     Proton::Display display("Proton2D test application", 700, 500);
-    display.setScene(new Menu(&display));
+    display.setScene(new Menu(display.getRenderer(), display.getNativeWindow()));
     display.startRendering();
     return 0;
 }

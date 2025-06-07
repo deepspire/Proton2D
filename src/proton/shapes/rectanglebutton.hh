@@ -7,10 +7,9 @@ namespace Proton
     class RectangleButton : public ButtonArea
     {
     public:
-        RectangleButton(SDL_Renderer *render, int X = 0, int Y = 0, int W = 10, int H = 10, Color color = Color(0, 0, 0)) : ButtonArea(X, Y, W, H)
+        RectangleButton(int X = 0, int Y = 0, int W = 10, int H = 10, Color color = Color(0, 0, 0)) : ButtonArea(X, Y, W, H)
         {
-            this->rectangle = new Rectangle(render, X, Y, W, H, color);
-            this->render = render;
+            this->rectangle = new Rectangle(X, Y, W, H, color);
         }
 
         ~RectangleButton()
@@ -32,9 +31,9 @@ namespace Proton
             rectangle->resize(w, h);
         }
 
-        void paint(int rX, int rY) override
+        void paint(SDL_Renderer *render, int rX, int rY) override
         {
-            rectangle->paint(rX, rY);
+            rectangle->paint(render, rX, rY);
         }
 
         void setFillColor(Color color) override

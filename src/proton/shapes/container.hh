@@ -7,10 +7,8 @@ namespace Proton
     class Container : public Shape
     {
     public:
-        Container(Display *display, int x, int y, int width, int height)
+        Container(int x, int y, int width, int height)
         {
-            this->render = display->getRenderer();
-
             // блять монслер так сложно было добавить поля x, y в конструкторе
             this->x = x;
             this->y = y;
@@ -19,14 +17,19 @@ namespace Proton
             this->isVisible = true;
         }
 
-        void paint(int rX, int rY) override
+        void paint(SDL_Renderer *render, int rX, int rY) override
         {
-            SDL_SetRenderClipRect(this->render, &this->containerRect);
+            SDL_Rect absoluteClipRect = {
+                this->x + rX, this->y + rY,
+                this->containerRect.w,this->containerRect.h
+            };
+
+            SDL_SetRenderClipRect(render, &absoluteClipRect);
             for (Shape *shape : this->shapes)
             {
-                shape->paint(this->x + rX, this->y + rY);
+                shape->paint(render, this->x + rX, this->y + rY);
             }
-            SDL_SetRenderClipRect(this->render, NULL);
+            SDL_SetRenderClipRect(render, NULL);
         }
 
         void setFillColor(Color /*unused*/) override
@@ -52,6 +55,14 @@ namespace Proton
             this->x = x;
             this->y = y;
             this->containerRect = {x, y, this->containerRect.w, this->containerRect.h};
+        }
+
+        void update(float dt) override
+        {
+            for (Shape *shape : this->shapes)
+            {
+                shape->update(dt);
+            }
         }
 
         ~Container()

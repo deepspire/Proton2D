@@ -1,7 +1,5 @@
 #pragma once
 #define SDL_MAIN_HANDLED // без этого линковщик ломается на винде
-#include "scene.hh"
-#include "shapes/shape.hh"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <SDL3/SDL_render.h>
@@ -9,6 +7,9 @@
 #include <thread>
 #include <iostream>
 #include "logman.hh"
+#include "scene.hh"
+#include "shapes/shape.hh"
+#include "resourcemanager.hh"
 
 namespace Proton
 {
@@ -84,8 +85,6 @@ namespace Proton
 
     SDL_Window *getNativeWindow() { return this->handle; }
 
-    void setBackground(Color color) { this->background = color; }
-
     int pointerX, pointerY = 0;
 
   private:
@@ -111,7 +110,7 @@ namespace Proton
             isDone = true;
             break;
           case SDL_EVENT_MOUSE_BUTTON_DOWN:
-            this->currentScene->mouseDown();
+            this->currentScene->mouseDown(e.button.x, e.button.y);
             this->currentScene->handleButtonClick(e.button.x, e.button.y);
             break;
           case SDL_EVENT_KEY_DOWN:
@@ -125,26 +124,44 @@ namespace Proton
             break;
           }
         }
+
+        // пизда сцене, делать нечего
+        if (!this->currentScene)
+        {
+          isDone = true;
+          continue;
+        }
+        else
+        {
+          SDL_SetRenderDrawColor(this->randr, this->currentScene->getBackgroundColor().getR(),
+                                              this->currentScene->getBackgroundColor().getG(),
+                                              this->currentScene->getBackgroundColor().getB(),
+                                              this->currentScene->getBackgroundColor().getA());
+        }
+
         float px, py;
         SDL_GetMouseState(&px, &py);
         pointerX = (int)px;
         pointerY = (int)py;
-        SDL_SetRenderDrawColor(this->randr,
-                               background.getR(), background.getG(),
-                               background.getB(), background.getA());
         SDL_RenderClear(this->randr);
 
-        this->currentScene->update(deltaTime); // сначало обновляем объекты а потом уже их рисуем
-        this->currentScene->paint(deltaTime);
+        Scene *nextScene = this->currentScene->update(deltaTime);
+
+        if (nextScene != this->currentScene)
+        {
+          if (nextScene == nullptr)
+          {
+            isDone = true;
+          }
+          this->setScene(nextScene);
+        }
+
+        if (this->currentScene)
+        {
+          this->currentScene->paint();
+        }
 
         SDL_RenderPresent(this->randr);
-
-        /*Uint64 frameTime = SDL_GetTicks() - frameStart;
-
-        if (frameTime < FRAME_DELAY)
-        {
-          SDL_Delay(FRAME_DELAY - frameTime);
-        }*/
 
         Uint64 currentTime = SDL_GetTicks();
         deltaTime = (currentTime - lastFrameTime) / 1000.0f;
@@ -157,7 +174,6 @@ namespace Proton
     SDL_Window *handle;
     SDL_Renderer *randr;
     std::string title;
-    Color background;
     std::vector<Shape> objects;
     Scene *currentScene;
     bool isInit = false;

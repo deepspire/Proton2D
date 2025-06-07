@@ -13,8 +13,15 @@ namespace Proton
     {
     public:
         virtual void keyPressed(Uint16 key) = 0;
-        virtual void mouseDown() = 0;
-        virtual void update(Uint64 dt) = 0;
+        virtual void mouseDown(int x, int y) = 0;
+        virtual Scene *update(float dt) = 0;
+
+        Scene(SDL_Renderer *render, SDL_Window *window)
+        {
+            this->render = render;
+            this->window = window;
+            this->background = Color(255, 255, 255);
+        }
 
         virtual ~Scene()
         {
@@ -44,14 +51,13 @@ namespace Proton
             this->destroyObjectMassive();
         }
 
-        void paint(float dt)
+        void paint()
         {
             for (Shape *shape : this->objects)
             {
-                shape->update(dt);
                 if (shape->getVisible())
                 {
-                    shape->paint(ROOT_POSITION);
+                    shape->paint(this->render, ROOT_POSITION);
                 }
             }
         }
@@ -98,23 +104,18 @@ namespace Proton
                 switch (event.key.key)
                 {
                 case (SDLK_HOME):
-                    Log("SDLK_HOME");
                     this->focusedTextBox->setCursorPosition(0);
                     break;
                 case (SDLK_END):
-                    Log("SDLK_END");
                     this->focusedTextBox->setCursorPosition(this->focusedTextBox->getTextLength());
                     break;
                 case (SDLK_LEFT):
-                    Log("SDLK_LEFT");
                     this->focusedTextBox->appendCursorLeft();
                     break;
                 case (SDLK_RIGHT):
-                    Log("SDLK_RIGHT");
                     this->focusedTextBox->appendCursorRight();
                     break;
                 case (SDLK_BACKSPACE):
-                    Log("SDLK_BACKSPACE");
                     this->focusedTextBox->removeAtCursor();
                 default:
                     break;
@@ -130,7 +131,10 @@ namespace Proton
             }
         }
 
-        SDL_Renderer *render;
+        Color getBackgroundColor() const
+        {
+            return this->background;
+        }
 
     private:
         void destroyObjectMassive()
@@ -145,8 +149,16 @@ namespace Proton
         TextBox *focusedTextBox = nullptr;
 
     protected:
+        SDL_Renderer *render;
+        SDL_Window *window;
+
         std::vector<Shape *> objects;
         std::vector<ButtonArea *> buttons;
         std::vector<TextBox *> textboxes;
+
+        bool goNextScene = false;
+        Scene *nextScene = nullptr;
+
+        Color background;
     };
 };

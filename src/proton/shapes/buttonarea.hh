@@ -19,7 +19,7 @@ namespace Proton
         {
         }
 
-        virtual void paint(int rX, int rY) override
+        virtual void paint(SDL_Renderer *render, int rX, int rY) override
         {
         }
 
