@@ -101,6 +101,24 @@ namespace Proton
         {
             if (this->focusedTextBox != nullptr)
             {
+                if ((event.key.mod & SDL_KMOD_CTRL))
+                {
+                    // если Ctrl зажат, проверяем конкретную клавишу
+                    if (event.key.key == SDLK_V)
+                    {
+                        Proton::Log("Ctrl+V");
+
+                        char *clipboardText = SDL_GetClipboardText();
+
+                        if (clipboardText)
+                        {
+                            this->focusedTextBox->insertSymbol(clipboardText);
+                            SDL_free(clipboardText);
+                        }
+                        return;
+                    }
+                }
+
                 switch (event.key.key)
                 {
                 case (SDLK_HOME):
