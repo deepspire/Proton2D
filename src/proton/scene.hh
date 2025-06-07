@@ -84,16 +84,30 @@ namespace Proton
                 }
             }
 
-            if (this->focusedTextBox != nullptr && this->focusedTextBox != clickedTextBox)
+            if (clickedTextBox)
             {
-                this->focusedTextBox->setFocused(false);
-                this->focusedTextBox = nullptr;
-            }
+                if (this->focusedTextBox && this->focusedTextBox != clickedTextBox)
+                {
+                    this->focusedTextBox->setFocused(false);
+                    this->focusedTextBox->setCursorPosition(0);
+                }
 
-            if (clickedTextBox != nullptr && this->focusedTextBox != clickedTextBox)
-            {
                 this->focusedTextBox = clickedTextBox;
                 this->focusedTextBox->setFocused(true);
+
+                int relativeX = mX - clickedTextBox->getX();
+                int charIndex = clickedTextBox->getCharIndexAt(relativeX);
+                clickedTextBox->setCursorPosition(charIndex);
+                clickedTextBox->setSelectionAnchor(charIndex);
+            }
+            else
+            {
+                if (this->focusedTextBox)
+                {
+                    this->focusedTextBox->setFocused(false);
+                    this->focusedTextBox->setCursorPosition(0);
+                    this->focusedTextBox = nullptr;
+                }
             }
         }
 
@@ -106,8 +120,6 @@ namespace Proton
                     // если Ctrl зажат, проверяем конкретную клавишу
                     if (event.key.key == SDLK_V)
                     {
-                        Proton::Log("Ctrl+V");
-
                         char *clipboardText = SDL_GetClipboardText();
 
                         if (clipboardText)

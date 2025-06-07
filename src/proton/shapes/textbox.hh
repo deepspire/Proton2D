@@ -27,22 +27,22 @@ namespace Proton
 
         void setFocused(bool v)
         {
+            if (this->focused == v)
+                return;
+
             this->focused = v;
-            Log("is focused: ", v);
             if (v)
             {
                 SDL_StartTextInput(this->window);
-                this->setCursorPosition(this->getTextLength());
                 this->cursorVisible = true;
-                this->currentBlinkTime = 0;
             }
             else
             {
                 SDL_StopTextInput(this->window);
-                this->setCursorPosition(0);
                 this->cursorVisible = false;
-                this->currentBlinkTime = 0;
             }
+
+            this->currentBlinkTime = 0;
         }
 
         int getCursorPosition()
@@ -62,6 +62,24 @@ namespace Proton
                 this->cursorVisible = true;
                 this->cursorPosition = v;
                 this->adjustScrollX();
+            }
+        }
+
+        void setSelectionAnchor(int v)
+        {
+            if (v == -1)
+            {
+                this->selectionAnchor = -1;
+                return;
+            }
+
+            if (v < 0 || v > (int)this->labelText.length())
+            {
+                Log("attempt to set selection anchor position > than label text length");
+            }
+            else
+            {
+                this->selectionAnchor = v;
             }
         }
 
@@ -152,6 +170,60 @@ namespace Proton
             }
         }
 
+        int getCharIndexAt(int pX)
+        {
+            int targetPixelX = pX + this->scrollX;
+
+            TTF_Font *font = ResourceManager::getInstance().getFont(this->path, this->fontSize);
+            if (!font)
+            {
+                return 0;
+            }
+
+            if (targetPixelX <= 0)
+            {
+                return 0;
+            }
+
+            if (this->labelText.empty())
+            {
+                return 0;
+            }
+
+            int currentWidth = 0;
+            int prevWidth = 0;
+
+            for (size_t charIndex = 0; charIndex < this->labelText.length();)
+            {
+                prevWidth = currentWidth;
+
+                int charLen = getCharLength(static_cast<unsigned char>(this->labelText[charIndex]));
+                if (charLen == 0)
+                {
+                    charLen = 1;
+                }
+
+                std::string sub = this->labelText.substr(0, charIndex + charLen);
+                TTF_GetStringSize(font, sub.c_str(), sub.length(), &currentWidth, nullptr);
+
+                if (targetPixelX >= prevWidth && targetPixelX <= currentWidth)
+                {
+                    if (targetPixelX - prevWidth < currentWidth - targetPixelX)
+                    {
+                        return charIndex;
+                    }
+                    else
+                    {
+                        return charIndex + charLen;
+                    }
+                }
+
+                charIndex += charLen;
+            }
+
+            return this->labelText.length();
+        }
+
         void update(float dt) override
         {
             this->currentBlinkTime += dt;
@@ -200,6 +272,7 @@ namespace Proton
         float requiredBlinkTime = 0.5; // в секундах
         bool cursorVisible = true;
         int scrollX = 0;
+        int selectionAnchor = -1;
 
         void adjustScrollX()
         {
