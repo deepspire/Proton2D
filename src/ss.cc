@@ -2,6 +2,7 @@
 
 Proton::Container *cnt;
 Proton::Group *grp;
+Proton::ProgressBar *bar;
 
 SecondScene::SecondScene(SDL_Renderer *render, SDL_Window *window) : Proton::Scene(render, window)
 {
@@ -15,12 +16,14 @@ SecondScene::SecondScene(SDL_Renderer *render, SDL_Window *window) : Proton::Sce
     grp = new Proton::Group(50, 50);
     grp->addObject(new Proton::Rectangle(0, 0, 10, 10, Proton::Color(255, 0, 0)));
     grp->addObject(new Proton::Rectangle(30, 0, 10, 10, Proton::Color(0, 0, 255)));
-
+    bar = new Proton::ProgressBar(100, 100, 200, 50);
+    bar->setFillColor(Proton::Color(0, 255, 0));
 
     this->addTextBox(new Proton::TextBox(this->window, "Hello, TextBox!", 50, 250, "fonts/Roboto-Regular.ttf", 20, Proton::Color(255, 255, 255, 255)));
 
     this->addObject(cnt);
     this->addObject(grp);
+    grp->addObject(bar);
 }
 
 void SecondScene::mouseDown(int x, int y)
@@ -42,6 +45,7 @@ void SecondScene::keyPressed(Uint16 key)
     if (key == SDLK_A)
     {
         grp->setPosition(rand() % 700, rand() % 500);
+        bar->setProgress(rand() % 100);
     }
 }
 

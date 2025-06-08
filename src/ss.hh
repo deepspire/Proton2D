@@ -11,6 +11,7 @@
 #include "proton/shapes/imagebutton.hh"
 #include "proton/shapes/container.hh"
 #include "proton/shapes/group.hh"
+#include "proton/shapes/progressbar.hh"
 
 class Menu;
 
