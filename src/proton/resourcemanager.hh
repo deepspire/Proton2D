@@ -4,7 +4,7 @@
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <string>
-#include <map>
+#include <unordered_map>
 
 namespace Proton
 {
@@ -25,7 +25,7 @@ namespace Proton
         ResourceManager() = default;
         ~ResourceManager();
 
-        std::map<std::string, SDL_Texture *> textureCache;
-        std::map<std::string, TTF_Font *> fontCache;
+        std::unordered_map<std::string, SDL_Texture *> textureCache;
+        std::unordered_map<std::string, TTF_Font *> fontCache;
     };
 };

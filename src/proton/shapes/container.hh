@@ -9,7 +9,6 @@ namespace Proton
     public:
         Container(int x, int y, int width, int height)
         {
-            // блять монслер так сложно было добавить поля x, y в конструкторе
             this->x = x;
             this->y = y;
 

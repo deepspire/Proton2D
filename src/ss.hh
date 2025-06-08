@@ -1,7 +1,6 @@
 #pragma once
 #include <SDL3/SDL_stdinc.h>
 #include "proton/proton.hh"
-#include "ss.hh"
 #include "menu.hh"
 #include "proton/shapes/rectangle.hh"
 #include "proton/shapes/line.hh"
@@ -11,6 +10,7 @@
 #include "proton/shapes/rectanglebutton.hh"
 #include "proton/shapes/imagebutton.hh"
 #include "proton/shapes/container.hh"
+#include "proton/shapes/group.hh"
 
 class Menu;
 
