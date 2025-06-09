@@ -5,17 +5,16 @@ if not IS_WINDOWS then
 	add_requires("libsdl3", "libsdl3_ttf", "libsdl3_image")
 end
 
+set_defaultmode("release")
 target("Proton2D")
+
 do
 	set_kind("binary")
 	add_files("src/*.cc")
 	add_files("src/proton/*.cc")
-	
-	add_cxxflags("-fno-rtti", "-g0", "-ffunction-sections", "-fdata-sections")
-	add_ldflags("-Wl,--gc-sections", "-s")
-
-
+	add_includedirs("ext")
 	if IS_WINDOWS then
+		
 		add_includedirs("C:/SDL3/x86_64-w64-mingw32/include")
 		add_linkdirs("C:/SDL3/x86_64-w64-mingw32/lib")
 

@@ -3,6 +3,7 @@
 Proton::Container *cnt;
 Proton::Group *grp;
 Proton::ProgressBar *bar;
+Proton::Audio* kachan;
 
 SecondScene::SecondScene(SDL_Renderer *render, SDL_Window *window) : Proton::Scene(render, window)
 {
@@ -12,14 +13,15 @@ SecondScene::SecondScene(SDL_Renderer *render, SDL_Window *window) : Proton::Sce
     cnt->addObject(new Proton::Circle(35, 35, 10, Proton::Color(0, 255, 0)));
     cnt->addObject(new Proton::Image(Proton::ResourceManager::getInstance().getTexture(this->render, "kachan.png"), 50, 50, 20, 20));
     cnt->addObject(new Proton::Line(0, 0, 30, 30));
-    cnt->addObject(new Proton::Text("Huesos!", 70, 70));
+    cnt->addObject(new Proton::Text("Proton2D text rendering", 70, 70, "fonts/s60.ttf"));
     grp = new Proton::Group(50, 50);
     grp->addObject(new Proton::Rectangle(0, 0, 10, 10, Proton::Color(255, 0, 0)));
     grp->addObject(new Proton::Rectangle(30, 0, 10, 10, Proton::Color(0, 0, 255)));
     bar = new Proton::ProgressBar(100, 100, 200, 50);
     bar->setFillColor(Proton::Color(0, 255, 0));
+    kachan = new Proton::Audio("kachan.mp3");
 
-    this->addTextBox(new Proton::TextBox(this->window, "Hello, TextBox!", 50, 250, "fonts/Roboto-Regular.ttf", 20, Proton::Color(255, 255, 255, 255)));
+    this->addTextBox(new Proton::TextBox(this->window, "Hello, TextBox!", 50, 250, "fonts/s60.ttf", 20, Proton::Color(255, 255, 255, 255)));
 
     this->addObject(cnt);
     this->addObject(grp);
@@ -46,7 +48,13 @@ void SecondScene::keyPressed(Uint16 key)
     {
         grp->setPosition(rand() % 700, rand() % 500);
         bar->setProgress(rand() % 100);
+        kachan->play();
     }
+}
+
+void SecondScene::deleteEvent()
+{
+    delete kachan;
 }
 
 Proton::Scene* SecondScene::update(float dt)

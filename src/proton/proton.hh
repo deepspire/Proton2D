@@ -7,6 +7,7 @@
 #include <thread>
 #include <iostream>
 #include "logman.hh"
+#include "audio.hh"
 #include "scene.hh"
 #include "shapes/shape.hh"
 #include "resourcemanager.hh"
@@ -46,12 +47,14 @@ namespace Proton
       Proton::Log("display init is successful");
       this->isInit = true;
       this->currentScene = nullptr;
+      Proton::initAudioEngine();
     }
 
     void setScene(Scene *newScene)
     {
       if (this->currentScene != nullptr)
       {
+        currentScene->deleteEvent();
         delete currentScene;
         Proton::Log("Deleting previous scene...");
         // this->currentScene->clearScene(); // зачем чистить сцену если ее можно удалить
@@ -71,6 +74,7 @@ namespace Proton
         SDL_DestroyRenderer(this->randr);
         TTF_Quit();
         SDL_Quit();
+        Proton::destroyAudioEngine();
       }
       else
       {
@@ -125,7 +129,6 @@ namespace Proton
           }
         }
 
-        // пизда сцене, делать нечего
         if (!this->currentScene)
         {
           isDone = true;

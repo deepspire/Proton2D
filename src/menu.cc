@@ -34,3 +34,8 @@ Proton::Scene *Menu::update(float dt)
 
     return this;
 }
+
+void Menu::deleteEvent()
+{
+    
+}
