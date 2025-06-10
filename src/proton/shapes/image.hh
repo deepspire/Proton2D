@@ -59,6 +59,13 @@ namespace Proton
       SDL_RenderTexture(render, imageTexture, NULL, &rectToRender);
     }
 
+    void setTexture(SDL_Texture *texture)
+    {
+      this->imageTexture = texture;
+      this->width = this->imageTexture->w;
+      this->height = this->imageTexture->h;
+    }
+
   private:
     int width, height;
     SDL_Texture *imageTexture;

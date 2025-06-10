@@ -16,6 +16,7 @@ namespace Proton
     void destroyAudioEngine()
     {
         ma_engine_uninit(&engine);
+        Proton::Log("Audio module shutted down");
     }
 
     ma_sound* Audio::sound = nullptr;
