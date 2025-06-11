@@ -2,6 +2,8 @@
 #include "buttonarea.hh"
 #include "rectangle.hh"
 
+void search();
+
 namespace Proton
 {
     class RectangleButton : public ButtonArea
@@ -24,6 +26,11 @@ namespace Proton
             rectangle->setPosition(x, y);
         }
 
+        void setClickListener(void (*f)())
+        {
+            this->clickListener = f;
+        }
+
         void resize(int w, int h) override
         {
             this->w = w;
@@ -43,10 +50,12 @@ namespace Proton
 
         void onClick() override
         {
-            std::cout << "sin blyadi!!!!" << std::endl;
+            if (clickListener)
+                clickListener();
         }
 
     protected:
         Rectangle *rectangle;
+        void (*clickListener)();
     };
 }
