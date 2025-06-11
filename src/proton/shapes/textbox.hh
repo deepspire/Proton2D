@@ -231,6 +231,7 @@ namespace Proton
             {
                 this->currentBlinkTime = 0;
                 this->cursorVisible = !this->cursorVisible;
+                Proton::Log("blink");
             }
         }
 
@@ -253,7 +254,7 @@ namespace Proton
 
                 if (cursorDrawX >= (this->x + rX) && cursorDrawX <= (this->x + rX + this->w))
                 {
-                    SDL_SetRenderDrawColor(render, 255, 255, 255, 255);
+                    SDL_SetRenderDrawColor(render, this->fillColor.getR(), this->fillColor.getG(), this->fillColor.getB(), this->fillColor.getA());
                     SDL_RenderLine(
                         render,
                         cursorDrawX,

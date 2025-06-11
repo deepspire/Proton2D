@@ -11,7 +11,7 @@ namespace Proton
             Proton::Log("Unable to init sound engine");
             return;
         }
-        Proton::Log("miniaudio backend initialized successfully");
+        Proton::Log("Miniaudio backend initialized successfully");
     }
     void destroyAudioEngine()
     {

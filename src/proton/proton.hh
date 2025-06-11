@@ -68,7 +68,6 @@ namespace Proton
       if (this->isInit)
       {
         this->renderStart();
-
         delete this->currentScene;
         SDL_DestroyWindow(this->handle);
         SDL_DestroyRenderer(this->randr);
@@ -88,6 +87,17 @@ namespace Proton
     SDL_Renderer *getRenderer() { return this->randr; }
 
     SDL_Window *getNativeWindow() { return this->handle; }
+
+    void setTitle(const char* title)
+    {
+      SDL_SetWindowTitle(this->handle, title);
+    }
+
+    void setIcon(std::string path)
+    {
+      SDL_Surface* icon = ResourceManager::getInstance().getIcon(path);
+      SDL_SetWindowIcon(this->handle, icon);
+    }
 
     int pointerX, pointerY = 0;
 

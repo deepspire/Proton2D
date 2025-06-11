@@ -19,7 +19,7 @@ namespace Proton
     {
         if (!render)
         {
-            Proton::Log("attempt to get texture without renderer..");
+            Proton::Log("Attempt to get texture without renderer..");
             return nullptr;
         }
 
@@ -29,25 +29,44 @@ namespace Proton
             return it->second;
         }
 
-        Proton::Log("loading new texture: ", path);
+        Proton::Log("Loading new texture: ", path);
         SDL_Surface *surface = IMG_Load(path.c_str());
         if (!surface)
         {
-            Proton::Log("failed to load image: ", path, ". error: ", SDL_GetError());
+            Proton::Log("Failed to load image: ", path, ". error: ", SDL_GetError());
             return nullptr;
         }
-
+        Proton::Log("Texture ", path, " loaded successfully");
         SDL_Texture *texture = SDL_CreateTextureFromSurface(render, surface);
         SDL_DestroySurface(surface);
 
+
         if (!texture)
         {
-            Proton::Log("failed to create texture from surface: ", path, ". error: ", SDL_GetError());
+            Proton::Log("Failed to create texture from surface: ", path, ". error: ", SDL_GetError());
             return nullptr;
         }
 
         this->textureCache[path] = texture;
         return texture;
+    }
+
+    SDL_Surface* ResourceManager::getIcon(const std::string& path)
+    {
+        Proton::Log("Loading new icon: ", path);
+        if(this->currentIcon)
+        {
+            delete currentIcon;
+        }
+        currentIcon = IMG_Load(path.c_str());
+        if(!currentIcon)
+        {
+            Proton::Log("Failed to load icon: ", path);
+            return nullptr;
+        }
+        Proton::Log("Icon ", path, " loaded successfully");
+
+        return currentIcon;
     }
 
     TTF_Font* ResourceManager::getFont(const std::string& path, int fontSize)
@@ -59,11 +78,11 @@ namespace Proton
             return it->second;
         }
 
-        Proton::Log("loading new font: ", path, " with size ", std::to_string(fontSize));
+        Proton::Log("Loading new font: ", path, " with size ", std::to_string(fontSize));
         TTF_Font* font = TTF_OpenFont(path.c_str(), fontSize);
         if (!font)
         {
-            Proton::Log("failed to load font: ", SDL_GetError());
+            Proton::Log("Failed to load font: ", SDL_GetError());
             return nullptr;
         }
         
@@ -82,5 +101,9 @@ namespace Proton
             TTF_CloseFont(font);
         }
         fontCache.clear();
+        if (currentIcon)
+        {
+            delete currentIcon;
+        }
     }
 }
