@@ -7,7 +7,7 @@ namespace Proton
   {
   public:
     Rectangle(int x = 0, int y = 0, int w = 10, int h = 10,
-              Color color = Color())
+              Color color = Color(), std::string style="fill")
     {
       this->x = x;
       this->y = y;
@@ -15,6 +15,7 @@ namespace Proton
       this->w = w;
       this->h = h;
       this->isVisible = true;
+      this->style = style;
     }
 
     void paint(SDL_Renderer *render, int rX, int rY) override
@@ -25,7 +26,10 @@ namespace Proton
       SDL_FRect rectToRender = {drawX, drawY, (float)this->w, (float)this->h};
 
       SDL_SetRenderDrawColor(render, color.getR(), color.getG(), color.getB(), color.getA());
-      SDL_RenderFillRect(render, &rectToRender);
+      if(this->style == "fill")
+        SDL_RenderFillRect(render, &rectToRender);
+      else if(this->style == "bevel")
+        SDL_RenderRect(render, &rectToRender);
     }
 
     void setFillColor(Color color) override { this->color = color; }
@@ -45,5 +49,6 @@ namespace Proton
   private:
     Color color;
     int w, h;
+    std::string style;
   };
 }
