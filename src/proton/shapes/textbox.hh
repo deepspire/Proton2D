@@ -9,15 +9,13 @@ namespace Proton
     class TextBox : public Text
     {
     public:
-        TextBox(SDL_Window *window, const std::string &text = "Label", int x = 0,
+        TextBox(SDL_Window *window, int boxW, const std::string &text = "Label", int x = 0,
                 int y = 0, const std::string &fontPath = "fonts/Roboto-Regular.ttf",
                 int fontSize = 10, Color color = Color(255, 255, 255, 255)) : Text(text, x, y, fontPath, fontSize, color)
         {
             this->window = window;
-            this->resize(static_cast<int>(this->w), static_cast<int>(this->h));
+            this->boxW = boxW;
             this->scrollX = 0;
-            this->adjustScrollX();
-            this->isVisible = true;
         }
 
         bool isFocused()
@@ -134,19 +132,6 @@ namespace Proton
 
         void insertSymbol(const char *symbol)
         {
-            TTF_Font *font = ResourceManager::getInstance().getFont(this->path, this->fontSize);
-            if (font)
-            {
-                std::string newText = this->labelText.substr(0, this->cursorPosition) + symbol + this->labelText.substr(this->cursorPosition);
-                int newWidth;
-                if (TTF_GetStringSize(font, newText.c_str(), newText.length(), &newWidth, nullptr) == 0)
-                {
-                    if (newWidth > static_cast<int>(this->w))
-                    {
-                        return; // Don't insert if it exceeds the width
-                    }
-                }
-            }
             this->labelText.insert(this->cursorPosition, symbol);
             size_t sizeNewBytes = strlen(symbol);
             this->setCursorPosition(this->cursorPosition + sizeNewBytes);
@@ -240,7 +225,7 @@ namespace Proton
         void update(float dt) override
         {
             this->currentBlinkTime += dt;
-            if (this->currentBlinkTime >= this->requiredBlinkTime)
+            if (this->currentBlinkTime >= this->requiredBlinkTime && this->focused)
             {
                 this->currentBlinkTime = 0;
                 this->cursorVisible = !this->cursorVisible;
@@ -249,30 +234,52 @@ namespace Proton
 
         void paint(SDL_Renderer *render, int rX, int rY) override
         {
-            Text::paint(render, rX, rY);
+            if (this->isDirty)
+                this->createTexture(render);
+            if (!this->isVisible || !this->textTexture)
+                return;
+
+            float fullTextWidth = (float)this->w;
+            float fullTextHeight = (float)this->h;
+
+            float box_width = (float)this->boxW;
+
+            SDL_FRect srcRect;
+            srcRect.x = (float)this->scrollX;
+            srcRect.y = 0.0f;
+            srcRect.w = box_width;
+            srcRect.h = fullTextHeight;
+
+            if (fullTextWidth - srcRect.x < box_width)
+            {
+                srcRect.w = fullTextWidth - srcRect.x;
+            }
+            if (srcRect.w < 0)
+                srcRect.w = 0;
+
+            SDL_FRect destRect = {(float)this->x + rX, (float)this->y + rY, srcRect.w, srcRect.h};
+
+            SDL_RenderTexture(render, this->textTexture, &srcRect, &destRect);
 
             if (this->focused && this->cursorVisible)
             {
                 TTF_Font *font = ResourceManager::getInstance().getFont(this->path, this->fontSize);
                 if (!font)
-                {
                     return;
-                }
 
                 int fontHeight = TTF_GetFontHeight(font);
-
                 int cursorPixelX = getCursorPixelPosition();
-                float cursorDrawX = static_cast<float>(this->x + rX + (cursorPixelX - scrollX));
+                float cursorDrawX = (float)(this->x + rX + cursorPixelX - this->scrollX);
 
-                if (cursorDrawX >= (this->x + rX) && cursorDrawX <= (this->x + rX + this->w))
+                if (cursorDrawX >= (this->x + rX) && cursorDrawX <= (this->x + rX + this->boxW))
                 {
                     SDL_SetRenderDrawColor(render, this->fillColor.getR(), this->fillColor.getG(), this->fillColor.getB(), this->fillColor.getA());
                     SDL_RenderLine(
                         render,
                         cursorDrawX,
-                        static_cast<float>(this->y + rY),
+                        (float)(this->y + rY),
                         cursorDrawX,
-                        static_cast<float>(this->y + rY + fontHeight));
+                        (float)(this->y + rY + fontHeight));
                 }
             }
         }
@@ -282,48 +289,49 @@ namespace Proton
         bool focused = false;
         int cursorPosition = 0;
         float currentBlinkTime = 0;
-        float requiredBlinkTime = 0.5;
+        float requiredBlinkTime = 0.5; // в секундах
         bool cursorVisible = true;
         int scrollX = 0;
+        int boxW = 0;
         int selectionAnchor = -1;
-
         void adjustScrollX()
         {
             TTF_Font *font = ResourceManager::getInstance().getFont(this->path, this->fontSize);
             if (!font)
             {
-                scrollX = 0;
+                this->scrollX = 0;
                 return;
             }
-            int textWidth;
-            if (TTF_GetStringSize(font, this->labelText.c_str(), this->labelText.length(), &textWidth, nullptr) != 0)
-            {
-                scrollX = 0;
-                return;
-            }
-            int boxWidth = static_cast<int>(this->w);
+
+            int fullTextWidth = 0;
+            TTF_GetStringSize(font, this->labelText.c_str(), this->labelText.length(), &fullTextWidth, nullptr);
+
             int cursorPixelX = getCursorPixelPosition();
 
-            if (textWidth > boxWidth)
+            if (fullTextWidth <= this->boxW)
             {
-                if (cursorPixelX < scrollX)
-                {
-                    scrollX = cursorPixelX;
-                }
-                else if (cursorPixelX > scrollX + boxWidth - 1)
-                {
-                    scrollX = cursorPixelX - boxWidth + 1;
-                }
-            }
-            else
-            {
-                scrollX = 0;
+                this->scrollX = 0;
+                return;
             }
 
-            if (scrollX < 0)
-                scrollX = 0;
-            if (textWidth > boxWidth && scrollX > textWidth - boxWidth)
-                scrollX = textWidth - boxWidth;
+            if (cursorPixelX < this->scrollX)
+            {
+                this->scrollX = cursorPixelX;
+            }
+            else if (cursorPixelX > this->scrollX + this->boxW)
+            {
+                this->scrollX = cursorPixelX - this->boxW;
+            }
+
+            if (this->scrollX < 0)
+            {
+                this->scrollX = 0;
+            }
+
+            if (this->scrollX > fullTextWidth - this->boxW)
+            {
+                this->scrollX = fullTextWidth - this->boxW;
+            }
         }
 
         int getCursorPixelPosition()
@@ -332,6 +340,7 @@ namespace Proton
                 return 0;
 
             TTF_Font *font = ResourceManager::getInstance().getFont(this->path, this->fontSize);
+
             if (!font)
             {
                 Proton::Log("какого хуя у тебя cursorPosition больше 0, если шрифта нет");

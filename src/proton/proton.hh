@@ -71,6 +71,7 @@ namespace Proton
         delete this->currentScene;
         SDL_DestroyWindow(this->handle);
         SDL_DestroyRenderer(this->randr);
+        ResourceManager::getInstance().clearCache();
         TTF_Quit();
         SDL_Quit();
         Proton::destroyAudioEngine();

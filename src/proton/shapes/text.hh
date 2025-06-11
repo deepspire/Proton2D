@@ -94,8 +94,6 @@ namespace Proton
     SDL_Texture *textTexture = nullptr;
     bool isDirty = true;
     int w, h;
-
-  private:
     void createTexture(SDL_Renderer *render)
     {
       if (textTexture)
@@ -141,5 +139,5 @@ namespace Proton
       SDL_DestroySurface(surface);
       this->isDirty = false;
     }
-  };
+    };
 }

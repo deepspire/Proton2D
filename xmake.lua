@@ -5,7 +5,7 @@ if not IS_WINDOWS then
 	add_requires("libsdl3", "libsdl3_ttf", "libsdl3_image")
 end
 
-set_defaultmode("release")
+set_config("mode", "release")
 target("Proton2D")
 
 do

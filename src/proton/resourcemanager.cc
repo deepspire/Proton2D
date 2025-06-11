@@ -11,8 +11,8 @@ namespace Proton
 
     ResourceManager::~ResourceManager()
     {
-        this->clearCache();
-        Proton::Log("ResourceManager destroyed, all textures unloaded");
+        /*this->clearCache(); // чистим когда я захочу
+        Proton::Log("ResourceManager destroyed, all textures unloaded");*/
     }
 
     SDL_Texture *ResourceManager::getTexture(SDL_Renderer *render, const std::string &path)
@@ -86,7 +86,7 @@ namespace Proton
             return nullptr;
         }
         
-        fontCache[key] = font;
+        this->fontCache[key] = font;
         return font;
     }
 
@@ -98,11 +98,15 @@ namespace Proton
         textureCache.clear();
         
         for (auto const& [key, font] : fontCache) {
+            Log("очищаю шрифт");
             TTF_CloseFont(font);
         }
+        Log("Доне!!!");
         fontCache.clear();
+
         if (currentIcon)
         {
+            Log("pizdec?");
             delete currentIcon;
         }
     }
