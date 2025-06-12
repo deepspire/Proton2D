@@ -13,7 +13,7 @@ download [SDL3](https://github.com/libsdl-org/SDL/releases/latest), [SDL3 image]
 
 (you need download the one with devel & mingw in name)
 
-**now unpack all of them in C:/ folder with names `SDL3`, `SDL3_image` and `SDL3_ttf`**
+**now unpack each library to C:/ folder with names `SDL3`, `SDL3_image` and `SDL3_ttf`**
 
 xmake will prefer to use msvc, to prevent this you'll need to input this command
 ```pwsh
