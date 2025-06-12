@@ -15,22 +15,23 @@ download [SDL3](https://github.com/libsdl-org/SDL/releases/latest), [SDL3 image]
 
 **now unpack all of them in C:/ folder with names `SDL3`, `SDL3_image` and `SDL3_ttf`**
 
-xmake will prefer to use msvc, to prevent this you need input this command
+xmake will prefer to use msvc, to prevent this you'll need to input this command
 ```pwsh
 xmake f --toolchain=mingw
 ```
-(if xmake couldn't find it then use this)
+(if xmake couldn't then find it then use this)
 ```pwsh
 xmake f --toolchain=mingw --mingw=msys64_folder_path/mingw64
 ```
-now you can build! this command will build as release
+now you can build! this command will build the release artifact
 ```pwsh
 xmake
 ```
 
-project is not static so you need to add SDL's .dll in same folder as Proton2D.exe
+project is not static so you have to have SDL's .dll in the same folder as Proton2D binary
 
-## Base requirements
+## Dependencies
 - SDL3
 - SDL3_image
 - SDL3_ttf
+- [miniaudio](https://github.com/mackron/miniaudio)
