@@ -21,9 +21,9 @@ namespace Proton
 
     ma_sound* Audio::sound = nullptr;
 
-    Audio::Audio(const char* audioPath)
+    Audio::Audio(std::string audioPath)
     {
-        this->audioPath = audioPath;
+        this->audioPath = "assets/" + audioPath;
     }
 
     Audio::~Audio()
@@ -50,7 +50,7 @@ namespace Proton
 
     void Audio::play()
     {
-        const char* audioPth = this->audioPath;
+        const char* audioPth = this->audioPath.c_str();
 
         if (sound != nullptr)
         {

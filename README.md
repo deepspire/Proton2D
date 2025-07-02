@@ -1,7 +1,16 @@
 # Proton2D
-Proton2D
 
-## Windows guide
+<p align="center">
+<img alt="GitHub last Main commit" src="https://img.shields.io/github/last-commit/deepspire/Proton2D/main">
+<img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/deepspire/Proton2D">
+</p>
+
+<p align="center">
+<img alt="Windows SUPPORTED" src="https://img.shields.io/badge/Windows-OUTDATED-orange">
+<img alt="Linux SUPPORTED" src="https://img.shields.io/badge/Linux-SUPPORTED-green">
+</p>
+
+## Windows build guide (OUTDATED)
 ### Requirements
 install mingw (i prefer from choco so you wont need to set up `PATH`)
 install xmake using powershell via command
@@ -34,4 +43,6 @@ project is not static so you have to have SDL's .dll in the same folder as Proto
 - SDL3
 - SDL3_image
 - SDL3_ttf
+- [SDL3_gfx](https://github.com/sabdul-khabir/SDL3_gfx) (you need to build it yourself & install & set: export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH")
 - [miniaudio](https://github.com/mackron/miniaudio)
+- Ninja build system

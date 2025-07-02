@@ -14,7 +14,6 @@ namespace Proton
       this->y = y;
       this->radius = radius;
       this->color = fillColor;
-      this->isVisible = true;
     }
 
     void setPosition(int x, int y) override

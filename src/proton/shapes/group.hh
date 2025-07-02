@@ -6,17 +6,16 @@ namespace Proton
 {
     class Group : public Shape
     {
-        public:
+    public:
         Group(int x, int y)
         {
             this->x = x;
             this->y = y;
-            this->isVisible = true;
         }
 
-        void paint(SDL_Renderer* render, int gX, int gY) override
+        void paint(SDL_Renderer *render, int gX, int gY) override
         {
-            for (Shape* shape: this->shapes)
+            for (Shape *shape : this->shapes)
             {
                 shape->paint(render, this->x + gX, this->y + gY);
             }
@@ -24,7 +23,6 @@ namespace Proton
 
         void setFillColor(Color /*unused*/) override
         {
-
         }
 
         void update(float dt) override
@@ -41,25 +39,25 @@ namespace Proton
             this->y = y;
         }
 
-        void addObject(Shape* shape)
+        void addObject(Shape *shape)
         {
             shapes.push_back(shape);
         }
 
         void clear()
         {
-            for(Proton::Shape* shape: this->shapes)
+            for (Proton::Shape *shape : this->shapes)
             {
                 delete shape;
             }
         }
 
-        ~Group() {
+        ~Group()
+        {
             clear();
         }
 
-        protected:
-
-        std::vector<Proton::Shape*> shapes;  
+    protected:
+        std::vector<Proton::Shape *> shapes;
     };
 }

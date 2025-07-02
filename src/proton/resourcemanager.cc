@@ -1,5 +1,6 @@
 #include "resourcemanager.hh"
 #include "logman.hh"
+#include <SDL3_gfx/SDL3_gfxPrimitives.h>
 
 namespace Proton
 {
@@ -11,8 +12,7 @@ namespace Proton
 
     ResourceManager::~ResourceManager()
     {
-        /*this->clearCache(); // чистим когда я захочу
-        Proton::Log("ResourceManager destroyed, all textures unloaded");*/
+        clearCache();
     }
 
     SDL_Texture *ResourceManager::getTexture(SDL_Renderer *render, const std::string &path)
@@ -29,21 +29,21 @@ namespace Proton
             return it->second;
         }
 
-        Proton::Log("Loading new texture: ", path);
-        SDL_Surface *surface = IMG_Load(path.c_str());
+        std::string fullPath = "assets/" + path;
+
+        SDL_Surface *surface = IMG_Load(fullPath.c_str());
         if (!surface)
         {
-            Proton::Log("Failed to load image: ", path, ". error: ", SDL_GetError());
+            Proton::Log("Failed to load image: ", fullPath, ". error: ", SDL_GetError());
             return nullptr;
         }
-        Proton::Log("Texture ", path, " loaded successfully");
+
         SDL_Texture *texture = SDL_CreateTextureFromSurface(render, surface);
         SDL_DestroySurface(surface);
 
-
         if (!texture)
         {
-            Proton::Log("Failed to create texture from surface: ", path, ". error: ", SDL_GetError());
+            Proton::Log("Failed to create texture from surface: ", fullPath, ". error: ", SDL_GetError());
             return nullptr;
         }
 
@@ -51,25 +51,26 @@ namespace Proton
         return texture;
     }
 
-    SDL_Surface* ResourceManager::getIcon(const std::string& path)
+    SDL_Surface *ResourceManager::getIcon(const std::string &path)
     {
-        Proton::Log("Loading new icon: ", path);
-        if(this->currentIcon)
+        std::string fullPath = "assets/" + path;
+
+        if (this->currentIcon)
         {
-            delete currentIcon;
+            SDL_DestroySurface(currentIcon);
         }
-        currentIcon = IMG_Load(path.c_str());
-        if(!currentIcon)
+
+        currentIcon = IMG_Load(fullPath.c_str());
+        if (!currentIcon)
         {
-            Proton::Log("Failed to load icon: ", path);
+            Proton::Log("Failed to load icon: ", fullPath);
             return nullptr;
         }
-        Proton::Log("Icon ", path, " loaded successfully");
 
         return currentIcon;
     }
 
-    TTF_Font* ResourceManager::getFont(const std::string& path, int fontSize)
+    TTF_Font *ResourceManager::getFont(const std::string &path, int fontSize)
     {
         std::string key = path + ":" + std::to_string(fontSize);
         auto it = fontCache.find(key);
@@ -78,36 +79,77 @@ namespace Proton
             return it->second;
         }
 
-        Proton::Log("Loading new font: ", path, " with size ", std::to_string(fontSize));
-        TTF_Font* font = TTF_OpenFont(path.c_str(), fontSize);
+        std::string fullPath = "assets/" + path;
+
+        TTF_Font *font = TTF_OpenFont(fullPath.c_str(), fontSize);
         if (!font)
         {
             Proton::Log("Failed to load font: ", SDL_GetError());
             return nullptr;
         }
-        
+
         this->fontCache[key] = font;
         return font;
     }
 
+    SDL_Texture *ResourceManager::getRoundedRectTexture(SDL_Renderer *render, int width, int height, int roundness, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
+    {
+        std::string key = "rounded_rect:" + std::to_string(width) + ":" + std::to_string(height) + ":" +
+                          std::to_string(roundness);
+
+        auto it = roundedRectCache.find(key);
+        if (it != roundedRectCache.end())
+        {
+            return it->second;
+        }
+
+        SDL_Texture *texture = SDL_CreateTexture(render, SDL_PIXELFORMAT_RGBA8888,
+                                                 SDL_TEXTUREACCESS_TARGET, width, height);
+        if (!texture)
+        {
+            Proton::Log("Failed to create rounded rectangle texture: ", SDL_GetError());
+            return nullptr;
+        }
+
+        SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+        SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_LINEAR);
+
+        SDL_SetRenderTarget(render, texture);
+        SDL_SetRenderDrawColor(render, 0, 0, 0, 0);
+        SDL_RenderClear(render);
+
+        roundedBoxRGBA(render, 0, 0, width - 1, height - 1, roundness * 8, r, g, b, a);
+
+        SDL_SetRenderTarget(render, nullptr);
+
+        roundedRectCache[key] = texture;
+        return texture;
+    }
+
     void ResourceManager::clearCache()
     {
-        for (auto const& [path, texture] : textureCache) {
+        for (auto const &[path, texture] : textureCache)
+        {
             SDL_DestroyTexture(texture);
         }
         textureCache.clear();
-        
-        for (auto const& [key, font] : fontCache) {
-            Log("очищаю шрифт");
+
+        for (auto const &[key, font] : fontCache)
+        {
             TTF_CloseFont(font);
         }
-        Log("Доне!!!");
         fontCache.clear();
+
+        for (auto const &[key, texture] : roundedRectCache)
+        {
+            SDL_DestroyTexture(texture);
+        }
+        roundedRectCache.clear();
 
         if (currentIcon)
         {
-            Log("pizdec?");
-            delete currentIcon;
+            SDL_DestroySurface(currentIcon);
+            currentIcon = nullptr;
         }
     }
 }

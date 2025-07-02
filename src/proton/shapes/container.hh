@@ -13,15 +13,13 @@ namespace Proton
             this->y = y;
 
             this->containerRect = {x, y, width, height};
-            this->isVisible = true;
         }
 
         void paint(SDL_Renderer *render, int rX, int rY) override
         {
             SDL_Rect absoluteClipRect = {
                 this->x + rX, this->y + rY,
-                this->containerRect.w,this->containerRect.h
-            };
+                this->containerRect.w, this->containerRect.h};
 
             SDL_SetRenderClipRect(render, &absoluteClipRect);
             for (Shape *shape : this->shapes)

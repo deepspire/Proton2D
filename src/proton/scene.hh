@@ -77,7 +77,7 @@ namespace Proton
             TextBox *clickedTextBox = nullptr;
             for (TextBox *textbox : this->textboxes)
             {
-                if ((textbox->getX() <= mX && mX <= textbox->getX() + textbox->getW()) &&
+                if ((textbox->getX() <= mX && mX <= textbox->getX() + textbox->getBoxW()) &&
                     (textbox->getY() <= mY && mY <= textbox->getY() + textbox->getH()))
                 {
                     clickedTextBox = textbox;
@@ -90,6 +90,7 @@ namespace Proton
                 if (this->focusedTextBox && this->focusedTextBox != clickedTextBox)
                 {
                     this->focusedTextBox->setFocused(false);
+                    this->focusedTextBox->setSelectionAnchor(-1);
                     this->focusedTextBox->setCursorPosition(0);
                 }
 
@@ -98,8 +99,12 @@ namespace Proton
 
                 int relativeX = mX - clickedTextBox->getX();
                 int charIndex = clickedTextBox->getCharIndexAt(relativeX);
+                if (relativeX > clickedTextBox->getW() || charIndex >= clickedTextBox->getTextLength())
+                {
+                    charIndex = clickedTextBox->getTextLength();
+                }
                 clickedTextBox->setCursorPosition(charIndex);
-                clickedTextBox->setSelectionAnchor(charIndex);
+                clickedTextBox->setSelectionAnchor(-1);
             }
             else
             {
@@ -107,6 +112,7 @@ namespace Proton
                 {
                     this->focusedTextBox->setFocused(false);
                     this->focusedTextBox->setCursorPosition(0);
+                    this->focusedTextBox->setSelectionAnchor(-1);
                     this->focusedTextBox = nullptr;
                 }
             }
@@ -118,11 +124,13 @@ namespace Proton
             {
                 if ((event.key.mod & SDL_KMOD_CTRL))
                 {
-                    // если Ctrl зажат, проверяем конкретную клавишу
                     if (event.key.key == SDLK_V)
                     {
+                        if (this->focusedTextBox->getSelectionAnchor() != -1 && this->focusedTextBox->getSelectionAnchor() != this->focusedTextBox->getCursorPosition())
+                        {
+                            this->focusedTextBox->removeAtCursor();
+                        }
                         char *clipboardText = SDL_GetClipboardText();
-
                         if (clipboardText)
                         {
                             this->focusedTextBox->insertSymbol(clipboardText);
@@ -130,26 +138,105 @@ namespace Proton
                         }
                         return;
                     }
+                    else if (event.key.key == SDLK_C)
+                    {
+                        if (this->focusedTextBox->getSelectionAnchor() != -1)
+                        {
+                            int selStart = std::min(this->focusedTextBox->getSelectionAnchor(), this->focusedTextBox->getCursorPosition());
+                            int selEnd = std::max(this->focusedTextBox->getSelectionAnchor(), this->focusedTextBox->getCursorPosition());
+                            if (selStart < selEnd)
+                            {
+                                std::string selectedText = this->focusedTextBox->getText().substr(selStart, selEnd - selStart);
+                                SDL_SetClipboardText(selectedText.c_str());
+                            }
+                        }
+                        return;
+                    }
+                    else if (event.key.key == SDLK_X)
+                    {
+                        if (this->focusedTextBox->getSelectionAnchor() != -1)
+                        {
+                            int selStart = std::min(this->focusedTextBox->getSelectionAnchor(), this->focusedTextBox->getCursorPosition());
+                            int selEnd = std::max(this->focusedTextBox->getSelectionAnchor(), this->focusedTextBox->getCursorPosition());
+                            if (selStart < selEnd)
+                            {
+                                std::string selectedText = this->focusedTextBox->getText().substr(selStart, selEnd - selStart);
+                                SDL_SetClipboardText(selectedText.c_str());
+                                this->focusedTextBox->removeAtCursor();
+                            }
+                        }
+                        return;
+                    }
+                    else if (event.key.key == SDLK_A)
+                    {
+                        this->focusedTextBox->setSelectionAnchor(0);
+                        this->focusedTextBox->setCursorPosition(this->focusedTextBox->getTextLength());
+                        return;
+                    }
                 }
 
+                bool shiftPressed = (event.key.mod & SDL_KMOD_SHIFT) != 0;
                 switch (event.key.key)
                 {
-                case (SDLK_HOME):
+                case SDLK_HOME:
+                    if (shiftPressed && this->focusedTextBox->getSelectionAnchor() == -1)
+                        this->focusedTextBox->setSelectionAnchor(this->focusedTextBox->getCursorPosition());
+                    else if (!shiftPressed)
+                        this->focusedTextBox->setSelectionAnchor(-1);
                     this->focusedTextBox->setCursorPosition(0);
                     break;
-                case (SDLK_END):
+                case SDLK_END:
+                    if (shiftPressed && this->focusedTextBox->getSelectionAnchor() == -1)
+                        this->focusedTextBox->setSelectionAnchor(this->focusedTextBox->getCursorPosition());
+                    else if (!shiftPressed)
+                        this->focusedTextBox->setSelectionAnchor(-1);
                     this->focusedTextBox->setCursorPosition(this->focusedTextBox->getTextLength());
                     break;
-                case (SDLK_LEFT):
+                case SDLK_LEFT:
+                    if (shiftPressed && this->focusedTextBox->getSelectionAnchor() == -1)
+                        this->focusedTextBox->setSelectionAnchor(this->focusedTextBox->getCursorPosition());
+                    else if (!shiftPressed)
+                        this->focusedTextBox->setSelectionAnchor(-1);
                     this->focusedTextBox->appendCursorLeft();
                     break;
-                case (SDLK_RIGHT):
+                case SDLK_RIGHT:
+                    if (shiftPressed && this->focusedTextBox->getSelectionAnchor() == -1)
+                        this->focusedTextBox->setSelectionAnchor(this->focusedTextBox->getCursorPosition());
+                    else if (!shiftPressed)
+                        this->focusedTextBox->setSelectionAnchor(-1);
                     this->focusedTextBox->appendCursorRight();
                     break;
-                case (SDLK_BACKSPACE):
+                case SDLK_BACKSPACE:
                     this->focusedTextBox->removeAtCursor();
+                    break;
                 default:
                     break;
+                }
+            }
+        }
+
+        void handleMouseDrag(int mX, int mY)
+        {
+            if (this->focusedTextBox)
+            {
+                if (this->focusedTextBox->getSelectionAnchor() == -1)
+                {
+                    this->focusedTextBox->setSelectionAnchor(this->focusedTextBox->getCursorPosition());
+                }
+
+                int relativeX = mX - focusedTextBox->getX();
+                if (relativeX < 0)
+                {
+                    focusedTextBox->setCursorPosition(0);
+                }
+                else if (relativeX > focusedTextBox->getW())
+                {
+                    focusedTextBox->setCursorPosition(focusedTextBox->getTextLength());
+                }
+                else
+                {
+                    int charIndex = focusedTextBox->getCharIndexAt(relativeX);
+                    focusedTextBox->setCursorPosition(charIndex);
                 }
             }
         }
@@ -177,8 +264,6 @@ namespace Proton
             objects.clear();
         }
 
-        TextBox *focusedTextBox = nullptr;
-
     protected:
         SDL_Renderer *render;
         SDL_Window *window;
@@ -189,6 +274,8 @@ namespace Proton
 
         bool goNextScene = false;
         Scene *nextScene = nullptr;
+
+        TextBox *focusedTextBox = nullptr;
 
         Color background;
     };

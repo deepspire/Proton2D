@@ -8,7 +8,6 @@ namespace Proton
         public:
         ProgressBar(int x=0, int y=0, int width=100, int height=20, int defaultProgress=100)
         {
-            this->isVisible = true;
             this->x = x;
             this->y = y;
             this->width = width;

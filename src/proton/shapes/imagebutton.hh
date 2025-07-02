@@ -10,7 +10,6 @@ namespace Proton
         ImageButton(SDL_Texture* texture, int X = 0, int Y = 0, int W = 10, int H = 10) : ButtonArea(X, Y, W, H)
         {
             this->image = new Image(texture, X, Y, W, H);
-            this->isVisible = true;
         }
 
         ~ImageButton()

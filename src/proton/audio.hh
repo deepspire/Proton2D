@@ -13,7 +13,7 @@ namespace Proton
     class Audio
     {
     public:
-        Audio(const char* audioPath);
+        Audio(std::string audioPath);
         ~Audio();
 
         void setAudioPath(const char* newPath);
@@ -23,6 +23,6 @@ namespace Proton
 
     protected:
         static ma_sound* sound;
-        const char* audioPath;
+        std::string audioPath;
     };
 }

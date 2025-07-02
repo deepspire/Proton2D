@@ -41,7 +41,7 @@ namespace Proton
       return this->w;
     }
 
-    int getH() const
+    virtual int getH() const
     {
       return this->h;
     }
@@ -94,6 +94,7 @@ namespace Proton
     SDL_Texture *textTexture = nullptr;
     bool isDirty = true;
     int w, h;
+
     void createTexture(SDL_Renderer *render)
     {
       if (textTexture)
@@ -139,5 +140,15 @@ namespace Proton
       SDL_DestroySurface(surface);
       this->isDirty = false;
     }
-    };
+
+    int getFontHeight() const
+    {
+      TTF_Font *font = ResourceManager::getInstance().getFont(this->path, this->fontSize);
+      if (font)
+      {
+        return TTF_GetFontHeight(font);
+      }
+      return 0;
+    }
+  };
 }

@@ -7,7 +7,7 @@ Proton::Audio* kachan;
 
 SecondScene::SecondScene(SDL_Renderer *render, SDL_Window *window) : Proton::Scene(render, window)
 {
-    this->background = Proton::Color(0, 200, 0);
+    this->background = Proton::Color(125, 125, 125);
     cnt = new Proton::Container(0, 0, 200, 500);
     cnt->addObject(new Proton::Rectangle(0, 0, 30, 30, Proton::Color(255, 0, 0)));
     cnt->addObject(new Proton::Circle(35, 35, 10, Proton::Color(0, 255, 0)));
@@ -21,7 +21,7 @@ SecondScene::SecondScene(SDL_Renderer *render, SDL_Window *window) : Proton::Sce
     bar->setFillColor(Proton::Color(0, 255, 0));
     kachan = new Proton::Audio("kachan.mp3");
 
-    this->addTextBox(new Proton::TextBox(this->window, 75, "Hello, TextBox!", 50, 250, "fonts/Roboto-Regular.ttf", 10, Proton::Color(255, 255, 255, 255)));
+    this->addTextBox(new Proton::TextBox(this->window, 125, "Hello, TextBox!", 50, 250, "fonts/Roboto-Regular.ttf", 15, Proton::Color(255, 255, 255, 255)));
 
     this->addObject(cnt);
     this->addObject(grp);
@@ -44,6 +44,8 @@ void SecondScene::mouseDown(int x, int y)
 
 void SecondScene::keyPressed(Uint16 key)
 {
+    if (this->focusedTextBox) return;
+
     if (key == SDLK_A)
     {
         grp->setPosition(rand() % 700, rand() % 500);

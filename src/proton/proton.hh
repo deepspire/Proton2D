@@ -20,8 +20,12 @@ namespace Proton
     Display(std::string title, int w = 480, int h = 640)
     {
       this->title = title;
+      SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "wayland");
+      SDL_SetHint(SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "1");
       int ret = SDL_Init(SDL_INIT_VIDEO);
       TTF_Init();
+
+      Proton::Log("SDL Video Driver: ", SDL_GetCurrentVideoDriver());
       if (ret < 0)
       {
         Proton::Log("Error initializing SDL: ", SDL_GetError());
@@ -41,6 +45,7 @@ namespace Proton
         Proton::Log("Error initializing display: ", SDL_GetError());
         return;
       }
+      SDL_SetRenderLogicalPresentation(this->randr, w, h, SDL_LOGICAL_PRESENTATION_INTEGER_SCALE);
 
       SDL_SetRenderVSync(this->randr, 1);
 
@@ -57,7 +62,6 @@ namespace Proton
         currentScene->deleteEvent();
         delete currentScene;
         Proton::Log("Deleting previous scene...");
-        // this->currentScene->clearScene(); // зачем чистить сцену если ее можно удалить
       }
 
       this->currentScene = newScene;
@@ -89,14 +93,14 @@ namespace Proton
 
     SDL_Window *getNativeWindow() { return this->handle; }
 
-    void setTitle(const char* title)
+    void setTitle(const char *title)
     {
       SDL_SetWindowTitle(this->handle, title);
     }
 
     void setIcon(std::string path)
     {
-      SDL_Surface* icon = ResourceManager::getInstance().getIcon(path);
+      SDL_Surface *icon = ResourceManager::getInstance().getIcon(path);
       SDL_SetWindowIcon(this->handle, icon);
     }
 
@@ -108,14 +112,10 @@ namespace Proton
       SDL_Event e;
       bool isDone = false;
 
-      /*const int TARGET_FPS = 120;
-      const Uint64 FRAME_DELAY = 1000 / TARGET_FPS;*/
-
       Uint64 lastFrameTime = SDL_GetTicks();
       float deltaTime = 0.0f;
       while (!isDone)
       {
-        // Uint64 frameStart = SDL_GetTicks();
 
         while (SDL_PollEvent(&e))
         {
@@ -128,9 +128,15 @@ namespace Proton
             this->currentScene->mouseDown(e.button.x, e.button.y);
             this->currentScene->handleButtonClick(e.button.x, e.button.y);
             break;
+          case SDL_EVENT_MOUSE_MOTION:
+            if (e.motion.state & SDL_BUTTON_LMASK)
+            {
+              this->currentScene->handleMouseDrag(e.motion.x, e.motion.y);
+            }
+            break;
           case SDL_EVENT_KEY_DOWN:
-            this->currentScene->keyPressed(e.key.key);
             this->currentScene->handleKeyDown(e);
+            this->currentScene->keyPressed(e.key.key);
             break;
           case SDL_EVENT_TEXT_INPUT:
             this->currentScene->handleTextInput(e);
@@ -147,10 +153,11 @@ namespace Proton
         }
         else
         {
-          SDL_SetRenderDrawColor(this->randr, this->currentScene->getBackgroundColor().getR(),
-                                              this->currentScene->getBackgroundColor().getG(),
-                                              this->currentScene->getBackgroundColor().getB(),
-                                              this->currentScene->getBackgroundColor().getA());
+          SDL_SetRenderDrawColor(this->randr,
+                                 this->currentScene->getBackgroundColor().getR(),
+                                 this->currentScene->getBackgroundColor().getG(),
+                                 this->currentScene->getBackgroundColor().getB(),
+                                 this->currentScene->getBackgroundColor().getA());
         }
 
         float px, py;
