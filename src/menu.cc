@@ -5,7 +5,7 @@ Menu::Menu(SDL_Renderer *render, SDL_Window *window) : Proton::Scene(render, win
     //addObject(new Proton::Rectangle(480, 640, 50, 50, Proton::Color(), 20));
     for (int i = 0; i <= 200; i += 1)
     {
-        addObject(new Proton::Rectangle(i, 640, 25, 50, Proton::Color(), 25));
+        addObject(new Proton::Rectangle(i, 640, 25, 50, Proton::Color()));
     }
     addObject(new Proton::Line(480 / 2, 640 / 2, 480, 640, Proton::Color()));
     addObject(new Proton::Line(0, 640, 480 / 2, 640 / 2, Proton::Color()));

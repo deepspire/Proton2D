@@ -6,36 +6,21 @@
 </p>
 
 <p align="center">
-<img alt="Windows SUPPORTED" src="https://img.shields.io/badge/Windows-OUTDATED-orange">
-<img alt="Linux SUPPORTED" src="https://img.shields.io/badge/Linux-SUPPORTED-green">
+<img alt="Windows support" src="https://img.shields.io/badge/Windows-SUPPORTED-green">
+<img alt="Linux support" src="https://img.shields.io/badge/Linux-SUPPORTED-green">
 </p>
 
-## Windows build guide (OUTDATED)
-### Requirements
-install mingw (i prefer from choco so you wont need to set up `PATH`)
-install xmake using powershell via command
-```pwsh
-Invoke-Expression (Invoke-Webrequest 'https://xmake.io/psget.text' -UseBasicParsing).Content
-```
+## Windows build guide
+install [vc_redist](https://aka.ms/vs/17/release/vc_redist.x64.exe) (users also should install this)
+install `msys2`, `ninja`. (choco: `choco install msys2 ninja -y`)
 
-download [SDL3](https://github.com/libsdl-org/SDL/releases/latest), [SDL3 image](https://github.com/libsdl-org/SDL_image/releases/latest) and [SDL3 ttf support](https://github.com/libsdl-org/SDL_ttf/releases/latest).
+open mingw64 terminal ("C:\tools\msys64\mingw64.exe" choco path)
 
-(you need download the one with devel & mingw in name)
+input `pacman -Syu` and `pacman -S mingw-w64-x86_64-toolchain`. (hit enter if it asks selection)
 
-**now unpack each library to C:/ folder with names `SDL3`, `SDL3_image` and `SDL3_ttf`**
+now, with CMake vscode extension, select kit: `[Scan recursively for kits in specific directories (max depth: 5)]`, input `C:\tools\msys64\mingw64`. after scan, select mingw64 GCC.
 
-xmake will prefer to use msvc, to prevent this you'll need to input this command
-```pwsh
-xmake f --toolchain=mingw
-```
-(if xmake couldn't then find it then use this)
-```pwsh
-xmake f --toolchain=mingw --mingw=msys64_folder_path/mingw64
-```
-now you can build! this command will build the release artifact
-```pwsh
-xmake
-```
+now you can press `Build`, `Debug` and `Run` buttons in vscode.
 
 project is not static so you have to have SDL's .dll in the same folder as Proton2D binary
 
@@ -43,6 +28,5 @@ project is not static so you have to have SDL's .dll in the same folder as Proto
 - SDL3
 - SDL3_image
 - SDL3_ttf
-- [SDL3_gfx](https://github.com/sabdul-khabir/SDL3_gfx) (you need to build it yourself & install & set: export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH")
 - [miniaudio](https://github.com/mackron/miniaudio)
 - Ninja build system

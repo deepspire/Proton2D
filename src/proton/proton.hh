@@ -20,7 +20,7 @@ namespace Proton
     Display(std::string title, int w = 480, int h = 640)
     {
       this->title = title;
-      SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "wayland");
+      SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "wayland,x11,windows,android");
       SDL_SetHint(SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "1");
       int ret = SDL_Init(SDL_INIT_VIDEO);
       TTF_Init();

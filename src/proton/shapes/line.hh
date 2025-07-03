@@ -1,9 +1,6 @@
 #pragma once
 
-#include <SDL3_gfx/SDL3_gfxPrimitives.h>
 #include "shape.hh"
-
-#define ULTIMATE_FPS_EATER_3000 0
 
 namespace Proton
 {
@@ -36,18 +33,10 @@ namespace Proton
       Sint16 y1 = (Sint16)this->y + rY;
       Sint16 x2 = (Sint16)this->endX + rX;
       Sint16 y2 = (Sint16)this->endY + rY;
-
-#if ULTIMATE_FPS_EATER_3000 == 1
-      aalineRGBA(
-          render,
-          x1, y1, x2, y2,
-          fillColor.getR(), fillColor.getG(), fillColor.getB(), fillColor.getA());
-#else
       SDL_SetRenderDrawColor(render, fillColor.getR(), fillColor.getG(),
-                                     fillColor.getB(), fillColor.getA());
+                             fillColor.getB(), fillColor.getA());
       SDL_RenderLine(render, this->x + rX, this->y + rY,
-                             this->endX + rX, this->endY + rY);
-#endif
+                     this->endX + rX, this->endY + rY);
     }
 
     void setFillColor(Color color) override { this->fillColor = color; }

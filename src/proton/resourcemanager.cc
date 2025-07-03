@@ -1,6 +1,5 @@
 #include "resourcemanager.hh"
 #include "logman.hh"
-#include <SDL3_gfx/SDL3_gfxPrimitives.h>
 
 namespace Proton
 {
@@ -92,40 +91,6 @@ namespace Proton
         return font;
     }
 
-    SDL_Texture *ResourceManager::getRoundedRectTexture(SDL_Renderer *render, int width, int height, int roundness, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
-    {
-        std::string key = "rounded_rect:" + std::to_string(width) + ":" + std::to_string(height) + ":" +
-                          std::to_string(roundness);
-
-        auto it = roundedRectCache.find(key);
-        if (it != roundedRectCache.end())
-        {
-            return it->second;
-        }
-
-        SDL_Texture *texture = SDL_CreateTexture(render, SDL_PIXELFORMAT_RGBA8888,
-                                                 SDL_TEXTUREACCESS_TARGET, width, height);
-        if (!texture)
-        {
-            Proton::Log("Failed to create rounded rectangle texture: ", SDL_GetError());
-            return nullptr;
-        }
-
-        SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-        SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_LINEAR);
-
-        SDL_SetRenderTarget(render, texture);
-        SDL_SetRenderDrawColor(render, 0, 0, 0, 0);
-        SDL_RenderClear(render);
-
-        roundedBoxRGBA(render, 0, 0, width - 1, height - 1, roundness * 8, r, g, b, a);
-
-        SDL_SetRenderTarget(render, nullptr);
-
-        roundedRectCache[key] = texture;
-        return texture;
-    }
-
     void ResourceManager::clearCache()
     {
         for (auto const &[path, texture] : textureCache)
@@ -139,12 +104,6 @@ namespace Proton
             TTF_CloseFont(font);
         }
         fontCache.clear();
-
-        for (auto const &[key, texture] : roundedRectCache)
-        {
-            SDL_DestroyTexture(texture);
-        }
-        roundedRectCache.clear();
 
         if (currentIcon)
         {
