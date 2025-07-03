@@ -11,16 +11,26 @@ if(WIN32)
     include(FetchContent)
 
     FetchContent_Declare(
-        SDL3_TTF_FETCH
-        URL "https://github.com/libsdl-org/SDL_ttf/releases/download/release-3.2.2/SDL3_ttf-devel-3.2.2-mingw.tar.gz"
-        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+            SDL3_TTF_FETCH
+            URL "https://github.com/libsdl-org/SDL_ttf/releases/download/release-3.2.2/SDL3_ttf-devel-3.2.2-mingw.tar.gz"
+            DOWNLOAD_EXTRACT_TIMESTAMP TRUE
     )
 
     FetchContent_Declare(
-        SDL3_IMAGE_FETCH
-        URL "https://github.com/libsdl-org/SDL_image/releases/download/release-3.2.4/SDL3_image-devel-3.2.4-mingw.tar.gz"
-        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+            SDL3_IMAGE_FETCH
+            URL "https://github.com/libsdl-org/SDL_image/releases/download/release-3.2.4/SDL3_image-devel-3.2.4-mingw.tar.gz"
+            DOWNLOAD_EXTRACT_TIMESTAMP TRUE
     )
+
+    FetchContent_Declare(
+            SDL3_FETCH
+            URL "https://github.com/libsdl-org/SDL/releases/download/release-3.2.2/SDL3-devel-3.2.2-mingw.tar.gz"
+            DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+    )
+
+    FetchContent_MakeAvailable(SDL3_FETCH)
+
+    list(PREPEND CMAKE_PREFIX_PATH "${sdl3_fetch_SOURCE_DIR}/${SDL_ARCH_DIR}")
 
     FetchContent_MakeAvailable(SDL3_TTF_FETCH)
     FetchContent_MakeAvailable(SDL3_IMAGE_FETCH)
