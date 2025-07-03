@@ -4,7 +4,7 @@
 
 namespace Proton
 {
-    Audio::Audio(std::string audioPath)
+    Audio::Audio(const std::string &audioPath)
     {
         this->sound = nullptr;
         this->audioPath = "assets/" + audioPath;
@@ -17,7 +17,7 @@ namespace Proton
             ma_sound_uninit(sound);
             delete sound;
             sound = nullptr;
-            Proton::Log("Audio ", audioPath, " destroyed");
+            Log("Audio ", audioPath, " destroyed");
         }
     }
 
@@ -46,20 +46,19 @@ namespace Proton
         }
 
         this->sound = new ma_sound();
-        if (ma_sound_init_from_file(ResourceManager::getInstance().getAudioEngine(), audioPth, 0, NULL, NULL, sound) == MA_SUCCESS)
+        if (ma_sound_init_from_file(ResourceManager::getInstance().getAudioEngine(), audioPth, 0, nullptr, nullptr, sound) == MA_SUCCESS)
         {
             ma_sound_start(sound);
         }
         else
         {
-            Proton::Log("Failed to load sound file ", audioPth);
+            Log("Failed to load sound file ", audioPth);
             delete sound;
             sound = nullptr;
         }
     }
 
-    void Audio::stop()
-    {
+    void Audio::stop() const {
         if (sound != nullptr)
         {
             ma_sound_stop(sound);

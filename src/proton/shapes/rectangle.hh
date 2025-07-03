@@ -16,32 +16,30 @@ namespace Proton
       Bevel
     };
 
-    Rectangle(int x = 0, int y = 0, int w = 10, int h = 10,
-              Color color = Color(), Sint16 roundness = 0, Style style = Style::Fill)
-        : x(x), y(y), w(w), h(h), color(color), style(style)
+    explicit Rectangle(int x = 0, int y = 0, int w = 10, int h = 10,
+              const Color color = Color(), Sint16 roundness = 0, const Style style = Fill)
+        : color(color), x(x), y(y), w(w), h(h), style(style)
     {
     }
 
-    ~Rectangle()
-    {
-    }
+    ~Rectangle() override = default;
 
     void paint(SDL_Renderer *render, int rX, int rY) override
     {
-      float drawX = static_cast<float>(rX + this->x);
-      float drawY = static_cast<float>(rY + this->y);
-      SDL_FRect rectToRender = {drawX, drawY, static_cast<float>(this->w), static_cast<float>(this->h)};
+      const auto drawX = static_cast<float>(rX + this->x);
+      const auto drawY = static_cast<float>(rY + this->y);
+      const SDL_FRect rectToRender = {drawX, drawY, static_cast<float>(this->w), static_cast<float>(this->h)};
 
       SDL_SetRenderDrawColor(render, color.getR(), color.getG(), color.getB(), color.getA());
 
       switch (this->style)
       {
-      case Style::Fill:
+      case Fill:
       {
         SDL_RenderFillRect(render, &rectToRender);
         break;
       }
-      case Style::Bevel:
+      case Bevel:
       {
         SDL_RenderRect(render, &rectToRender);
         break;
@@ -49,12 +47,12 @@ namespace Proton
       }
     }
 
-    void setFillColor(Color color) override
+    void setFillColor(const Color color) override
     {
       this->color = color;
     }
 
-    void resize(int width, int height)
+    void resize(const int width, const int height)
     {
       if (this->w != width || this->h != height)
       {

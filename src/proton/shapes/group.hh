@@ -1,19 +1,19 @@
-#include <iostream>
+#pragma once
 #include "shape.hh"
 #include <vector>
 
 namespace Proton
 {
-    class Group : public Shape
+    class Group final : public Shape
     {
     public:
-        Group(int x, int y)
+        Group(const int x, const int y)
         {
             this->x = x;
             this->y = y;
         }
 
-        void paint(SDL_Renderer *render, int gX, int gY) override
+        void paint(SDL_Renderer *render, const int gX, const int gY) override
         {
             for (Shape *shape : this->shapes)
             {
@@ -25,7 +25,7 @@ namespace Proton
         {
         }
 
-        void update(float dt) override
+        void update(const float dt) override
         {
             for (Shape *shape : this->shapes)
             {
@@ -33,7 +33,7 @@ namespace Proton
             }
         }
 
-        void setPosition(int x, int y) override
+        void setPosition(const int x, const int y) override
         {
             this->x = x;
             this->y = y;
@@ -44,20 +44,18 @@ namespace Proton
             shapes.push_back(shape);
         }
 
-        void clear()
-        {
+        void clear() const {
             for (Proton::Shape *shape : this->shapes)
             {
                 delete shape;
             }
         }
 
-        ~Group()
-        {
+        ~Group() override {
             clear();
         }
 
     protected:
-        std::vector<Proton::Shape *> shapes;
+        std::vector<Shape *> shapes;
     };
 }

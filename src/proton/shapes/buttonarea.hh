@@ -1,5 +1,4 @@
 #pragma once
-#include <iostream>
 #include "shape.hh"
 
 namespace Proton
@@ -7,7 +6,7 @@ namespace Proton
     class ButtonArea : public Shape
     {
     public:
-        ButtonArea(int x = 0, int y = 0, int w = 10, int h = 10)
+        explicit ButtonArea(const int x = 0, const int y = 0, const int w = 10, const int h = 10)
         {
             this->x = x;
             this->y = y;
@@ -19,28 +18,28 @@ namespace Proton
         {
         }
 
-        virtual void paint(SDL_Renderer *render, int rX, int rY) override
+        void paint(SDL_Renderer *render, int rX, int rY) override
         {
         }
 
-        virtual void setPosition(int x, int y) override
+        void setPosition(const int x, const int y) override
         {
             this->x = x;
             this->y = y;
         }
 
-        virtual void setFillColor([[maybe_unused]] Color color) override
+        void setFillColor([[maybe_unused]] Color color) override
         {
         }
 
-        virtual void resize(int w, int h)
+        virtual void resize(const int w, const int h)
         {
             this->w = w;
             this->h = h;
         }
 
-        int getW() const { return this->w; }
-        int getH() const { return this->h; }
+        [[nodiscard]] int getW() const { return this->w; }
+        [[nodiscard]] int getH() const { return this->h; }
 
     protected:
         int w, h;

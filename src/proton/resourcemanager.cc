@@ -1,5 +1,8 @@
 #include "resourcemanager.hh"
 
+#include "logman.hh"
+#include <SDL3_image/SDL_image.h>
+
 namespace Proton
 {
     ResourceManager &ResourceManager::getInstance()
@@ -17,9 +20,9 @@ namespace Proton
     {
         if (!this->audioEngineInitialized)
         {
-            if (ma_engine_init(NULL, &this->currentAudioEngine) != MA_SUCCESS)
+            if (ma_engine_init(nullptr, &this->currentAudioEngine) != MA_SUCCESS)
             {
-                Proton::Log("Unable to init sound engine");
+                Log("Unable to init sound engine");
                 return;
             }
 
@@ -28,7 +31,7 @@ namespace Proton
             return;
         }
 
-        Proton::Log("Audio engine is defined already!!");
+        Log("Audio engine is defined already!!");
     }
 
     ma_engine *ResourceManager::getAudioEngine()
@@ -88,7 +91,7 @@ namespace Proton
         currentIcon = IMG_Load(fullPath.c_str());
         if (!currentIcon)
         {
-            Proton::Log("Failed to load icon: ", fullPath);
+            Log("Failed to load icon: ", fullPath);
             return nullptr;
         }
 
@@ -97,19 +100,18 @@ namespace Proton
 
     TTF_Font *ResourceManager::getFont(const std::string &path, int fontSize)
     {
-        std::string key = path + ":" + std::to_string(fontSize);
-        auto it = fontCache.find(key);
-        if (it != fontCache.end())
+        const std::string key = path + ":" + std::to_string(fontSize);
+        if (const auto it = fontCache.find(key); it != fontCache.end())
         {
             return it->second;
         }
 
-        std::string fullPath = "assets/" + path;
+        const std::string fullPath = "assets/" + path;
 
         TTF_Font *font = TTF_OpenFont(fullPath.c_str(), fontSize);
         if (!font)
         {
-            Proton::Log("Failed to load font: ", SDL_GetError());
+            Log("Failed to load font: ", SDL_GetError());
             return nullptr;
         }
 

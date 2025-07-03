@@ -1,11 +1,9 @@
 #pragma once
 
 #include <SDL3/SDL.h>
-#include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <string>
 #include <unordered_map>
-#include "logman.hh"
 #include "miniaudio.h"
 
 namespace Proton
@@ -30,11 +28,11 @@ namespace Proton
         ResourceManager() = default;
         ~ResourceManager();
 
-        ma_engine currentAudioEngine;
-        bool audioEngineInitialized;
+        ma_engine currentAudioEngine{};
+        bool audioEngineInitialized{};
 
         std::unordered_map<std::string, SDL_Texture *> textureCache;
         std::unordered_map<std::string, TTF_Font *> fontCache;
-        SDL_Surface *currentIcon;
+        SDL_Surface *currentIcon{};
     };
 };

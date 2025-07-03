@@ -6,16 +6,15 @@ void search();
 
 namespace Proton
 {
-    class RectangleButton : public ButtonArea
+    class RectangleButton final : public ButtonArea
     {
     public:
-        RectangleButton(int X = 0, int Y = 0, int W = 10, int H = 10, Color color = Color(0, 0, 0)) : ButtonArea(X, Y, W, H)
-        {
+        explicit RectangleButton(int X = 0, int Y = 0, int W = 10, int H = 10, Color color = Color(0, 0, 0)) : ButtonArea(
+            X, Y, W, H), clickListener(nullptr) {
             this->rectangle = new Rectangle(X, Y, W, H, color);
         }
 
-        ~RectangleButton()
-        {
+        ~RectangleButton() override {
             delete this->rectangle;
         }
 
@@ -31,19 +30,19 @@ namespace Proton
             this->clickListener = f;
         }
 
-        void resize(int w, int h) override
+        void resize(const int w, const int h) override
         {
             this->w = w;
             this->h = h;
             rectangle->resize(w, h);
         }
 
-        void paint(SDL_Renderer *render, int rX, int rY) override
+        void paint(SDL_Renderer *render, const int rX, const int rY) override
         {
             rectangle->paint(render, rX, rY);
         }
 
-        void setFillColor(Color color) override
+        void setFillColor(const Color color) override
         {
             rectangle->setFillColor(color);
         }

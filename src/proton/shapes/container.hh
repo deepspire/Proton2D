@@ -1,13 +1,14 @@
+#pragma once
 #include "shape.hh"
 #include <vector>
 #include "../proton.hh"
 
 namespace Proton
 {
-    class Container : public Shape
+    class Container final : public Shape
     {
     public:
-        Container(int x, int y, int width, int height)
+        explicit Container(const int x, const int y, const int width, const int height)
         {
             this->x = x;
             this->y = y;
@@ -17,7 +18,7 @@ namespace Proton
 
         void paint(SDL_Renderer *render, int rX, int rY) override
         {
-            SDL_Rect absoluteClipRect = {
+            const SDL_Rect absoluteClipRect = {
                 this->x + rX, this->y + rY,
                 this->containerRect.w, this->containerRect.h};
 
@@ -26,7 +27,7 @@ namespace Proton
             {
                 shape->paint(render, this->x + rX, this->y + rY);
             }
-            SDL_SetRenderClipRect(render, NULL);
+            SDL_SetRenderClipRect(render, nullptr);
         }
 
         void setFillColor(Color /*unused*/) override
@@ -40,7 +41,7 @@ namespace Proton
 
         void clear()
         {
-            for (Shape *shape : this->shapes)
+            for (const Shape *shape : this->shapes)
             {
                 delete shape;
             }
@@ -54,7 +55,7 @@ namespace Proton
             this->containerRect = {x, y, this->containerRect.w, this->containerRect.h};
         }
 
-        void update(float dt) override
+        void update(const float dt) override
         {
             for (Shape *shape : this->shapes)
             {
@@ -62,13 +63,12 @@ namespace Proton
             }
         }
 
-        ~Container()
-        {
+        ~Container() override {
             this->clear();
         }
 
     private:
-        SDL_Rect containerRect;
+        SDL_Rect containerRect{};
         std::vector<Shape *> shapes;
     };
 }

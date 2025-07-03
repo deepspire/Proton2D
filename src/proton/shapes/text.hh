@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL3_ttf/SDL_ttf.h>
 #include <string>
+#include <utility>
 #include "shape.hh"
 #include "../logman.hh"
 #include "../resourcemanager.hh"
@@ -10,12 +11,12 @@ namespace Proton
   class Text : public Shape
   {
   public:
-    Text(const std::string &text = "Label", int x = 0,
-         int y = 0, const std::string &fontPath = "fonts/Roboto-Regular.ttf",
-         int fontSize = 12, Color color = Color(255, 255, 255, 255))
-        : labelText(text), fillColor(color), path(fontPath), fontSize(fontSize)
+    explicit Text(std::string text = "Label", const int x = 0,
+                  const int y = 0, std::string fontPath = "fonts/Roboto-Regular.ttf",
+                  const int fontSize = 12, const Color color = Color(255, 255, 255, 255))
+        : labelText(std::move(text)), path(std::move(fontPath)), fontSize(fontSize), fillColor(color)
     {
-      this->setPosition(x, y);
+      this->Text::setPosition(x, y);
     }
 
     ~Text() override
@@ -36,17 +37,17 @@ namespace Proton
       this->h = h;
     }
 
-    int getW() const
+    [[nodiscard]] int getW() const
     {
       return this->w;
     }
 
-    virtual int getH() const
+    [[nodiscard]] virtual int getH() const
     {
       return this->h;
     }
 
-    void setFillColor(Color newColor) override
+    void setFillColor(const Color newColor) override
     {
       this->fillColor = newColor;
       this->isDirty = true;
@@ -63,12 +64,12 @@ namespace Proton
       return this->labelText;
     }
 
-    int getTextLength() const
+    [[nodiscard]] int getTextLength() const
     {
       return this->labelText.length();
     }
 
-    virtual void paint(SDL_Renderer *render, int rX, int rY) override
+    void paint(SDL_Renderer *render, const int rX, const int rY) override
     {
       if (this->isDirty)
       {
@@ -77,10 +78,10 @@ namespace Proton
 
       if (textTexture)
       {
-        float drawX = static_cast<float>(rX + this->x);
-        float drawY = static_cast<float>(rY + this->y);
+        const auto drawX = static_cast<float>(rX + this->x);
+        const auto drawY = static_cast<float>(rY + this->y);
 
-        SDL_FRect rectToRender = {drawX, drawY, (float)this->w, (float)this->h};
+        const SDL_FRect rectToRender = {drawX, drawY, static_cast<float>(this->w), static_cast<float>(this->h)};
 
         SDL_RenderTexture(render, textTexture, nullptr, &rectToRender);
       }
@@ -93,7 +94,7 @@ namespace Proton
     Color fillColor;
     SDL_Texture *textTexture = nullptr;
     bool isDirty = true;
-    int w, h;
+    int w{}, h{};
 
     void createTexture(SDL_Renderer *render)
     {
@@ -116,22 +117,22 @@ namespace Proton
       if (!font)
         return;
 
-      SDL_Color sdlColor = {static_cast<Uint8>(fillColor.getR()),
-                            static_cast<Uint8>(fillColor.getG()),
-                            static_cast<Uint8>(fillColor.getB()),
-                            static_cast<Uint8>(fillColor.getA())};
+      const SDL_Color sdlColor = {(fillColor.getR()),
+                            (fillColor.getG()),
+                            (fillColor.getB()),
+                            (fillColor.getA())};
 
       SDL_Surface *surface = TTF_RenderText_Blended(font, labelText.c_str(), labelText.length(), sdlColor);
       if (!surface)
       {
-        Proton::Log("TTF_RenderText_Blended error: ", SDL_GetError());
+        Log("TTF_RenderText_Blended error: ", SDL_GetError());
         return;
       }
 
       textTexture = SDL_CreateTextureFromSurface(render, surface);
       if (!textTexture)
       {
-        Proton::Log("SDL_CreateTextureFromSurface error: ", SDL_GetError());
+        Log("SDL_CreateTextureFromSurface error: ", SDL_GetError());
       }
 
       this->w = static_cast<float>(surface->w);
@@ -141,10 +142,9 @@ namespace Proton
       this->isDirty = false;
     }
 
-    int getFontHeight() const
+    [[nodiscard]] int getFontHeight() const
     {
-      TTF_Font *font = ResourceManager::getInstance().getFont(this->path, this->fontSize);
-      if (font)
+      if (const TTF_Font *font = ResourceManager::getInstance().getFont(this->path, this->fontSize))
       {
         return TTF_GetFontHeight(font);
       }

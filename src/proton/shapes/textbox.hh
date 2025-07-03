@@ -9,21 +9,20 @@ namespace Proton
     class TextBox : public Text
     {
     public:
-        TextBox(SDL_Window *window, int boxW, const std::string &text = "Label", int x = 0,
-                int y = 0, const std::string &fontPath = "fonts/Roboto-Regular.ttf",
-                int fontSize = 10, Color color = Color(255, 255, 255, 255)) : Text(text, x, y, fontPath, fontSize, color)
+        TextBox(SDL_Window *window, const int boxW, const std::string &text = "Label", const int x = 0,
+                const int y = 0, const std::string &fontPath = "fonts/Roboto-Regular.ttf",
+                const int fontSize = 10, const Color color = Color(255, 255, 255, 255)) : Text(text, x, y, fontPath, fontSize, color)
         {
             this->window = window;
             this->boxW = boxW;
             this->scrollX = 0;
         }
 
-        bool isFocused()
-        {
+        [[nodiscard]] bool isFocused() const {
             return this->focused;
         }
 
-        void setFocused(bool v)
+        void setFocused(const bool v)
         {
             if (this->focused == v)
                 return;
@@ -43,14 +42,13 @@ namespace Proton
             this->currentBlinkTime = 0;
         }
 
-        int getCursorPosition()
-        {
+        int getCursorPosition() const {
             return this->cursorPosition;
         }
 
-        void setCursorPosition(unsigned int v)
+        void setCursorPosition(const unsigned int v)
         {
-            if (v > (unsigned int)this->labelText.length())
+            if (v > static_cast<unsigned int>(this->labelText.length()))
             {
                 Log("attempt to set cursor position > than label text length");
             }
@@ -63,12 +61,11 @@ namespace Proton
             }
         }
 
-        int getSelectionAnchor()
-        {
+        [[nodiscard]] int getSelectionAnchor() const {
             return this->selectionAnchor;
         }
 
-        void setSelectionAnchor(int v)
+        void setSelectionAnchor(const int v)
         {
             if (v == -1)
             {
@@ -76,7 +73,7 @@ namespace Proton
                 return;
             }
 
-            if (v < 0 || v > (int)this->labelText.length())
+            if (v < 0 || v > static_cast<int>(this->labelText.length()))
             {
                 Log("attempt to set selection anchor position > than label text length");
             }
@@ -94,11 +91,9 @@ namespace Proton
                 while (currentPos > 0)
                 {
                     currentPos--;
-                    unsigned char firstByte = static_cast<unsigned char>(this->labelText[currentPos]);
-                    if ((firstByte & 0xC0) != 0x80)
+                    if (const auto firstByte = static_cast<unsigned char>(this->labelText[currentPos]); (firstByte & 0xC0) != 0x80)
                     {
-                        int char_len = getCharLength(firstByte);
-                        if (char_len > 0 && (currentPos + char_len <= this->cursorPosition))
+                        if (const int char_len = getCharLength(firstByte); char_len > 0 && (currentPos + char_len <= this->cursorPosition))
                         {
                             this->setCursorPosition(currentPos);
                             return;
@@ -113,16 +108,15 @@ namespace Proton
         {
             if (this->cursorPosition < this->labelText.length())
             {
-                unsigned char firstByte = static_cast<unsigned char>(this->labelText[this->cursorPosition]);
-                int char_len = getCharLength(firstByte);
-                if (char_len > 0)
+                const auto firstByte = static_cast<unsigned char>(this->labelText[this->cursorPosition]);
+                if (const int char_len = getCharLength(firstByte); char_len > 0)
                 {
                     this->setCursorPosition(this->cursorPosition + char_len);
                 }
             }
         }
 
-        void setText(const std::string &text, bool dontUpdateCursor = false)
+        void setText(const std::string &text, const bool dontUpdateCursor = false)
         {
             Text::setText(text);
             if (!dontUpdateCursor)
@@ -139,8 +133,8 @@ namespace Proton
         {
             if (this->selectionAnchor != -1 && this->selectionAnchor != this->cursorPosition)
             {
-                int selStart = std::min(this->selectionAnchor, this->cursorPosition);
-                int selEnd = std::max(this->selectionAnchor, this->cursorPosition);
+                const int selStart = std::min(this->selectionAnchor, this->cursorPosition);
+                const int selEnd = std::max(this->selectionAnchor, this->cursorPosition);
                 this->labelText.erase(selStart, selEnd - selStart);
                 this->cursorPosition = selStart;
                 this->selectionAnchor = -1;
@@ -155,8 +149,8 @@ namespace Proton
         {
             if (this->selectionAnchor != -1 && this->selectionAnchor != this->cursorPosition)
             {
-                int selStart = std::min(this->selectionAnchor, this->cursorPosition);
-                int selEnd = std::max(this->selectionAnchor, this->cursorPosition);
+                const int selStart = std::min(this->selectionAnchor, this->cursorPosition);
+                const int selEnd = std::max(this->selectionAnchor, this->cursorPosition);
                 this->labelText.erase(selStart, selEnd - selStart);
                 this->setCursorPosition(selStart);
                 this->selectionAnchor = -1;
@@ -170,16 +164,17 @@ namespace Proton
                     if (scanPos >= this->labelText.length())
                         return;
                     charStartPos = scanPos;
-                    unsigned char firstByte = static_cast<unsigned char>(this->labelText[scanPos]);
-                    int charLen = getCharLength(firstByte);
+                    const auto firstByte = static_cast<unsigned char>(this->labelText[scanPos]);
+                    const int charLen = getCharLength(firstByte);
                     if (charLen <= 0)
                         return;
                     scanPos += charLen;
                 }
                 if (charStartPos < this->cursorPosition)
                 {
-                    int charLen = getCharLength(static_cast<unsigned char>(this->labelText[charStartPos]));
-                    if (charLen > 0 && charStartPos + charLen <= this->labelText.length() && charStartPos + charLen == scanPos)
+                    if (const int charLen = getCharLength(static_cast<unsigned char>(this->labelText[charStartPos]));
+                        charLen > 0 && charStartPos + charLen <= this->labelText.length() && charStartPos + charLen ==
+                        scanPos)
                     {
                         this->labelText.erase(charStartPos, charLen);
                         this->setCursorPosition(charStartPos);
@@ -189,9 +184,8 @@ namespace Proton
             this->setText(this->labelText, true);
         }
 
-        int getCharIndexAt(int pX)
-        {
-            int targetPixelX = pX + this->scrollX;
+        [[nodiscard]] int getCharIndexAt(const int pX) const {
+            const int targetPixelX = pX + this->scrollX;
 
             TTF_Font *font = ResourceManager::getInstance().getFont(this->path, this->fontSize);
             if (!font)
@@ -243,7 +237,7 @@ namespace Proton
             return this->labelText.length();
         }
 
-        void update(float dt) override
+        void update(const float dt) override
         {
             this->currentBlinkTime += dt;
             if (this->currentBlinkTime >= this->requiredBlinkTime && this->focused)
@@ -253,26 +247,26 @@ namespace Proton
             }
         }
 
-        void paint(SDL_Renderer *render, int rX, int rY) override
+        void paint(SDL_Renderer *render, const int rX, const int rY) override
         {
             if (this->isDirty)
                 this->createTexture(render);
             if (!this->isVisible)
                 return;
 
-            float box_width = (float)this->boxW;
-            float box_height = (float)this->getH();
+            const auto box_width = static_cast<float>(this->boxW);
+            const auto box_height = static_cast<float>(this->getH());
 
             SDL_SetRenderDrawColor(render, 200, 200, 200, 255);
-            SDL_FRect bgRect = {(float)(this->x + rX), (float)(this->y + rY), box_width, box_height};
+            const SDL_FRect bgRect = {static_cast<float>(this->x + rX), static_cast<float>(this->y + rY), box_width, box_height};
             SDL_RenderFillRect(render, &bgRect);
 
             if (this->textTexture)
             {
-                float fullTextWidth = (float)this->w;
-                float fullTextHeight = (float)this->h;
+                const auto fullTextWidth = static_cast<float>(this->w);
+                const auto fullTextHeight = static_cast<float>(this->h);
 
-                SDL_FRect srcRect = {(float)this->scrollX, 0.0f, box_width, fullTextHeight};
+                SDL_FRect srcRect = {static_cast<float>(this->scrollX), 0.0f, box_width, fullTextHeight};
                 if (fullTextWidth - srcRect.x < box_width)
                 {
                     srcRect.w = fullTextWidth - srcRect.x;
@@ -280,25 +274,24 @@ namespace Proton
                 if (srcRect.w < 0)
                     srcRect.w = 0;
 
-                SDL_FRect destRect = {(float)(this->x + rX), (float)(this->y + rY), srcRect.w, srcRect.h};
+                const SDL_FRect destRect = {static_cast<float>(this->x + rX), static_cast<float>(this->y + rY), srcRect.w, srcRect.h};
 
                 if (this->selectionAnchor != -1)
                 {
-                    int selStart = std::min(this->selectionAnchor, this->cursorPosition);
-                    int selEnd = std::max(this->selectionAnchor, this->cursorPosition);
-                    if (selStart < selEnd)
+                    const int selStart = std::min(this->selectionAnchor, this->cursorPosition);
+                    if (const int selEnd = std::max(this->selectionAnchor, this->cursorPosition); selStart < selEnd)
                     {
-                        int selStartPixel = getPixelPosition(selStart);
-                        int selEndPixel = getPixelPosition(selEnd);
-                        float visibleSelStart = std::max((float)selStartPixel, (float)scrollX);
-                        float visibleSelEnd = std::min((float)selEndPixel, (float)(scrollX + boxW));
+                        const int selStartPixel = getPixelPosition(selStart);
+                        const int selEndPixel = getPixelPosition(selEnd);
+                        const float visibleSelStart = std::max(static_cast<float>(selStartPixel), static_cast<float>(scrollX));
+                        const float visibleSelEnd = std::min(static_cast<float>(selEndPixel), static_cast<float>(scrollX + boxW));
                         if (visibleSelStart < visibleSelEnd)
                         {
-                            float drawX = (float)(this->x + rX) + (visibleSelStart - scrollX);
-                            float drawY = (float)(this->y + rY);
-                            float drawW = visibleSelEnd - visibleSelStart;
-                            float drawH = (float)this->h;
-                            SDL_FRect selRect = {drawX, drawY, drawW, drawH};
+                            const float drawX = static_cast<float>(this->x + rX) + (visibleSelStart - scrollX);
+                            const auto drawY = static_cast<float>(this->y + rY);
+                            const float drawW = visibleSelEnd - visibleSelStart;
+                            const auto drawH = static_cast<float>(this->h);
+                            const SDL_FRect selRect = {drawX, drawY, drawW, drawH};
                             SDL_SetRenderDrawColor(render, 173, 216, 230, 255);
                             SDL_RenderFillRect(render, &selRect);
                         }
@@ -310,23 +303,22 @@ namespace Proton
 
             if (this->focused && this->cursorVisible)
             {
-                TTF_Font *font = ResourceManager::getInstance().getFont(this->path, this->fontSize);
-                if (font)
+                if (const TTF_Font *font = ResourceManager::getInstance().getFont(this->path, this->fontSize))
                 {
-                    int fontHeight = TTF_GetFontHeight(font);
-                    int cursorPixelX = getCursorPixelPosition();
-                    float cursorDrawX = (float)(this->x + rX + cursorPixelX - this->scrollX);
+                    const int fontHeight = TTF_GetFontHeight(font);
+                    const int cursorPixelX = getCursorPixelPosition();
 
-                    if (cursorDrawX >= (this->x + rX) && cursorDrawX <= (this->x + rX + this->boxW))
+                    if (const auto cursorDrawX = static_cast<float>(this->x + rX + cursorPixelX - this->scrollX);
+                        cursorDrawX >= (this->x + rX) && cursorDrawX <= (this->x + rX + this->boxW))
                     {
                         SDL_SetRenderDrawColor(render, this->fillColor.getR(), this->fillColor.getG(), this->fillColor.getB(), this->fillColor.getA());
-                        SDL_RenderLine(render, cursorDrawX, (float)(this->y + rY), cursorDrawX, (float)(this->y + rY + fontHeight));
+                        SDL_RenderLine(render, cursorDrawX, static_cast<float>(this->y + rY), cursorDrawX, static_cast<float>(this->y + rY + fontHeight));
                     }
                 }
             }
         }
 
-        int getH() const override
+        [[nodiscard]] int getH() const override
         {
             if (this->h > 0)
             {
@@ -338,7 +330,7 @@ namespace Proton
             }
         }
 
-        int getBoxW() const
+        [[nodiscard]] int getBoxW() const
         {
             return this->boxW;
         }
@@ -366,7 +358,7 @@ namespace Proton
             int fullTextWidth = 0;
             TTF_GetStringSize(font, this->labelText.c_str(), this->labelText.length(), &fullTextWidth, nullptr);
 
-            int cursorPixelX = getCursorPixelPosition();
+            const int cursorPixelX = getCursorPixelPosition();
 
             if (fullTextWidth <= this->boxW)
             {
@@ -394,19 +386,18 @@ namespace Proton
             }
         }
 
-        int getCursorPixelPosition()
-        {
+        int getCursorPixelPosition() const {
             if (this->cursorPosition == 0)
                 return 0;
 
             TTF_Font *font = ResourceManager::getInstance().getFont(this->path, this->fontSize);
             if (!font)
             {
-                Proton::Log("какого хуя у тебя cursorPosition больше 0, если шрифта нет");
+                Log("какого хуя у тебя cursorPosition больше 0, если шрифта нет");
                 return 0;
             }
 
-            std::string textBeforeCursor = this->labelText.substr(0, this->cursorPosition);
+            const std::string textBeforeCursor = this->labelText.substr(0, this->cursorPosition);
             int width, height;
             if (TTF_GetStringSize(font, textBeforeCursor.c_str(), textBeforeCursor.length(), &width, &height))
             {
@@ -415,16 +406,16 @@ namespace Proton
             return 0;
         }
 
-        int getPixelPosition(int charIndex)
+        int getPixelPosition(const int charIndex)
         {
             if (charIndex == 0)
                 return 0;
-            if (charIndex > (int)labelText.length())
+            if (charIndex > static_cast<int>(labelText.length()))
                 return getPixelPosition(labelText.length());
             TTF_Font *font = ResourceManager::getInstance().getFont(this->path, this->fontSize);
             if (!font)
                 return 0;
-            std::string textBefore = this->labelText.substr(0, charIndex);
+            const std::string textBefore = this->labelText.substr(0, charIndex);
             int width;
             TTF_GetStringSize(font, textBefore.c_str(), textBefore.length(), &width, nullptr);
             return width;

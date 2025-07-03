@@ -7,31 +7,30 @@ namespace Proton
     class ImageButton : public ButtonArea
     {
     public:
-        ImageButton(SDL_Texture* texture, int X = 0, int Y = 0, int W = 10, int H = 10) : ButtonArea(X, Y, W, H)
+        explicit ImageButton(SDL_Texture* texture, const int x = 0, const int y = 0, const int w = 10, const int h = 10) : ButtonArea(x, y, w, h)
         {
-            this->image = new Image(texture, X, Y, W, H);
+            this->image = new Image(texture, x, y, w, h);
         }
 
-        ~ImageButton()
-        {
+        ~ImageButton() override {
             delete this->image;
         }
 
-        void setPosition(int x, int y) override
+        void setPosition(const int x, const int y) override
         {
             this->x = x;
             this->y = y;
             image->setPosition(x, y);
         }
 
-        void resize(int w, int h) override
+        void resize(const int w, const int h) override
         {
             this->w = w;
             this->h = h;
             image->resize(w, h);
         }
 
-        void paint(SDL_Renderer *render, int rX, int rY) override
+        void paint(SDL_Renderer *render, const int rX, const int rY) override
         {
             image->paint(render, rX, rY);
         }

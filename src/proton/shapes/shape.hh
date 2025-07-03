@@ -6,7 +6,7 @@ namespace Proton
   class Color
   {
   public:
-    Color(unsigned char r = 0, unsigned char g = 0, unsigned char b = 0, unsigned char a = 255)
+    explicit Color(const unsigned char r = 0, const unsigned char g = 0, const unsigned char b = 0, const unsigned char a = 255)
     {
       this->r = r;
       this->g = g;
@@ -14,27 +14,27 @@ namespace Proton
       this->a = a;
     }
 
-    unsigned char getR() const { return this->r; }
-    unsigned char getG() const { return this->g; }
-    unsigned char getB() const { return this->b; }
-    unsigned char getA() const { return this->a; }
+    [[nodiscard]] unsigned char getR() const { return this->r; }
+    [[nodiscard]] unsigned char getG() const { return this->g; }
+    [[nodiscard]] unsigned char getB() const { return this->b; }
+    [[nodiscard]] unsigned char getA() const { return this->a; }
 
-    void setR(unsigned char v)
+    void setR(const unsigned char v)
     {
       this->r = v;
     }
 
-    void setG(unsigned char v)
+    void setG(const unsigned char v)
     {
       this->g = v;
     }
 
-    void setB(unsigned char v)
+    void setB(const unsigned char v)
     {
       this->b = v;
     }
 
-    void setA(unsigned char v)
+    void setA(const unsigned char v)
     {
       this->a = v;
     }
@@ -50,31 +50,31 @@ namespace Proton
     virtual void setFillColor(Color color) = 0;
     virtual void setPosition(int x, int y) = 0;
 
-    void setVisible(bool a)
+    void setVisible(const bool a)
     {
       this->isVisible = a;
     }
 
-    bool getVisible() const
+    [[nodiscard]] bool getVisible() const
     {
       return this->isVisible;
     }
 
-    int getX() const
+    [[nodiscard]] int getX() const
     {
       return this->x;
     }
 
-    int getY() const
+    [[nodiscard]] int getY() const
     {
       return this->y;
     }
 
     virtual void update(float dt) {}
-    virtual ~Shape() {}
+    virtual ~Shape() = default;
 
   protected:
     bool isVisible = true;
-    int x, y = 0;
+    int x{}, y = 0;
   };
 }

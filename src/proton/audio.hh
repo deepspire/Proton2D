@@ -8,13 +8,13 @@ namespace Proton
     class Audio
     {
     public:
-        Audio(std::string audioPath);
+        explicit Audio(const std::string &audioPath);
         ~Audio();
 
         void setAudioPath(const char *newPath);
         void play();
-        void stop();
-        bool isPlaying() const;
+        void stop() const;
+        [[nodiscard]] bool isPlaying() const;
 
     protected:
         ma_sound *sound;

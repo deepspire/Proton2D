@@ -1,21 +1,19 @@
 #pragma once
-#include <SDL3_image/SDL_image.h>
-#include <iostream>
+
 #include "../logman.hh"
 #include "shape.hh"
-#include "../resourcemanager.hh"
 
 namespace Proton
 {
   class Image : public Shape
   {
   public:
-    Image(SDL_Texture* texture, int x = 0, int y = 0,
-          int width = 0, int height = 0)
+    explicit Image(SDL_Texture* texture, const int x = 0, const int y = 0,
+                   const int width = 0, const int height = 0)
     {
       if (texture == nullptr)
       {
-        Proton::Log("у тебя два айкью????");
+        Log("Invalid texture or didn't loaded successfully");
         return;
       }
       this->imageTexture = texture;
@@ -31,32 +29,30 @@ namespace Proton
         this->height = imageTexture->h;
     }
 
-    ~Image()
-    {
-    }
+    ~Image() override = default;
 
     void setFillColor([[maybe_unused]] Color c) override {}
 
-    void resize(int width, int height)
+    void resize(const int width, const int height)
     {
       this->width = width;
       this->height = height;
     }
 
-    void setPosition(int x, int y) override
+    void setPosition(const int x, const int y) override
     {
       this->x = x;
       this->y = y;
     }
 
-    void paint(SDL_Renderer *render, int rX, int rY) override
+    void paint(SDL_Renderer *render, const int rX, const int rY) override
     {
-      float drawX = static_cast<float>(rX + this->x);
-      float drawY = static_cast<float>(rY + this->y);
+      const auto drawX = static_cast<float>(rX + this->x);
+      const auto drawY = static_cast<float>(rY + this->y);
 
-      SDL_FRect rectToRender = {drawX, drawY, (float)this->width, (float)this->height};
+      const SDL_FRect rectToRender = {drawX, drawY, static_cast<float>(this->width), static_cast<float>(this->height)};
 
-      SDL_RenderTexture(render, imageTexture, NULL, &rectToRender);
+      SDL_RenderTexture(render, imageTexture, nullptr, &rectToRender);
     }
 
     void setTexture(SDL_Texture *texture)

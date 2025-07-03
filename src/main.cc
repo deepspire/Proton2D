@@ -9,10 +9,10 @@
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv)
 {
-#ifdef _WIN32
-    SetConsoleOutputCP(CP_UTF8);
-    SetConsoleCP(CP_UTF8);
-#endif
+    #ifdef _WIN32
+        SetConsoleOutputCP(CP_UTF8);
+        SetConsoleCP(CP_UTF8);
+    #endif
 
     Proton::Display display("Proton2D test application", 700, 700);
     display.setIcon("kachan.png");
