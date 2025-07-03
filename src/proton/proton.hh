@@ -45,14 +45,14 @@ namespace Proton
         Proton::Log("Error initializing display: ", SDL_GetError());
         return;
       }
+
       SDL_SetRenderLogicalPresentation(this->randr, w, h, SDL_LOGICAL_PRESENTATION_INTEGER_SCALE);
-
       SDL_SetRenderVSync(this->randr, 1);
-
       Proton::Log("display init is successful");
+
+      Proton::ResourceManager::getInstance().initAudioEngine();
       this->isInit = true;
       this->currentScene = nullptr;
-      Proton::initAudioEngine();
     }
 
     void setScene(Scene *newScene)
@@ -78,7 +78,6 @@ namespace Proton
         ResourceManager::getInstance().clearCache();
         TTF_Quit();
         SDL_Quit();
-        Proton::destroyAudioEngine();
       }
       else
       {

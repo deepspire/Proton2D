@@ -1,28 +1,12 @@
 #define MINIAUDIO_IMPLEMENTATION
 #include "audio.hh"
+#include "resourcemanager.hh"
 
 namespace Proton
 {
-    ma_engine engine;
-    void initAudioEngine()
-    {
-        if (ma_engine_init(NULL, &engine) != MA_SUCCESS)
-        {
-            Proton::Log("Unable to init sound engine");
-            return;
-        }
-        Proton::Log("Miniaudio backend initialized successfully");
-    }
-    void destroyAudioEngine()
-    {
-        ma_engine_uninit(&engine);
-        Proton::Log("Audio module shutted down");
-    }
-
-    ma_sound* Audio::sound = nullptr;
-
     Audio::Audio(std::string audioPath)
     {
+        this->sound = nullptr;
         this->audioPath = "assets/" + audioPath;
     }
 
@@ -39,18 +23,19 @@ namespace Proton
 
     bool Audio::isPlaying() const
     {
-        if(sound == nullptr) return false;
+        if (sound == nullptr)
+            return false;
         return ma_sound_is_playing(sound);
     }
 
-    void Audio::setAudioPath(const char* newPath)
+    void Audio::setAudioPath(const char *newPath)
     {
         this->audioPath = newPath;
     }
 
     void Audio::play()
     {
-        const char* audioPth = this->audioPath.c_str();
+        const char *audioPth = this->audioPath.c_str();
 
         if (sound != nullptr)
         {
@@ -60,16 +45,17 @@ namespace Proton
             sound = nullptr;
         }
 
-        std::thread([audioPth]() {
-            sound = new ma_sound;
-            if (ma_sound_init_from_file(&engine, audioPth, 0, NULL, NULL, sound) == MA_SUCCESS) {
-                ma_sound_start(sound);
-            } else {
-                Proton::Log("Failed to load sound file ", audioPth);
-                delete sound;
-                sound = nullptr;
-            }
-        }).detach();
+        this->sound = new ma_sound();
+        if (ma_sound_init_from_file(ResourceManager::getInstance().getAudioEngine(), audioPth, 0, NULL, NULL, sound) == MA_SUCCESS)
+        {
+            ma_sound_start(sound);
+        }
+        else
+        {
+            Proton::Log("Failed to load sound file ", audioPth);
+            delete sound;
+            sound = nullptr;
+        }
     }
 
     void Audio::stop()

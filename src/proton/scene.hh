@@ -4,6 +4,7 @@
 #include "shapes/shape.hh"
 #include "shapes/buttonarea.hh"
 #include "shapes/textbox.hh"
+#include "audio.hh"
 
 #define ROOT_POSITION 0, 0
 
@@ -45,6 +46,12 @@ namespace Proton
         {
             this->textboxes.push_back(textbox);
             addObject(textbox);
+        }
+
+        // только для того, чтобы после сцены очистить звуки
+        void addAudio(Audio *audio)
+        {
+            this->audios.push_back(audio);
         }
 
         void clearScene()
@@ -257,11 +264,17 @@ namespace Proton
     private:
         void destroyObjectMassive()
         {
-            for (Shape *shape : objects)
+            for (Shape *shape : this->objects)
             {
                 delete shape;
             }
-            objects.clear();
+            this->objects.clear();
+
+            for (Audio *audio : this->audios)
+            {
+                delete audio;
+            }
+            this->audios.clear();
         }
 
     protected:
@@ -271,6 +284,7 @@ namespace Proton
         std::vector<Shape *> objects;
         std::vector<ButtonArea *> buttons;
         std::vector<TextBox *> textboxes;
+        std::vector<Audio *> audios;
 
         bool goNextScene = false;
         Scene *nextScene = nullptr;

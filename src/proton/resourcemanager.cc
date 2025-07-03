@@ -1,5 +1,4 @@
 #include "resourcemanager.hh"
-#include "logman.hh"
 
 namespace Proton
 {
@@ -11,7 +10,34 @@ namespace Proton
 
     ResourceManager::~ResourceManager()
     {
-        clearCache();
+        this->clearCache();
+    }
+
+    void ResourceManager::initAudioEngine()
+    {
+        if (!this->audioEngineInitialized)
+        {
+            if (ma_engine_init(NULL, &this->currentAudioEngine) != MA_SUCCESS)
+            {
+                Proton::Log("Unable to init sound engine");
+                return;
+            }
+
+            this->audioEngineInitialized = true;
+
+            return;
+        }
+
+        Proton::Log("Audio engine is defined already!!");
+    }
+
+    ma_engine *ResourceManager::getAudioEngine()
+    {
+        if (!this->audioEngineInitialized)
+        {
+            this->initAudioEngine();
+        }
+        return &this->currentAudioEngine;
     }
 
     SDL_Texture *ResourceManager::getTexture(SDL_Renderer *render, const std::string &path)
@@ -109,6 +135,12 @@ namespace Proton
         {
             SDL_DestroySurface(currentIcon);
             currentIcon = nullptr;
+        }
+
+        if (this->audioEngineInitialized)
+        {
+            ma_engine_uninit(&this->currentAudioEngine);
+            this->audioEngineInitialized = false;
         }
     }
 }
