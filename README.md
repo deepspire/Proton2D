@@ -22,8 +22,6 @@ now, with CMake vscode extension, select kit: `[Scan recursively for kits in spe
 
 now you can press `Build`, `Debug` and `Run` buttons in vscode.
 
-project is not static so you have to have SDL's .dll in the same folder as Proton2D binary
-
 ## Dependencies
 - SDL3
 - SDL3_image
