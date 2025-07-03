@@ -16,7 +16,6 @@ namespace Proton
         virtual void keyPressed(Uint16 key) = 0;
         virtual void mouseDown(int x, int y) = 0;
         virtual Scene *update(float dt) = 0;
-        virtual void deleteEvent() = 0;
 
         Scene(SDL_Renderer *render, SDL_Window *window)
         {

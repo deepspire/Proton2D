@@ -15,6 +15,5 @@ public:
 
     void mouseDown(int x, int y) override;
     void keyPressed(Uint16 key) override;
-    void deleteEvent() override;
     Proton::Scene* update(float dt) override;
 };

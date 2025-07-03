@@ -59,7 +59,6 @@ namespace Proton
     {
       if (this->currentScene != nullptr)
       {
-        currentScene->deleteEvent();
         delete currentScene;
         Proton::Log("Deleting previous scene...");
       }

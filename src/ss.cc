@@ -4,8 +4,11 @@ Proton::Container *cnt;
 Proton::Group *grp;
 Proton::ProgressBar *bar;
 
+Proton::Audio *tmp;
+
 SecondScene::SecondScene(SDL_Renderer *render, SDL_Window *window) : Proton::Scene(render, window)
 {
+
     this->background = Proton::Color(125, 125, 125);
     cnt = new Proton::Container(0, 0, 200, 500);
     cnt->addObject(new Proton::Rectangle(0, 0, 30, 30, Proton::Color(255, 0, 0)));
@@ -18,6 +21,8 @@ SecondScene::SecondScene(SDL_Renderer *render, SDL_Window *window) : Proton::Sce
     grp->addObject(new Proton::Rectangle(30, 0, 10, 10, Proton::Color(0, 0, 255)));
     bar = new Proton::ProgressBar(100, 100, 200, 50);
     bar->setFillColor(Proton::Color(0, 255, 0));
+    tmp = new Proton::Audio("kachan.mp3");
+    this->addAudio(tmp);
 
     this->addTextBox(new Proton::TextBox(this->window, 125, "Hello, TextBox!", 50, 250, "fonts/Roboto-Regular.ttf", 15, Proton::Color(255, 255, 255, 255)));
 
@@ -48,14 +53,12 @@ void SecondScene::keyPressed(Uint16 key)
     {
         grp->setPosition(rand() % 700, rand() % 500);
         bar->setProgress(rand() % 100);
-        Proton::Audio *tmp = new Proton::Audio("kachan.mp3");
         tmp->play();
-        this->addAudio(tmp);
+
     }
 }
 
-void SecondScene::deleteEvent()
-{
+SecondScene::~SecondScene() {
 }
 
 Proton::Scene* SecondScene::update(float dt)
