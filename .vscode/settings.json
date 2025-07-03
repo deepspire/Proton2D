@@ -1,5 +1,8 @@
 {
     "cmake.generator": "Ninja",
+    "cmake.environment": {
+        "PKG_CONFIG_PATH": "/usr/local/lib/pkgconfig"
+    },
     "files.associations": {
         "array": "cpp",
         "atomic": "cpp",
