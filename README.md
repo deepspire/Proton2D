@@ -11,52 +11,54 @@
 <img alt="Android support" src="https://img.shields.io/badge/Android-works-green">
 </p>
 
-## андройд тест
-скачиваем android-sdk, jdk-17, jdk-8 и android-ndk (jdk8 нужен для принятии sdkmanager лицензии)
+## Android building (arch)
+you can do same step as arch for windows and other linux distro, because it's almost same
+
+install android-sdk, jdk-17, jdk-8 and android-ndk (jdk8 is needed for sdkmanager licenses)
 ```bash
 sudo pacman -S jdk17-openjdk jdk8-openjdk
 yay -S android-sdk android-ndk android-sdk-platform-tools
 ```
 
-потом в `~/.bashrc` (или чем вы пользуетесь) надо добавить где-нибудь строчки
+add env paths, for linux, in `~/.bashrc` (or whatever you're using) you need to add:
 ```bash
 export ANDROID_NDK_HOME=/opt/android-ndk
 export ANDROID_HOME=/opt/android-sdk
 export PATH=$PATH:$ANDROID_HOME/platform-tools
 ```
 
-на арче путь до **JDK8** обычно `/usr/lib/jvm/java-8-openjdk`
+arch **JDK8** path is commonly `/usr/lib/jvm/java-8-openjdk`
 
-еще на арче нужно дать себе права на /opt/android-sdk и на /opt/android-ndk
+also you're may need to get access for /opt/android-sdk and /opt/android-ndk
 
-(обычно пользователь:группа это просто имя пользователя, например, santer:santer)
+(commonly, user:group is just a username, for example, santer:santer)
 ```bash
-sudo chown -R пользователь:группа /opt/android-sdk
-sudo chown -R пользователь:группа /opt/android-ndk
+sudo chown -R user:group /opt/android-sdk
+sudo chown -R user:group /opt/android-ndk
 ```
 
-принимаем лицензии (просто отвечайте y):
+agree with licenses (just input y):
 ```bash
 JAVA_HOME="/usr/lib/jvm/java-8-openjdk" sdkmanager --licenses
 ```
 
-для билда:
+for debug build:
 ```bash
 cd android_build
 JAVA_HOME=/usr/lib/jvm/java-17-openjdk ./gradlew assembleDebug
 ```
 
-для релиз билда:
+for release build:
 ```bash
 JAVA_HOME=/usr/lib/jvm/java-17-openjdk ./gradlew assembleRelease
 ```
 
-для инсталла через ADB:
+for installing debug apk via ADB:
 ```bash
 JAVA_HOME=/usr/lib/jvm/java-17-openjdk ./gradlew installDebug
 ```
 
-для инсталла релиза через ADB:
+for installing release apk via ADB:
 ```bash
 JAVA_HOME=/usr/lib/jvm/java-17-openjdk ./gradlew releaseDebug
 ```
