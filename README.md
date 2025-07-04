@@ -46,6 +46,11 @@ cd android_build
 JAVA_HOME=/usr/lib/jvm/java-17-openjdk ./gradlew assembleDebug -PBUILD_WITH_CMAKE
 ```
 
+для релиз билда:
+```bash
+JAVA_HOME=/usr/lib/jvm/java-17-openjdk ./gradlew assembleRelease -PBUILD_WITH_CMAKE
+```
+
 для инсталла через ADB:
 ```bash
 JAVA_HOME=/usr/lib/jvm/java-17-openjdk ./gradlew installDebug -PBUILD_WITH_CMAKE
