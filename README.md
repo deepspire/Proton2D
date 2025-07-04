@@ -6,7 +6,8 @@
 </p>
 
 <p align="center">
-Android tree
+<img alt="Windows support" src="https://img.shields.io/badge/Windows-SUPPORTED-green">
+<img alt="Linux support" src="https://img.shields.io/badge/Linux-SUPPORTED-green">
 </p>
 
 ## Cloning
