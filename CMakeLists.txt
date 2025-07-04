@@ -36,10 +36,6 @@ set(SDLIMAGE_TGA     OFF CACHE BOOL "Disable TGA support" )
 add_subdirectory(ext/SDL3_image)
 add_subdirectory(ext/SDL3_ttf)
 
-find_package(SDL3 REQUIRED)
-find_package(SDL3_ttf REQUIRED)
-find_package(SDL3_image REQUIRED)
-
 add_executable(Proton2D ${SOURCE_FILES})
 target_include_directories(Proton2D PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/ext) # ext/miniaudio.h !!!
 target_link_libraries(Proton2D PRIVATE SDL3::SDL3 SDL3_ttf::SDL3_ttf SDL3_image::SDL3_image)
