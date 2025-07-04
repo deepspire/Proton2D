@@ -8,7 +8,7 @@
 <p align="center">
 <img alt="Windows support" src="https://img.shields.io/badge/Windows-works-green">
 <img alt="Linux support" src="https://img.shields.io/badge/Linux-works-green">
-<img alt="Android support" src="https://img.shields.io/badge/Android-WIP-yellow">
+<img alt="Android support" src="https://img.shields.io/badge/Android-works-green">
 </p>
 
 ## андройд тест
@@ -54,6 +54,11 @@ JAVA_HOME=/usr/lib/jvm/java-17-openjdk ./gradlew assembleRelease -PBUILD_WITH_CM
 для инсталла через ADB:
 ```bash
 JAVA_HOME=/usr/lib/jvm/java-17-openjdk ./gradlew installDebug -PBUILD_WITH_CMAKE
+```
+
+для инсталла релиза через ADB:
+```bash
+JAVA_HOME=/usr/lib/jvm/java-17-openjdk ./gradlew releaseDebug -PBUILD_WITH_CMAKE
 ```
 
 ## Cloning

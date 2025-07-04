@@ -1,8 +1,13 @@
 #include "menu.hh"
 
+Proton::Rectangle *moving;
+bool movingflag = false;
+
 Menu::Menu(SDL_Renderer *render, SDL_Window *window) : Scene(render, window)
 {
-    //addObject(new Proton::Rectangle(480, 640, 50, 50, Proton::Color(), 20));
+    // addObject(new Proton::Rectangle(480, 640, 50, 50, Proton::Color(), 20));
+    moving = new Proton::Rectangle(200, 600, 25, 50, Proton::Color());
+    addObject(moving);
     for (int i = 0; i <= 200; i += 1)
     {
         addObject(new Proton::Rectangle(i, 640, 25, 50, Proton::Color()));
@@ -25,7 +30,23 @@ void Menu::mouseDown(int x, int y)
 void Menu::keyPressed([[maybe_unused]] Uint16 ev) {}
 Proton::Scene *Menu::update(float dt)
 {
-    // clearScene();
+    if (movingflag)
+    {
+        moving->setPosition(moving->getX() - 1, moving->getY());
+        if (moving->getX() <= 0)
+        {
+            moving->setPosition(600, moving->getY());
+            movingflag = false;
+        }
+    }
+    else
+    {
+        moving->setPosition(moving->getX() + 1, moving->getY());
+        if (moving->getX() >= 600)
+        {
+            movingflag = true;
+        }
+    }
 
     if (this->goNextScene)
     {

@@ -18,8 +18,10 @@ namespace Proton
 
     explicit Rectangle(int x = 0, int y = 0, int w = 10, int h = 10,
               const Color color = Color(), Sint16 roundness = 0, const Style style = Fill)
-        : color(color), x(x), y(y), w(w), h(h), style(style)
+        : color(color), w(w), h(h), style(style)
     {
+      this->x = x;
+      this->y = y;
     }
 
     ~Rectangle() override = default;
@@ -74,7 +76,7 @@ namespace Proton
 
   private:
     Color color;
-    int x, y, w, h;
+    int w, h;
     Color lastColor;
     Style style;
   };
