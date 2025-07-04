@@ -1,5 +1,6 @@
 {
     "cmake.generator": "Ninja",
+    "cmake.buildDirectory": "${workspaceFolder}/build/${buildType}",
     "files.associations": {
         "array": "cpp",
         "atomic": "cpp",

@@ -10,8 +10,19 @@
 <img alt="Linux support" src="https://img.shields.io/badge/Linux-SUPPORTED-green">
 </p>
 
+## Cloning
+```pwsh
+git clone --recurse-submodules https://github.com/deepspire/Proton2D.git
+cd Proton2D
+git submodule update --init --recursive
+```
+
+if any new external submodule added:
+```pwsh
+git submodule update --remote --recursive
+```
+
 ## Windows build guide
-install [vc_redist](https://aka.ms/vs/17/release/vc_redist.x64.exe) (users also should install this)
 install `msys2`, `ninja`. (choco: `choco install msys2 ninja -y`)
 
 open mingw64 terminal ("C:\tools\msys64\mingw64.exe" choco path)
