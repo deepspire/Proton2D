@@ -91,6 +91,10 @@ namespace Proton
     SDL_SetWindowIcon(this->handle, icon);
   }
 
+  void Display::setRenderScale(const double x, const double y) const {
+    SDL_SetRenderScale(this->render, static_cast<float>(x), static_cast<float>(y));
+  }
+
   void Display::renderStart()
   {
     SDL_Event e;

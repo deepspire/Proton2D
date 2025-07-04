@@ -27,6 +27,7 @@ namespace Proton
 
     void setTitle(const char *title) const;
     void setIcon(const std::string &path) const;
+    void setRenderScale(double x, double y) const;
 
     int pointerX, pointerY = 0;
 
