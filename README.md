@@ -6,8 +6,9 @@
 </p>
 
 <p align="center">
-<img alt="Windows support" src="https://img.shields.io/badge/Windows-SUPPORTED-green">
-<img alt="Linux support" src="https://img.shields.io/badge/Linux-SUPPORTED-green">
+<img alt="Windows support" src="https://img.shields.io/badge/Windows-works-green">
+<img alt="Linux support" src="https://img.shields.io/badge/Linux-works-green">
+<img alt="Android support" src="https://img.shields.io/badge/Android-WIP-yellow">
 </p>
 
 ## андройд тест
