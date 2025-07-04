@@ -1,5 +1,9 @@
 #pragma once
 
+#if defined(__ANDROID__)
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
+#endif
 #include "logman.hh"
 #include "miniaudio.h"
 
@@ -18,6 +22,7 @@ namespace Proton
 
     protected:
         ma_sound *sound;
+        ma_decoder *decoder = nullptr;
         std::string audioPath;
     };
 }

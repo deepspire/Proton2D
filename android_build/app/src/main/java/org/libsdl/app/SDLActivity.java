@@ -14,6 +14,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -168,6 +169,8 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         Log.v(TAG, prefix + "int=" + s_copy + " CLASS={" + cls + " } source(s):" + src);
     }
 */
+
+    public native void nativeInit(AssetManager assetManager);
 
     public static boolean mIsResumedCalled, mHasFocus;
     public static final boolean mHasMultiWindow = (Build.VERSION.SDK_INT >= 24  /* Android 7.0 (N) */);
@@ -424,6 +427,8 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
 
            return;
         }
+
+        nativeInit(getAssets());
 
 
         /* Control activity re-creation */

@@ -40,6 +40,7 @@ void SecondScene::mouseDown(int x, int y)
     }
     else
     {
+        tmp->play();
         // rect->setPosition(rand() % 700, rand() % 500);
         // img->setPosition(rand() % 200, rand() % 200);
     }

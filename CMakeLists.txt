@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.22)
 
 project(Proton2D)
 
@@ -13,6 +13,7 @@ set(SOURCE_FILES
     src/proton/audio.cc
     src/proton/proton.cc
     src/proton/resourcemanager.cc
+    src/jni/JNIBindings.cpp
 )
 
 if(ANDROID)
@@ -62,7 +63,7 @@ if(WIN32)
         $<TARGET_FILE_DIR:Proton2D>
     )
 elseif(ANDROID)
-    target_link_libraries(${SDL_MAIN_TARGET} PRIVATE log)
+    target_link_libraries(${SDL_MAIN_TARGET} PRIVATE log android)
 elseif(UNIX AND NOT APPLE)
     add_custom_command(TARGET Proton2D POST_BUILD
         COMMAND_EXPAND_LISTS
@@ -78,4 +79,43 @@ elseif(UNIX AND NOT APPLE)
     )
 else()
     message(FATAL_ERROR "platform pizdec")
+endif()
+
+find_package(Java)
+
+if(Java_FOUND)
+    if(WIN32)
+        set(GRADLEW_EXECUTABLE gradlew.bat)
+    else()
+        set(GRADLEW_EXECUTABLE ./gradlew)
+    endif()
+
+    add_custom_target(
+        "Build-android-Release"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/android_build
+        COMMAND ${CMAKE_COMMAND} -E env
+        "JAVA_HOME=$ENV{JAVA_HOME}"
+        ${GRADLEW_EXECUTABLE} assembleRelease -PBUILD_WITH_CMAKE
+        USES_TERMINAL
+    )
+
+    add_custom_target(
+        "Install-android-Release"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/android_build
+        COMMAND ${CMAKE_COMMAND} -E env
+        "JAVA_HOME=$ENV{JAVA_HOME}"
+        ${GRADLEW_EXECUTABLE} installRelease -PBUILD_WITH_CMAKE
+        USES_TERMINAL
+    )
+
+    add_custom_target(
+        "Clean-android"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/android_build
+        COMMAND ${CMAKE_COMMAND} -E env
+        "JAVA_HOME=$ENV{JAVA_HOME}"
+        ${GRADLEW_EXECUTABLE} clean
+        USES_TERMINAL
+    )
+else()
+    message(STATUS "Couldn't find java.")
 endif()

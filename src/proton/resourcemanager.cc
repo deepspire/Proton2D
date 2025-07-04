@@ -1,8 +1,5 @@
 #include "resourcemanager.hh"
 
-#include "logman.hh"
-#include <SDL3_image/SDL_image.h>
-
 namespace Proton
 {
     ResourceManager &ResourceManager::getInstance()
@@ -130,6 +127,18 @@ namespace Proton
         this->fontCache[key] = font;
         return font;
     }
+
+#if defined(__ANDROID__)
+    void ResourceManager::setAssetManager(AAssetManager *manager)
+    {
+        this->assetManager = manager;
+    }
+
+    AAssetManager *ResourceManager::getAssetManager()
+    {
+        return this->assetManager;
+    }
+#endif
 
     void ResourceManager::clearCache()
     {
