@@ -57,7 +57,11 @@ namespace Proton
             return it->second;
         }
 
+#ifndef __ANDROID__
         std::string fullPath = "assets/" + path;
+#else
+        std::string fullPath = path;
+#endif
 
         SDL_Surface *surface = IMG_Load(fullPath.c_str());
         if (!surface)
@@ -81,7 +85,11 @@ namespace Proton
 
     SDL_Surface *ResourceManager::getIcon(const std::string &path)
     {
+#ifndef __ANDROID__
         std::string fullPath = "assets/" + path;
+#else
+        std::string fullPath = path;
+#endif
 
         if (this->currentIcon)
         {
@@ -106,7 +114,11 @@ namespace Proton
             return it->second;
         }
 
-        const std::string fullPath = "assets/" + path;
+#ifndef __ANDROID__
+        std::string fullPath = "assets/" + path;
+#else
+        std::string fullPath = path;
+#endif
 
         TTF_Font *font = TTF_OpenFont(fullPath.c_str(), fontSize);
         if (!font)

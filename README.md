@@ -10,15 +10,55 @@
 <img alt="Linux support" src="https://img.shields.io/badge/Linux-SUPPORTED-green">
 </p>
 
+## андройд тест
+скачиваем android-sdk, jdk-17, jdk-8 и android-ndk (jdk8 нужен для принятии sdkmanager лицензии)
+```bash
+sudo pacman -S jdk17-openjdk jdk8-openjdk
+yay -S android-sdk android-ndk android-sdk-platform-tools
+```
+
+потом в `~/.bashrc` (или чем вы пользуетесь) надо добавить где-нибудь строчки
+```bash
+export ANDROID_NDK_HOME=/opt/android-ndk
+export ANDROID_HOME=/opt/android-sdk
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+```
+
+на арче путь до **JDK8** обычно `/usr/lib/jvm/java-8-openjdk`
+
+еще на арче нужно дать себе права на /opt/android-sdk и на /opt/android-ndk
+
+(обычно пользователь:группа это просто имя пользователя, например, santer:santer)
+```bash
+sudo chown -R пользователь:группа /opt/android-sdk
+sudo chown -R пользователь:группа /opt/android-ndk
+```
+
+принимаем лицензии (просто отвечайте y):
+```bash
+JAVA_HOME="/usr/lib/jvm/java-8-openjdk" sdkmanager --licenses
+```
+
+для билда:
+```bash
+cd android_build
+JAVA_HOME=/usr/lib/jvm/java-17-openjdk ./gradlew assembleDebug -PBUILD_WITH_CMAKE
+```
+
+для инсталла через ADB:
+```bash
+JAVA_HOME=/usr/lib/jvm/java-17-openjdk ./gradlew installDebug -PBUILD_WITH_CMAKE
+```
+
 ## Cloning
-```pwsh
+```bash
 git clone --recurse-submodules https://github.com/deepspire/Proton2D.git
 cd Proton2D
 git submodule update --init --recursive
 ```
 
 if any new external submodule added:
-```pwsh
+```bash
 git submodule update --remote --recursive
 ```
 

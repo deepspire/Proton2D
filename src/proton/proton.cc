@@ -12,30 +12,44 @@ namespace Proton
     SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "wayland,x11,windows,android");
     SDL_SetHint(SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "1");
     SDL_SetHint(SDL_HINT_RENDER_LINE_METHOD, "1");
+    SDL_SetHint(SDL_HINT_ORIENTATIONS, "LandscapeLeft LandscapeRight");
 
     const int ret = SDL_Init(SDL_INIT_VIDEO);
     TTF_Init();
 
     Log("SDL Video Driver: ", SDL_GetCurrentVideoDriver());
-    if (ret < 0) {
+    if (ret < 0)
+    {
       Log("Error initializing SDL: ", SDL_GetError());
       return;
     }
 
-    this->handle = SDL_CreateWindow(this->title.c_str(), w, h, 0);
-    if (!this->handle) {
+    int window_flags = 0;
+#ifdef __ANDROID__
+    window_flags |= SDL_WINDOW_FULLSCREEN;
+#else
+    window_flags |= SDL_WINDOW_RESIZABLE;
+#endif
+
+    this->handle = SDL_CreateWindow(this->title.c_str(), w, h, window_flags);
+    if (!this->handle)
+    {
       Log("Error creating window: ", SDL_GetError());
       return;
     }
 
     this->render = SDL_CreateRenderer(this->handle, nullptr);
-    if (!this->render) {
+    if (!this->render)
+    {
       Log("Error initializing display: ", SDL_GetError());
       return;
     }
 
-    SDL_SetRenderLogicalPresentation(this->render, w, h, SDL_LOGICAL_PRESENTATION_INTEGER_SCALE);
     SDL_SetRenderVSync(this->render, 1);
+    if (!SDL_SetRenderLogicalPresentation(this->render, w, h, SDL_LOGICAL_PRESENTATION_LETTERBOX))
+    {
+      Log("Unable to set SDL_SetRenderLogicalPresentation", SDL_GetError());
+    }
 
     Log("display init is successful");
 
@@ -46,7 +60,8 @@ namespace Proton
 
   void Display::setScene(Scene *newScene)
   {
-    if (this->currentScene != nullptr) {
+    if (this->currentScene != nullptr)
+    {
       delete currentScene;
       Log("Deleting previous scene...");
     }
@@ -56,7 +71,8 @@ namespace Proton
 
   void Display::startRendering()
   {
-    if (this->isInit) {
+    if (this->isInit)
+    {
       this->renderStart();
       delete this->currentScene;
       SDL_DestroyWindow(this->handle);
@@ -64,29 +80,36 @@ namespace Proton
       ResourceManager::getInstance().clearCache();
       TTF_Quit();
       SDL_Quit();
-    } else {
+    }
+    else
+    {
       summonError();
       return;
     }
   }
 
-  SDL_Surface *Display::getSurface() const {
+  SDL_Surface *Display::getSurface() const
+  {
     return SDL_GetWindowSurface(this->handle);
   }
 
-  SDL_Renderer *Display::getRenderer() const {
+  SDL_Renderer *Display::getRenderer() const
+  {
     return this->render;
   }
 
-  SDL_Window *Display::getNativeWindow() const {
+  SDL_Window *Display::getNativeWindow() const
+  {
     return this->handle;
   }
 
-  void Display::setTitle(const char *title) const {
+  void Display::setTitle(const char *title) const
+  {
     SDL_SetWindowTitle(this->handle, title);
   }
 
-  void Display::setIcon(const std::string &path) const {
+  void Display::setIcon(const std::string &path) const
+  {
     SDL_Surface *icon = ResourceManager::getInstance().getIcon(path);
     SDL_SetWindowIcon(this->handle, icon);
   }
@@ -107,6 +130,8 @@ namespace Proton
     {
       while (SDL_PollEvent(&e))
       {
+        SDL_ConvertEventToRenderCoordinates(render, &e);
+
         switch (e.type)
         {
         case SDL_EVENT_QUIT:
@@ -134,7 +159,8 @@ namespace Proton
         }
       }
 
-      if (!this->currentScene) {
+      if (!this->currentScene)
+      {
         isDone = true;
         continue;
       }

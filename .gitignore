@@ -1,1 +1,6 @@
 /build
+/android_build/.gradle
+/android_build/build
+/android_build/.cxx
+/android_build/app/build
+/android_build/app/.cxx

@@ -14,7 +14,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv)
         SetConsoleCP(CP_UTF8);
     #endif
 
-    Proton::Display display("Proton2D test application", 740, 740);
+    Proton::Display display("Proton2D test application", 1560, 720);
     display.setIcon("kachan.png");
     display.setScene(new Menu(display.getRenderer(), display.getNativeWindow()));
     //display.setRenderScale(2, 2);
