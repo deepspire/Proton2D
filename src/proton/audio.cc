@@ -1,6 +1,6 @@
 #define MINIAUDIO_IMPLEMENTATION
-#include "audio.hh"
-#include "resourcemanager.hh"
+#include "proton/audio.hh"
+#include "proton/resourcemanager.hh"
 
 namespace Proton
 {

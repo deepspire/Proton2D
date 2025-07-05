@@ -7,3 +7,6 @@
 [submodule "ext/SDL3_ttf"]
 	path = ext/SDL3_ttf
 	url = https://github.com/libsdl-org/SDL_ttf.git
+[submodule "ext/luajit"]
+	path = ext/luajit
+	url = https://github.com/LuaJIT/LuaJIT

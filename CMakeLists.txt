@@ -45,8 +45,38 @@ set(SDLIMAGE_TGA OFF CACHE BOOL "Disable TGA support")
 add_subdirectory(ext/SDL3_image)
 add_subdirectory(ext/SDL3_ttf)
 
-target_include_directories(${SDL_MAIN_TARGET} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/ext) # ext/miniaudio.h !!!
-target_link_libraries(${SDL_MAIN_TARGET} PRIVATE SDL3::SDL3 SDL3_ttf::SDL3_ttf SDL3_image::SDL3_image)
+target_include_directories(${SDL_MAIN_TARGET} PUBLIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/ext
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+) # ext/miniaudio.h !!!
+
+# luajit stuff
+set(LUAJIT_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ext/luajit/src)
+if(MSVC)
+    # че ты вообще делаешь с msvc здесь
+    set(LUAJIT_BUILD_COMMAND cmd.exe /c msvcbuild.bat static)
+    set(LUAJIT_LIB_NAME lua51.lib)
+else()
+    set(LUAJIT_BUILD_COMMAND make BUILDMODE=static)
+    set(LUAJIT_LIB_NAME libluajit.a)
+endif()
+
+add_custom_target(luajit_build ALL
+    COMMAND ${LUAJIT_BUILD_COMMAND}
+    WORKING_DIRECTORY ${LUAJIT_SRC_DIR}
+    BYPRODUCTS ${LUAJIT_SRC_DIR}/${LUAJIT_LIB_NAME}
+)
+
+add_library(LuaJIT::LuaJIT STATIC IMPORTED GLOBAL)
+
+set_target_properties(LuaJIT::LuaJIT PROPERTIES
+    IMPORTED_LOCATION "${LUAJIT_SRC_DIR}/${LUAJIT_LIB_NAME}"
+    INTERFACE_INCLUDE_DIRECTORIES "${LUAJIT_SRC_DIR}"
+)
+
+add_dependencies(${SDL_MAIN_TARGET} luajit_build)
+
+target_link_libraries(${SDL_MAIN_TARGET} PRIVATE SDL3::SDL3 SDL3_ttf::SDL3_ttf SDL3_image::SDL3_image LuaJIT::LuaJIT)
 
 if(WIN32)
     target_link_options(Proton2D PRIVATE -static-libgcc -static-libstdc++)
@@ -65,6 +95,7 @@ if(WIN32)
 elseif(ANDROID)
     target_link_libraries(${SDL_MAIN_TARGET} PRIVATE log android)
 elseif(UNIX AND NOT APPLE)
+    target_link_libraries(${SDL_MAIN_TARGET} PRIVATE m dl)
     add_custom_command(TARGET Proton2D POST_BUILD
         COMMAND_EXPAND_LISTS
 

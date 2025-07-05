@@ -1,4 +1,4 @@
-#include "resourcemanager.hh"
+#include "proton/resourcemanager.hh"
 
 namespace Proton
 {

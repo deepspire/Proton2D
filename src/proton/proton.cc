@@ -2,7 +2,7 @@
 // Created by Monsler on 04.07.2025.
 //
 
-#include "proton.hh"
+#include "proton/proton.hh"
 
 namespace Proton
 {
