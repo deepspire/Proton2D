@@ -11,8 +11,8 @@ namespace Proton
   class Text : public Shape
   {
   public:
-    explicit Text(std::string text = "Label", const int x = 0,
-                  const int y = 0, std::string fontPath = "fonts/Roboto-Regular.ttf",
+    explicit Text(std::string text = "Label", const float x = 0,
+                  const float y = 0, std::string fontPath = "fonts/Roboto-Regular.ttf",
                   const int fontSize = 12, const Color color = Color(255, 255, 255, 255))
         : labelText(std::move(text)), path(std::move(fontPath)), fontSize(fontSize), fillColor(color)
     {
@@ -25,13 +25,13 @@ namespace Proton
         SDL_DestroyTexture(textTexture);
     }
 
-    void setPosition(int x, int y) override
+    void setPosition(const float x, const float y) override
     {
       this->x = x;
       this->y = y;
     }
 
-    void resize(int w, int h)
+    void resize(const int w, const int h)
     {
       this->w = w;
       this->h = h;
@@ -78,8 +78,8 @@ namespace Proton
 
       if (textTexture)
       {
-        const auto drawX = static_cast<float>(rX + this->x);
-        const auto drawY = static_cast<float>(rY + this->y);
+        const auto drawX = rX + this->x;
+        const auto drawY = rY + this->y;
 
         const SDL_FRect rectToRender = {drawX, drawY, static_cast<float>(this->w), static_cast<float>(this->h)};
 

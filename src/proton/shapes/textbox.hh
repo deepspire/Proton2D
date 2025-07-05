@@ -9,8 +9,8 @@ namespace Proton
     class TextBox : public Text
     {
     public:
-        TextBox(SDL_Window *window, const int boxW, const std::string &text = "Label", const int x = 0,
-                const int y = 0, const std::string &fontPath = "fonts/Roboto-Regular.ttf",
+        TextBox(SDL_Window *window, const int boxW, const std::string &text = "Label", const float x = 0,
+                const float y = 0, const std::string &fontPath = "fonts/Roboto-Regular.ttf",
                 const int fontSize = 10, const Color color = Color(255, 255, 255, 255)) : Text(text, x, y, fontPath, fontSize, color)
         {
             this->window = window;

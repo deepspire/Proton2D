@@ -7,7 +7,7 @@ namespace Proton
   class Line : public Shape
   {
   public:
-    explicit Line(const int x1 = 0, const int y1 = 0, const int x2 = 5, const int y2 = 5, const Color color = Color())
+    explicit Line(const float x1 = 0, const float y1 = 0, const float x2 = 5, const float y2 = 5, const Color color = Color())
     {
       this->x = x1;
       this->y = y1;
@@ -16,7 +16,7 @@ namespace Proton
       this->fillColor = color;
     };
 
-    void setPosition(int x, int y) override
+    void setPosition(const float x, const float y) override
     {
       const int dx = this->endX - this->x;
       const int dy = this->endY - this->y;

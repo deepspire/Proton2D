@@ -16,7 +16,7 @@ namespace Proton
             delete this->image;
         }
 
-        void setPosition(const int x, const int y) override
+        void setPosition(const float x, const float y) override
         {
             this->x = x;
             this->y = y;

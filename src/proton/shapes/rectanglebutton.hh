@@ -18,7 +18,7 @@ namespace Proton
             delete this->rectangle;
         }
 
-        void setPosition(int x, int y) override
+        void setPosition(const float x, const float y) override
         {
             this->x = x;
             this->y = y;

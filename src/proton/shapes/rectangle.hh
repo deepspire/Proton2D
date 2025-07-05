@@ -16,7 +16,7 @@ namespace Proton
       Bevel
     };
 
-    explicit Rectangle(int x = 0, int y = 0, int w = 10, int h = 10,
+    explicit Rectangle(const float x = 0, const float y = 0, const int w = 10, const int h = 10,
               const Color color = Color(), Sint16 roundness = 0, const Style style = Fill)
         : color(color), w(w), h(h), style(style)
     {
@@ -26,10 +26,10 @@ namespace Proton
 
     ~Rectangle() override = default;
 
-    void paint(SDL_Renderer *render, int rX, int rY) override
+    void paint(SDL_Renderer *render, const int rX, const int rY) override
     {
-      const auto drawX = static_cast<float>(rX + this->x);
-      const auto drawY = static_cast<float>(rY + this->y);
+      const auto drawX = rX + this->x;
+      const auto drawY = rY + this->y;
       const SDL_FRect rectToRender = {drawX, drawY, static_cast<float>(this->w), static_cast<float>(this->h)};
 
       SDL_SetRenderDrawColor(render, color.getR(), color.getG(), color.getB(), color.getA());
@@ -63,7 +63,7 @@ namespace Proton
       }
     }
 
-    void setPosition(int x, int y) override
+    void setPosition(const float x, const float y) override
     {
       this->x = x;
       this->y = y;

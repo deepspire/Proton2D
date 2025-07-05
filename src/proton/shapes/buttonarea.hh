@@ -6,7 +6,7 @@ namespace Proton
     class ButtonArea : public Shape
     {
     public:
-        explicit ButtonArea(const int x = 0, const int y = 0, const int w = 10, const int h = 10)
+        explicit ButtonArea(const float x = 0, const float y = 0, const int w = 10, const int h = 10)
         {
             this->x = x;
             this->y = y;
@@ -22,7 +22,7 @@ namespace Proton
         {
         }
 
-        void setPosition(const int x, const int y) override
+        void setPosition(const float x, const float y) override
         {
             this->x = x;
             this->y = y;

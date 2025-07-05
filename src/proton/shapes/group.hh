@@ -7,7 +7,7 @@ namespace Proton
     class Group final : public Shape
     {
     public:
-        Group(const int x, const int y)
+        Group(const float x, const float y)
         {
             this->x = x;
             this->y = y;
@@ -33,7 +33,7 @@ namespace Proton
             }
         }
 
-        void setPosition(const int x, const int y) override
+        void setPosition(const float x, const float y) override
         {
             this->x = x;
             this->y = y;
@@ -45,7 +45,7 @@ namespace Proton
         }
 
         void clear() const {
-            for (Proton::Shape *shape : this->shapes)
+            for (const Shape *shape : this->shapes)
             {
                 delete shape;
             }

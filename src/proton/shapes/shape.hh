@@ -48,7 +48,7 @@ namespace Proton
   public:
     virtual void paint(SDL_Renderer *render, int rX, int rY) = 0;
     virtual void setFillColor(Color color) = 0;
-    virtual void setPosition(int x, int y) = 0;
+    virtual void setPosition(float x, float y) = 0;
 
     void setVisible(const bool a)
     {
@@ -75,6 +75,6 @@ namespace Proton
 
   protected:
     bool isVisible = true;
-    int x{}, y = 0;
+    float x = 0, y = 0;
   };
 }

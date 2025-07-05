@@ -12,7 +12,7 @@ SecondScene::SecondScene(SDL_Renderer *render, SDL_Window *window) : Proton::Sce
     this->background = Proton::Color(125, 125, 125);
     cnt = new Proton::Container(0, 0, 200, 500);
     cnt->addObject(new Proton::Rectangle(0, 0, 30, 30, Proton::Color(255, 0, 0)));
-    cnt->addObject(new Proton::Circle(35, 35, 10, Proton::Color(0, 255, 0)));
+    cnt->addObject(new Proton::Circle(35.0f, 35.0f, 10, Proton::Color(0, 255, 0)));
     cnt->addObject(new Proton::Image(Proton::ResourceManager::getInstance().getTexture(this->render, "kachan.png"), 50, 50, 20, 20));
     cnt->addObject(new Proton::Line(0, 0, 30, 30));
     cnt->addObject(new Proton::Text("Proton2D text rendering", 70, 70, "fonts/Roboto-Regular.ttf"));

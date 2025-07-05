@@ -8,18 +8,18 @@ namespace Proton
     class Container final : public Shape
     {
     public:
-        explicit Container(const int x, const int y, const int width, const int height)
+        explicit Container(const float x, const float y, const int width, const int height)
         {
             this->x = x;
             this->y = y;
 
-            this->containerRect = {x, y, width, height};
+            this->containerRect = {static_cast<int>(x), static_cast<int>(y), width, height};
         }
 
-        void paint(SDL_Renderer *render, int rX, int rY) override
+        void paint(SDL_Renderer *render, const int rX, const int rY) override
         {
             const SDL_Rect absoluteClipRect = {
-                this->x + rX, this->y + rY,
+                static_cast<int>(this->x + rX), static_cast<int>(this->y + rY),
                 this->containerRect.w, this->containerRect.h};
 
             SDL_SetRenderClipRect(render, &absoluteClipRect);
@@ -48,11 +48,11 @@ namespace Proton
             shapes.clear();
         }
 
-        void setPosition(int x, int y) override
+        void setPosition(float x, float y) override
         {
             this->x = x;
             this->y = y;
-            this->containerRect = {x, y, this->containerRect.w, this->containerRect.h};
+            this->containerRect = {static_cast<int>(x), static_cast<int>(y), this->containerRect.w, this->containerRect.h};
         }
 
         void update(const float dt) override

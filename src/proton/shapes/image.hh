@@ -8,8 +8,8 @@ namespace Proton
   class Image : public Shape
   {
   public:
-    explicit Image(SDL_Texture* texture, const int x = 0, const int y = 0,
-                   const int width = 0, const int height = 0)
+    explicit Image(SDL_Texture* texture, const float x = 0, const float y = 0,
+                   const float width = 0, const float height = 0)
     {
       if (texture == nullptr)
       {
@@ -39,7 +39,7 @@ namespace Proton
       this->height = height;
     }
 
-    void setPosition(const int x, const int y) override
+    void setPosition(const float x, const float y) override
     {
       this->x = x;
       this->y = y;
@@ -47,8 +47,8 @@ namespace Proton
 
     void paint(SDL_Renderer *render, const int rX, const int rY) override
     {
-      const auto drawX = static_cast<float>(rX + this->x);
-      const auto drawY = static_cast<float>(rY + this->y);
+      const auto drawX = rX + this->x;
+      const auto drawY = rY + this->y;
 
       const SDL_FRect rectToRender = {drawX, drawY, static_cast<float>(this->width), static_cast<float>(this->height)};
 
@@ -63,7 +63,7 @@ namespace Proton
     }
 
   private:
-    int width, height;
+    float width, height;
     SDL_Texture *imageTexture;
   };
 }

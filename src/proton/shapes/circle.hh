@@ -12,7 +12,7 @@ namespace Proton
       Fill,
       Bevel
     };
-    explicit Circle(const int x = 0, const int y = 0, const int radius = 40, const Color fillColor = Color(), const Style style=Fill)
+    explicit Circle(const float x = 0, const float y = 0, const int radius = 40, const Color fillColor = Color(), const Style style=Fill)
     {
       this->x = x;
       this->y = y;
@@ -21,7 +21,7 @@ namespace Proton
       this->style = style;
     }
 
-    void setPosition(int x, int y) override
+    void setPosition(const float x, const float y) override
     {
       this->x = x;
       this->y = y;
