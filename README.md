@@ -29,7 +29,7 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 
 arch **JDK8** path is commonly `/usr/lib/jvm/java-8-openjdk`
 
-also you're may need to get access for /opt/android-sdk and /opt/android-ndk
+also you may need to get access for /opt/android-sdk and /opt/android-ndk
 
 (commonly, user:group is just a username, for example, santer:santer)
 ```bash
