@@ -46,7 +46,7 @@ namespace Proton
   class Shape
   {
   public:
-    virtual void paint(SDL_Renderer *render, int rX, int rY) = 0;
+    virtual void paint(SDL_Renderer *render, float rX, float rY) = 0;
     virtual void setFillColor(Color color) = 0;
     virtual void setPosition(float x, float y) = 0;
 
@@ -60,12 +60,12 @@ namespace Proton
       return this->isVisible;
     }
 
-    [[nodiscard]] int getX() const
+    [[nodiscard]] float getX() const
     {
       return this->x;
     }
 
-    [[nodiscard]] int getY() const
+    [[nodiscard]] float getY() const
     {
       return this->y;
     }

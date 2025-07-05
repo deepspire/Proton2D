@@ -95,7 +95,7 @@ if(Java_FOUND)
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/android_build
         COMMAND ${CMAKE_COMMAND} -E env
         "JAVA_HOME=$ENV{JAVA_HOME}"
-        ${GRADLEW_EXECUTABLE} assembleRelease -PBUILD_WITH_CMAKE
+        ${GRADLEW_EXECUTABLE} assembleRelease
         USES_TERMINAL
     )
 
@@ -104,7 +104,7 @@ if(Java_FOUND)
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/android_build
         COMMAND ${CMAKE_COMMAND} -E env
         "JAVA_HOME=$ENV{JAVA_HOME}"
-        ${GRADLEW_EXECUTABLE} installRelease -PBUILD_WITH_CMAKE
+        ${GRADLEW_EXECUTABLE} installRelease
         USES_TERMINAL
     )
 

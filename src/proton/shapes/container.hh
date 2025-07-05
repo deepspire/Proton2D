@@ -13,14 +13,14 @@ namespace Proton
             this->x = x;
             this->y = y;
 
-            this->containerRect = {static_cast<int>(x), static_cast<int>(y), width, height};
+            this->containerRect = {x, y, static_cast<float>(width), static_cast<float>(height)};
         }
 
-        void paint(SDL_Renderer *render, const int rX, const int rY) override
+        void paint(SDL_Renderer *render, const float rX, const float rY) override
         {
             const SDL_Rect absoluteClipRect = {
                 static_cast<int>(this->x + rX), static_cast<int>(this->y + rY),
-                this->containerRect.w, this->containerRect.h};
+                static_cast<int>(this->containerRect.w), static_cast<int>(this->containerRect.h)};
 
             SDL_SetRenderClipRect(render, &absoluteClipRect);
             for (Shape *shape : this->shapes)
@@ -52,7 +52,7 @@ namespace Proton
         {
             this->x = x;
             this->y = y;
-            this->containerRect = {static_cast<int>(x), static_cast<int>(y), this->containerRect.w, this->containerRect.h};
+            this->containerRect = {x, y, this->containerRect.w, this->containerRect.h};
         }
 
         void update(const float dt) override
@@ -68,7 +68,7 @@ namespace Proton
         }
 
     private:
-        SDL_Rect containerRect{};
+        SDL_FRect containerRect{};
         std::vector<Shape *> shapes;
     };
 }

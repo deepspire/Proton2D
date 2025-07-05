@@ -6,7 +6,7 @@
 #include "shapes/textbox.hh"
 #include "audio.hh"
 
-#define ROOT_POSITION 0, 0
+#define ROOT_POSITION 0.0f, 0.0f
 
 namespace Proton
 {

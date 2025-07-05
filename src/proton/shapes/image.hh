@@ -45,7 +45,7 @@ namespace Proton
       this->y = y;
     }
 
-    void paint(SDL_Renderer *render, const int rX, const int rY) override
+    void paint(SDL_Renderer *render, const float rX, const float rY) override
     {
       const auto drawX = rX + this->x;
       const auto drawY = rY + this->y;

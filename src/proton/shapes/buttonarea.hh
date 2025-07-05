@@ -18,7 +18,7 @@ namespace Proton
         {
         }
 
-        void paint(SDL_Renderer *render, int rX, int rY) override
+        void paint(SDL_Renderer *render, float rX, float rY) override
         {
         }
 

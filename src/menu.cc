@@ -6,12 +6,12 @@ bool movingflag = false;
 Menu::Menu(SDL_Renderer *render, SDL_Window *window) : Scene(render, window)
 {
     // addObject(new Proton::Rectangle(480, 640, 50, 50, Proton::Color(), 20));
-    moving = new Proton::Rectangle(200, 600, 25, 50, Proton::Color());
+    moving = new Proton::Rectangle(200, 600, 50, 50, Proton::Color());
     addObject(moving);
-    for (int i = 0; i <= 200; i += 1)
+    /*for (int i = 0; i <= 200; i += 1)
     {
         addObject(new Proton::Rectangle(i, 640, 25, 50, Proton::Color()));
-    }
+    }*/
     addObject(new Proton::Line(480 / 2, 640 / 2, 480, 640, Proton::Color()));
     addObject(new Proton::Line(0, 640, 480 / 2, 640 / 2, Proton::Color()));
 
@@ -32,7 +32,7 @@ Proton::Scene *Menu::update(float dt)
 {
     if (movingflag)
     {
-        moving->setPosition(moving->getX() - 1, moving->getY());
+        moving->setPosition(moving->getX() - 40 * dt, moving->getY());
         if (moving->getX() <= 0)
         {
             moving->setPosition(600, moving->getY());
@@ -41,7 +41,7 @@ Proton::Scene *Menu::update(float dt)
     }
     else
     {
-        moving->setPosition(moving->getX() + 1, moving->getY());
+        moving->setPosition(moving->getX() + 40 * dt, moving->getY());
         if (moving->getX() >= 600)
         {
             movingflag = true;

@@ -30,7 +30,7 @@ namespace Proton
             image->resize(w, h);
         }
 
-        void paint(SDL_Renderer *render, const int rX, const int rY) override
+        void paint(SDL_Renderer *render, const float rX, const float rY) override
         {
             image->paint(render, rX, rY);
         }

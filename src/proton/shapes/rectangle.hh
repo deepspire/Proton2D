@@ -26,10 +26,10 @@ namespace Proton
 
     ~Rectangle() override = default;
 
-    void paint(SDL_Renderer *render, const int rX, const int rY) override
+    void paint(SDL_Renderer *render, const float rX, const float rY) override
     {
-      const auto drawX = rX + this->x;
-      const auto drawY = rY + this->y;
+      const float drawX = rX + this->x;
+      const float drawY = rY + this->y;
       const SDL_FRect rectToRender = {drawX, drawY, static_cast<float>(this->w), static_cast<float>(this->h)};
 
       SDL_SetRenderDrawColor(render, color.getR(), color.getG(), color.getB(), color.getA());

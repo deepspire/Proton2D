@@ -13,7 +13,7 @@ namespace Proton
             this->y = y;
         }
 
-        void paint(SDL_Renderer *render, const int gX, const int gY) override
+        void paint(SDL_Renderer *render, const float gX, const float gY) override
         {
             for (Shape *shape : this->shapes)
             {

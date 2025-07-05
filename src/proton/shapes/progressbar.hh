@@ -42,7 +42,7 @@ namespace Proton
             return this->progress;
         }
 
-        void paint(SDL_Renderer* render, const int pX, const int pY) override {
+        void paint(SDL_Renderer* render, const float pX, const float pY) override {
             const float progressWidth = (static_cast<float>(progress)/100.0f)*this->width-4;
             const SDL_FRect bgRect = {(this->x+pX), (this->y+pY), static_cast<float>(this->width), static_cast<float>(this->height)};
             const SDL_FRect progressRect = {(this->x+pX+2), (this->y+pY+2), static_cast<float>(progressWidth), static_cast<float>(this->height-4)};

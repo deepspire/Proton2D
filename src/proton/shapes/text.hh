@@ -69,7 +69,7 @@ namespace Proton
       return this->labelText.length();
     }
 
-    void paint(SDL_Renderer *render, const int rX, const int rY) override
+    void paint(SDL_Renderer *render, const float rX, const float rY) override
     {
       if (this->isDirty)
       {
