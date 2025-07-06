@@ -138,20 +138,24 @@ namespace Proton
           isDone = true;
           break;
         case SDL_EVENT_MOUSE_BUTTON_DOWN:
+          if (!this->currentScene) break;
           this->currentScene->mouseDown(static_cast<int>(e.button.x), static_cast<int>(e.button.y));
           this->currentScene->handleButtonClick(static_cast<int>(e.button.x), static_cast<int>(e.button.y));
           break;
         case SDL_EVENT_MOUSE_MOTION:
+          if (!this->currentScene) break;
           if (e.motion.state & SDL_BUTTON_LMASK)
           {
             this->currentScene->handleMouseDrag(static_cast<int>(e.motion.x), static_cast<int>(e.motion.y));
           }
           break;
         case SDL_EVENT_KEY_DOWN:
+          if (!this->currentScene) break;
           this->currentScene->handleKeyDown(e);
           this->currentScene->keyPressed(e.key.key);
           break;
         case SDL_EVENT_TEXT_INPUT:
+          if (!this->currentScene) break;
           this->currentScene->handleTextInput(e);
           break;
         default:
@@ -161,7 +165,6 @@ namespace Proton
 
       if (!this->currentScene)
       {
-        isDone = true;
         continue;
       }
 
