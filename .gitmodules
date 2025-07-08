@@ -7,3 +7,6 @@
 [submodule "ext/SDL3_ttf"]
 	path = ext/SDL3_ttf
 	url = https://github.com/libsdl-org/SDL_ttf.git
+[submodule "ext/box2d"]
+	path = ext/box2d
+	url = https://github.com/erincatto/box2d.git
