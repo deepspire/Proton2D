@@ -62,8 +62,9 @@ void SecondScene::mouseDown(int x, int y)
 
 void SecondScene::keyPressed(Uint16 key)
 {
-    if (this->focusedTextBox)
+    if (this->focusedTextBox != nullptr) {
         return;
+}
 
     if (key == SDLK_A)
     {
