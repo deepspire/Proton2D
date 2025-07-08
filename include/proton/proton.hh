@@ -21,12 +21,12 @@ class Display
     explicit Display(const std::string &title, int w = 480, int h = 640);
     void setScene(Scene *newScene);
     void startRendering();
-    [[nodiscard]] int getWindowHeight() const;
-    [[nodiscard]] int getWindowWidth() const;
+    [[nodiscard]] auto getWindowHeight() const -> int;
+    [[nodiscard]] auto getWindowWidth() const -> int;
 
-    [[nodiscard]] SDL_Surface *getSurface() const;
-    [[nodiscard]] SDL_Renderer *getRenderer() const;
-    [[nodiscard]] SDL_Window *getNativeWindow() const;
+    [[nodiscard]] auto getSurface() const -> SDL_Surface *;
+    [[nodiscard]] auto getRenderer() const -> SDL_Renderer *;
+    [[nodiscard]] auto getNativeWindow() const -> SDL_Window *;
 
     void setTitle(const char *title) const;
     void setIcon(const std::string &path) const;

@@ -93,15 +93,15 @@ void Display::startRendering()
     }
 }
 
-int Display::getWindowHeight() const { return this->windowHeight; }
+auto Display::getWindowHeight() const -> int { return this->windowHeight; }
 
-int Display::getWindowWidth() const { return this->windowWidth; }
+auto Display::getWindowWidth() const -> int { return this->windowWidth; }
 
-SDL_Surface *Display::getSurface() const { return SDL_GetWindowSurface(this->handle); }
+auto Display::getSurface() const -> SDL_Surface * { return SDL_GetWindowSurface(this->handle); }
 
-SDL_Renderer *Display::getRenderer() const { return this->render; }
+auto Display::getRenderer() const -> SDL_Renderer * { return this->render; }
 
-SDL_Window *Display::getNativeWindow() const { return this->handle; }
+auto Display::getNativeWindow() const -> SDL_Window * { return this->handle; }
 
 void Display::setTitle(const char *title) const { SDL_SetWindowTitle(this->handle, title); }
 
