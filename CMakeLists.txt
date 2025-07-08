@@ -17,11 +17,13 @@ set(SOURCE_FILES
 )
 
 if(ANDROID)
-    add_library(main SHARED ${SOURCE_FILES})
+    add_library(main SHARED ${SOURCE_FILES}
+            include/proton/physics.hh)
     set(SDL_MAIN_TARGET main)
     set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries" FORCE)
 else()
-    add_executable(Proton2D ${SOURCE_FILES})
+    add_executable(Proton2D ${SOURCE_FILES}
+            src/proton/physics.cc)
     set(SDL_MAIN_TARGET Proton2D)
     set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries" FORCE)
 endif()
@@ -44,13 +46,14 @@ set(SDLIMAGE_BMP OFF CACHE BOOL "Disable BMP support")
 set(SDLIMAGE_TGA OFF CACHE BOOL "Disable TGA support")
 add_subdirectory(ext/SDL3_image)
 add_subdirectory(ext/SDL3_ttf)
+add_subdirectory(ext/box2d)
 
 target_include_directories(${SDL_MAIN_TARGET} PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}/ext
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 ) # ext/miniaudio.h !!!
 
-target_link_libraries(${SDL_MAIN_TARGET} PRIVATE SDL3::SDL3 SDL3_ttf::SDL3_ttf SDL3_image::SDL3_image)
+target_link_libraries(${SDL_MAIN_TARGET} PRIVATE SDL3::SDL3 SDL3_ttf::SDL3_ttf SDL3_image::SDL3_image box2d::box2d)
 
 if(WIN32)
     target_link_options(Proton2D PRIVATE -static-libgcc -static-libstdc++)

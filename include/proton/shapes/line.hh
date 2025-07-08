@@ -20,7 +20,7 @@ namespace Proton
       this->rotation = angle;
     }
 
-    void setPosition(float x, float y) override
+    void setPosition(const float x, const float y) override
     {
       float dx = endX - this->x;
       float dy = endY - this->y;
