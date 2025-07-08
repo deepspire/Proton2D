@@ -3,11 +3,15 @@
 //
 
 #include "proton/proton.hh"
+#include "proton/logman.hh"
+#include "proton/physics.hh"
+#include "proton/resourcemanager.hh"
 
 namespace Proton
 {
-  Display::Display(const std::string &title, const int w, const int h) : pointerX(0), pointerY(0), windowWidth(w), windowHeight(h)
-  {
+Display::Display(const std::string &title, const int w, const int h)
+    : pointerX(0), pointerY(0), windowWidth(w), windowHeight(h)
+{
     this->title = title;
     SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "wayland,x11,windows,android");
     SDL_SetHint(SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "1");
@@ -20,8 +24,8 @@ namespace Proton
     Log("SDL Video Driver: ", SDL_GetCurrentVideoDriver());
     if (ret < 0)
     {
-      Log("Error initializing SDL: ", SDL_GetError());
-      return;
+        Log("Error initializing SDL: ", SDL_GetError());
+        return;
     }
 
     int window_flags = 0;
@@ -34,15 +38,15 @@ namespace Proton
     this->handle = SDL_CreateWindow(this->title.c_str(), w, h, window_flags);
     if (!this->handle)
     {
-      Log("Error creating window: ", SDL_GetError());
-      return;
+        Log("Error creating window: ", SDL_GetError());
+        return;
     }
 
     this->render = SDL_CreateRenderer(this->handle, nullptr);
     if (!this->render)
     {
-      Log("Error initializing display: ", SDL_GetError());
-      return;
+        Log("Error initializing display: ", SDL_GetError());
+        return;
     }
 
     SDL_SetRenderVSync(this->render, 1);
@@ -57,78 +61,63 @@ namespace Proton
     Physics::initPhysicsDevice();
     this->isInit = true;
     this->currentScene = nullptr;
-  }
+}
 
-  void Display::setScene(Scene *newScene)
-  {
+void Display::setScene(Scene *newScene)
+{
     if (this->currentScene != nullptr)
     {
-      delete currentScene;
-      Log("Deleting previous scene...");
+        delete currentScene;
+        Log("Deleting previous scene...");
     }
 
     this->currentScene = newScene;
-  }
+}
 
-  void Display::startRendering()
-  {
+void Display::startRendering()
+{
     if (this->isInit)
     {
-      this->renderStart();
-      delete this->currentScene;
-      SDL_DestroyWindow(this->handle);
-      SDL_DestroyRenderer(this->render);
-      ResourceManager::getInstance().clearCache();
-      TTF_Quit();
-      SDL_Quit();
-      Physics::destroyPhysicsDevice();
+        this->renderStart();
+        delete this->currentScene;
+        SDL_DestroyWindow(this->handle);
+        SDL_DestroyRenderer(this->render);
+        ResourceManager::getInstance().clearCache();
+        TTF_Quit();
+        SDL_Quit();
+        Physics::destroyPhysicsDevice();
     }
     else
     {
-      summonError();
+        summonError();
     }
-  }
+}
 
-  int Display::getWindowHeight() const {
-    return this->windowHeight;
-  }
+int Display::getWindowHeight() const { return this->windowHeight; }
 
-  int Display::getWindowWidth() const {
-    return this->windowWidth;
-  }
+int Display::getWindowWidth() const { return this->windowWidth; }
 
+SDL_Surface *Display::getSurface() const { return SDL_GetWindowSurface(this->handle); }
 
-  SDL_Surface *Display::getSurface() const
-  {
-    return SDL_GetWindowSurface(this->handle);
-  }
+SDL_Renderer *Display::getRenderer() const { return this->render; }
 
-  SDL_Renderer *Display::getRenderer() const
-  {
-    return this->render;
-  }
+SDL_Window *Display::getNativeWindow() const { return this->handle; }
 
-  SDL_Window *Display::getNativeWindow() const
-  {
-    return this->handle;
-  }
+void Display::setTitle(const char *title) const { SDL_SetWindowTitle(this->handle, title); }
 
-  void Display::setTitle(const char *title) const
-  {
-    SDL_SetWindowTitle(this->handle, title);
-  }
-
-  void Display::setIcon(const std::string &path) const
-  {
+void Display::setIcon(const std::string &path) const
+{
     SDL_Surface *icon = ResourceManager::getInstance().getIcon(path);
     SDL_SetWindowIcon(this->handle, icon);
-  }
+}
 
-  void Display::setRenderScale(const double x, const double y) const {
+void Display::setRenderScale(const double x, const double y) const
+{
     SDL_SetRenderScale(this->render, static_cast<float>(x), static_cast<float>(y));
-  }
+}
 
-  void Display::renderStart() {
+void Display::renderStart()
+{
     SDL_Event e;
     bool isDone = false;
 
@@ -137,90 +126,91 @@ namespace Proton
 
     while (!isDone)
     {
-      while (SDL_PollEvent(&e))
-      {
-        SDL_ConvertEventToRenderCoordinates(render, &e);
-
-        switch (e.type)
+        while (SDL_PollEvent(&e))
         {
-          case SDL_EVENT_QUIT:
-            isDone = true;
-            break;
-          case SDL_EVENT_MOUSE_BUTTON_DOWN:
-            if (!this->currentScene) break;
-            this->currentScene->mouseDown(static_cast<int>(e.button.x), static_cast<int>(e.button.y));
-            this->currentScene->handleButtonClick(static_cast<int>(e.button.x), static_cast<int>(e.button.y));
-            break;
-          case SDL_EVENT_MOUSE_MOTION:
-            if (!this->currentScene) break;
-            if (e.motion.state & SDL_BUTTON_LMASK)
+            SDL_ConvertEventToRenderCoordinates(render, &e);
+
+            switch (e.type)
             {
-              this->currentScene->handleMouseDrag(static_cast<int>(e.motion.x), static_cast<int>(e.motion.y));
+            case SDL_EVENT_QUIT:
+                isDone = true;
+                break;
+            case SDL_EVENT_MOUSE_BUTTON_DOWN:
+                if (!this->currentScene)
+                    break;
+                this->currentScene->mouseDown(static_cast<int>(e.button.x), static_cast<int>(e.button.y));
+                this->currentScene->handleButtonClick(static_cast<int>(e.button.x), static_cast<int>(e.button.y));
+                break;
+            case SDL_EVENT_MOUSE_MOTION:
+                if (!this->currentScene)
+                    break;
+                if (e.motion.state & SDL_BUTTON_LMASK)
+                {
+                    this->currentScene->handleMouseDrag(static_cast<int>(e.motion.x), static_cast<int>(e.motion.y));
+                }
+                break;
+            case SDL_EVENT_KEY_DOWN:
+                if (!this->currentScene)
+                    break;
+                this->currentScene->handleKeyDown(e);
+                this->currentScene->keyPressed(e.key.key);
+                break;
+            case SDL_EVENT_TEXT_INPUT:
+                if (!this->currentScene)
+                    break;
+                this->currentScene->handleTextInput(e);
+                break;
+            default:
+                break;
             }
-            break;
-          case SDL_EVENT_KEY_DOWN:
-            if (!this->currentScene) break;
-            this->currentScene->handleKeyDown(e);
-            this->currentScene->keyPressed(e.key.key);
-            break;
-          case SDL_EVENT_TEXT_INPUT:
-            if (!this->currentScene) break;
-            this->currentScene->handleTextInput(e);
-            break;
-          default:
-            break;
         }
-      }
 
-      if (!this->currentScene)
-      {
-        continue;
-      }
-
-      SDL_SetRenderDrawColor(this->render,
-                             this->currentScene->getBackgroundColor().getR(),
-                             this->currentScene->getBackgroundColor().getG(),
-                             this->currentScene->getBackgroundColor().getB(),
-                             this->currentScene->getBackgroundColor().getA());
-
-      float px, py;
-      SDL_GetMouseState(&px, &py);
-      pointerX = static_cast<int>(px);
-      pointerY = static_cast<int>(py);
-
-      SDL_RenderClear(this->render);
-
-      if (Scene *nextScene = this->currentScene->update(deltaTime); nextScene != this->currentScene)
-      {
-        if (nextScene == nullptr)
+        if (!this->currentScene)
         {
-          isDone = true;
+            continue;
         }
-        this->setScene(nextScene);
-      }
 
-      if (this->currentScene)
-      {
-        this->currentScene->paint();
-      }
+        SDL_SetRenderDrawColor(this->render, this->currentScene->getBackgroundColor().getR(),
+                               this->currentScene->getBackgroundColor().getG(),
+                               this->currentScene->getBackgroundColor().getB(),
+                               this->currentScene->getBackgroundColor().getA());
 
-      SDL_RenderPresent(this->render);
+        float px, py;
+        SDL_GetMouseState(&px, &py);
+        pointerX = static_cast<int>(px);
+        pointerY = static_cast<int>(py);
 
-      const auto currentTime = static_cast<float>(SDL_GetTicks());
-      deltaTime = (currentTime - static_cast<float>(lastFrameTime)) / 1000.0f;
-      lastFrameTime = static_cast<Uint64>(currentTime);
-      Physics::simulationStep();
-      for (PhysicsBody& body: physicsBodies) {
-        b2BodyId bodyId = body.getBody();
-        Shape* shape = body.getUsedShape();
-        //shape->setPosition(bodyId.)
-      }
+        SDL_RenderClear(this->render);
+
+        if (Scene *nextScene = this->currentScene->update(deltaTime); nextScene != this->currentScene)
+        {
+            if (nextScene == nullptr)
+            {
+                isDone = true;
+            }
+            this->setScene(nextScene);
+        }
+
+        if (this->currentScene)
+        {
+            this->currentScene->paint();
+        }
+
+        SDL_RenderPresent(this->render);
+
+        const auto currentTime = static_cast<float>(SDL_GetTicks());
+        deltaTime = (currentTime - static_cast<float>(lastFrameTime)) / 1000.0f;
+        lastFrameTime = static_cast<Uint64>(currentTime);
+        Physics::simulationStep();
+        for (PhysicsBody &body : physicsBodies)
+        {
+            b2BodyId bodyId = body.getBody();
+            Shape *shape = body.getUsedShape();
+            // shape->setPosition(bodyId.)
+        }
     }
     SDL_GetWindowSize(this->handle, &this->windowWidth, &this->windowHeight);
-  }
-
-  void Display::summonError()
-  {
-    Log("Init display first!");
-  }
 }
+
+void Display::summonError() { Log("Init display first!"); }
+} // namespace Proton

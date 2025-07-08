@@ -2,9 +2,7 @@
 // Created by Monsler on 08.07.2025.
 //
 
-#ifndef PHYSICS_H
-#define PHYSICS_H
-#include "logman.hh"
+#pragma once
 #include <vector>
 
 #include "box2d/types.h"
@@ -41,5 +39,3 @@ namespace Proton {
 
     static std::vector<PhysicsBody> physicsBodies;
 }
-
-#endif //PHYSICS_H

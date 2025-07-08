@@ -3,7 +3,7 @@
 //
 #include "proton/physics.hh"
 #include "box2d/box2d.h"
-#include <algorithm>
+#include "proton/logman.hh"
 
 namespace Proton {
     b2WorldId worldGame;

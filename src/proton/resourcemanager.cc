@@ -1,4 +1,5 @@
 #include "proton/resourcemanager.hh"
+#include "proton/logman.hh"
 
 namespace Proton
 {
@@ -19,7 +20,7 @@ namespace Proton
         {
             if (ma_engine_init(nullptr, &this->currentAudioEngine) != MA_SUCCESS)
             {
-                Log("Unable to init sound engine");
+                Proton::Log("Unable to init sound engine");
                 return;
             }
 

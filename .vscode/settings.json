@@ -1,6 +1,8 @@
 {
     "cmake.generator": "Ninja",
-    "cmake.buildDirectory": "${workspaceFolder}/build/${buildType}",
+    "editor.detectIndentation": false,
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
     "files.associations": {
         "array": "cpp",
         "atomic": "cpp",
@@ -65,5 +67,5 @@
         "__verbose_abort": "cpp",
         "ios": "cpp",
         "locale": "cpp"
-    }
+    },
 }

@@ -4,51 +4,40 @@
 
 namespace Proton
 {
-    class ImageButton : public ButtonArea
+class ImageButton : public ButtonArea
+{
+  public:
+    explicit ImageButton(SDL_Texture *texture, const int x = 0, const int y = 0, const int w = 10, const int h = 10)
+        : ButtonArea(x, y, w, h)
     {
-    public:
-        explicit ImageButton(SDL_Texture* texture, const int x = 0, const int y = 0, const int w = 10, const int h = 10) : ButtonArea(x, y, w, h)
-        {
-            this->image = new Image(texture, x, y, w, h);
-        }
+        this->image = new Image(texture, x, y, w, h);
+    }
 
-        ~ImageButton() override {
-            delete this->image;
-        }
+    ~ImageButton() override { delete this->image; }
 
-        void setRotation(const float angle) override {
-            this->rotation = angle;
-        }
+    void setRotation(const float angle) override { this->rotation = angle; }
 
-        void setPosition(const float x, const float y) override
-        {
-            this->x = x;
-            this->y = y;
-            image->setPosition(x, y);
-        }
+    void setPosition(const float x, const float y) override
+    {
+        this->x = x;
+        this->y = y;
+        image->setPosition(x, y);
+    }
 
-        void resize(const int w, const int h) override
-        {
-            this->w = w;
-            this->h = h;
-            image->resize(w, h);
-        }
+    void resize(const int w, const int h) override
+    {
+        this->w = w;
+        this->h = h;
+        image->resize(w, h);
+    }
 
-        void paint(SDL_Renderer *render, const float rX, const float rY) override
-        {
-            image->paint(render, rX, rY);
-        }
+    void paint(SDL_Renderer *render, const float rX, const float rY) override { image->paint(render, rX, rY); }
 
-        void setFillColor([[maybe_unused]] Color color) override
-        {
-        }
+    void setFillColor([[maybe_unused]] Color color) override {}
 
-        void onClick() override
-        {
-            std::cout << "image" << std::endl;
-        }
+    void onClick() override { std::cout << "image" << std::endl; }
 
-    protected:
-        Image *image;
-    };
+  protected:
+    Image *image;
 };
+}; // namespace Proton

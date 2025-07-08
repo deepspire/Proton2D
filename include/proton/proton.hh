@@ -4,22 +4,19 @@
 #define SDL_MAIN_HANDLED
 #endif
 
+#include "scene.hh"
+#include "shapes/shape.hh"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <SDL3/SDL_render.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <string>
 #include <vector>
-#include "physics.hh"
-#include "logman.hh"
-#include "scene.hh"
-#include "shapes/shape.hh"
-#include "resourcemanager.hh"
 
 namespace Proton
 {
-  class Display
-  {
+class Display
+{
   public:
     explicit Display(const std::string &title, int w = 480, int h = 640);
     void setScene(Scene *newScene);
@@ -48,5 +45,5 @@ namespace Proton
     Scene *currentScene;
     bool isInit = false;
     int windowWidth, windowHeight;
-  };
-}
+};
+} // namespace Proton

@@ -1,6 +1,7 @@
 #define MINIAUDIO_IMPLEMENTATION
 #include "proton/audio.hh"
 #include "proton/resourcemanager.hh"
+#include "proton/logman.hh"
 
 namespace Proton
 {
@@ -21,7 +22,7 @@ namespace Proton
             ma_sound_uninit(sound);
             delete sound;
             sound = nullptr;
-            Log("Audio ", audioPath, " destroyed");
+            Proton::Log("Audio ", audioPath, " destroyed");
         }
     }
 
@@ -57,14 +58,14 @@ namespace Proton
         AAssetManager *assetManager = ResourceManager::getInstance().getAssetManager();
         if (assetManager == nullptr)
         {
-            Log("AAssetManager is null!! Unable to play sound on Android!!");
+            Proton::Log("AAssetManager is null!! Unable to play sound on Android!!");
             return;
         }
 
         AAsset *asset = AAssetManager_open(assetManager, this->audioPath.c_str(), AASSET_MODE_BUFFER);
         if (asset == nullptr)
         {
-            Log("Failed to open sound asset at ", this->audioPath);
+            Proton::Log("Failed to open sound asset at ", this->audioPath);
             return;
         }
 
@@ -78,7 +79,7 @@ namespace Proton
 
         if (result != MA_SUCCESS)
         {
-            Log("Failed to init DECODER from memory for asset ", this->audioPath);
+            Proton::Log("Failed to init DECODER from memory for asset ", this->audioPath);
             free(audioData);
             delete this->decoder;
             this->decoder = nullptr;
@@ -96,11 +97,11 @@ namespace Proton
         if (result == MA_SUCCESS)
         {
             ma_sound_start(sound);
-            Log("Sound started from memory ", this->audioPath);
+            Proton::Log("Sound started from memory ", this->audioPath);
         }
         else
         {
-            Log("Failed to init SOUND from data source for asset ", this->audioPath);
+            Proton::Log("Failed to init SOUND from data source for asset ", this->audioPath);
             ma_decoder_uninit(this->decoder);
             delete this->decoder;
             this->decoder = nullptr;
@@ -117,7 +118,7 @@ namespace Proton
 
         if (result != MA_SUCCESS)
         {
-            Log("Failed to init DECODER from file ", this->audioPath);
+            Proton::Log("Failed to init DECODER from file ", this->audioPath);
             delete this->decoder;
             this->decoder = nullptr;
             return;
@@ -137,7 +138,7 @@ namespace Proton
         }
         else
         {
-            Log("Failed to init sound from data source for file ", this->audioPath);
+            Proton::Log("Failed to init sound from data source for file ", this->audioPath);
             ma_decoder_uninit(this->decoder);
             delete this->decoder;
             this->decoder = nullptr;

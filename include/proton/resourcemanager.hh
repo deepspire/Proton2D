@@ -9,7 +9,6 @@
 #include <android/asset_manager.h>
 #endif
 #include "miniaudio.h"
-#include "logman.hh"
 
 namespace Proton
 {

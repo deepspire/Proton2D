@@ -1,10 +1,6 @@
 #pragma once
 #include <SDL3/SDL_stdinc.h>
-#include "proton/proton.hh"
-#include "ss.hh"
-#include "proton/shapes/rectangle.hh"
-#include "proton/shapes/line.hh"
-#include "proton/shapes/circle.hh"
+#include "proton/scene.hh"
 
 class SecondScene;
 
