@@ -11,6 +11,18 @@
 <img alt="Android support" src="https://img.shields.io/badge/Android-works-green">
 </p>
 
+## Cloning
+```bash
+git clone --recurse-submodules https://github.com/deepspire/Proton2D.git
+cd Proton2D
+git submodule update --init --recursive
+```
+
+if external submodule updated:
+```bash
+git submodule update --remote --recursive
+```
+
 ## Android building
 you can do it the same way as on arch, any other linux distro or even windows, because it's almost same
 
@@ -61,18 +73,6 @@ JAVA_HOME=/usr/lib/jvm/java-17-openjdk ./gradlew installDebug
 for installing release apk via ADB:
 ```bash
 JAVA_HOME=/usr/lib/jvm/java-17-openjdk ./gradlew releaseDebug
-```
-
-## Cloning
-```bash
-git clone --recurse-submodules https://github.com/deepspire/Proton2D.git
-cd Proton2D
-git submodule update --init --recursive
-```
-
-if any new external submodule added:
-```bash
-git submodule update --remote --recursive
 ```
 
 ## Windows build guide
