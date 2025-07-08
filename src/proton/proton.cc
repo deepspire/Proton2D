@@ -6,7 +6,7 @@
 
 namespace Proton
 {
-  Display::Display(const std::string &title, const int w, const int h) : pointerX(0)
+  Display::Display(const std::string &title, const int w, const int h) : pointerX(0), pointerY(0), windowWidth(w), windowHeight(h)
   {
     this->title = title;
     SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "wayland,x11,windows,android");
@@ -46,14 +46,15 @@ namespace Proton
     }
 
     SDL_SetRenderVSync(this->render, 1);
-    if (!SDL_SetRenderLogicalPresentation(this->render, w, h, SDL_LOGICAL_PRESENTATION_LETTERBOX))
+    /*if (!SDL_SetRenderLogicalPresentation(this->render, w, h, SDL_LOGICAL_PRESENTATION_LETTERBOX))
     {
       Log("Unable to set SDL_SetRenderLogicalPresentation", SDL_GetError());
-    }
+    }*/
 
     Log("display init is successful");
 
     ResourceManager::getInstance().initAudioEngine();
+    Physics::initPhysicsDevice();
     this->isInit = true;
     this->currentScene = nullptr;
   }
@@ -80,13 +81,22 @@ namespace Proton
       ResourceManager::getInstance().clearCache();
       TTF_Quit();
       SDL_Quit();
+      Physics::destroyPhysicsDevice();
     }
     else
     {
       summonError();
-      return;
     }
   }
+
+  int Display::getWindowHeight() const {
+    return this->windowHeight;
+  }
+
+  int Display::getWindowWidth() const {
+    return this->windowWidth;
+  }
+
 
   SDL_Surface *Display::getSurface() const
   {
@@ -118,8 +128,7 @@ namespace Proton
     SDL_SetRenderScale(this->render, static_cast<float>(x), static_cast<float>(y));
   }
 
-  void Display::renderStart()
-  {
+  void Display::renderStart() {
     SDL_Event e;
     bool isDone = false;
 
@@ -134,32 +143,32 @@ namespace Proton
 
         switch (e.type)
         {
-        case SDL_EVENT_QUIT:
-          isDone = true;
-          break;
-        case SDL_EVENT_MOUSE_BUTTON_DOWN:
-          if (!this->currentScene) break;
-          this->currentScene->mouseDown(static_cast<int>(e.button.x), static_cast<int>(e.button.y));
-          this->currentScene->handleButtonClick(static_cast<int>(e.button.x), static_cast<int>(e.button.y));
-          break;
-        case SDL_EVENT_MOUSE_MOTION:
-          if (!this->currentScene) break;
-          if (e.motion.state & SDL_BUTTON_LMASK)
-          {
-            this->currentScene->handleMouseDrag(static_cast<int>(e.motion.x), static_cast<int>(e.motion.y));
-          }
-          break;
-        case SDL_EVENT_KEY_DOWN:
-          if (!this->currentScene) break;
-          this->currentScene->handleKeyDown(e);
-          this->currentScene->keyPressed(e.key.key);
-          break;
-        case SDL_EVENT_TEXT_INPUT:
-          if (!this->currentScene) break;
-          this->currentScene->handleTextInput(e);
-          break;
-        default:
-          break;
+          case SDL_EVENT_QUIT:
+            isDone = true;
+            break;
+          case SDL_EVENT_MOUSE_BUTTON_DOWN:
+            if (!this->currentScene) break;
+            this->currentScene->mouseDown(static_cast<int>(e.button.x), static_cast<int>(e.button.y));
+            this->currentScene->handleButtonClick(static_cast<int>(e.button.x), static_cast<int>(e.button.y));
+            break;
+          case SDL_EVENT_MOUSE_MOTION:
+            if (!this->currentScene) break;
+            if (e.motion.state & SDL_BUTTON_LMASK)
+            {
+              this->currentScene->handleMouseDrag(static_cast<int>(e.motion.x), static_cast<int>(e.motion.y));
+            }
+            break;
+          case SDL_EVENT_KEY_DOWN:
+            if (!this->currentScene) break;
+            this->currentScene->handleKeyDown(e);
+            this->currentScene->keyPressed(e.key.key);
+            break;
+          case SDL_EVENT_TEXT_INPUT:
+            if (!this->currentScene) break;
+            this->currentScene->handleTextInput(e);
+            break;
+          default:
+            break;
         }
       }
 
@@ -200,7 +209,14 @@ namespace Proton
       const auto currentTime = static_cast<float>(SDL_GetTicks());
       deltaTime = (currentTime - static_cast<float>(lastFrameTime)) / 1000.0f;
       lastFrameTime = static_cast<Uint64>(currentTime);
+      Physics::simulationStep();
+      for (PhysicsBody& body: physicsBodies) {
+        b2BodyId bodyId = body.getBody();
+        Shape* shape = body.getUsedShape();
+        //shape->setPosition(bodyId.)
+      }
     }
+    SDL_GetWindowSize(this->handle, &this->windowWidth, &this->windowHeight);
   }
 
   void Display::summonError()
