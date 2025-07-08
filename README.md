@@ -12,7 +12,7 @@
 </p>
 
 ## Android building
-you can do it the same way as arch, any other linux distro or even windows, because it's almost same
+you can do it the same way as on arch, any other linux distro or even windows, because it's almost same
 
 You'll need to install android-sdk, jdk-17, jdk-8 and android-ndk (jdk8 is needed for sdkmanager licenses)
 ```bash
