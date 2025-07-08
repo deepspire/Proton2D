@@ -25,6 +25,7 @@ namespace Proton
             SDL_SetRenderClipRect(render, &absoluteClipRect);
             for (Shape *shape : this->shapes)
             {
+                shape->setRotation(this->rotation);
                 shape->paint(render, this->x + rX, this->y + rY);
             }
             SDL_SetRenderClipRect(render, nullptr);

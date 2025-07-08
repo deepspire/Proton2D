@@ -17,8 +17,16 @@ namespace Proton
         {
             for (Shape *shape : this->shapes)
             {
+                const float originalRotation = shape->getRotation();
+                shape->setRotation(originalRotation + this->rotation);
                 shape->paint(render, this->x + gX, this->y + gY);
+                shape->setRotation(originalRotation);
             }
+        }
+
+
+        void setRotation(const float angle) override {
+            this->rotation = angle;
         }
 
         void setFillColor(Color /*unused*/) override

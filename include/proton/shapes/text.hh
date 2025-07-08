@@ -83,7 +83,7 @@ namespace Proton
 
         const SDL_FRect rectToRender = {drawX, drawY, static_cast<float>(this->w), static_cast<float>(this->h)};
 
-        SDL_RenderTexture(render, textTexture, nullptr, &rectToRender);
+        SDL_RenderTextureRotated(render, textTexture, nullptr, &rectToRender, this->rotation, nullptr, SDL_FLIP_NONE);
       }
     }
 

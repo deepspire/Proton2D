@@ -10,7 +10,7 @@
 #include <SDL3_ttf/SDL_ttf.h>
 #include <string>
 #include <vector>
-
+#include "physics.hh"
 #include "logman.hh"
 #include "scene.hh"
 #include "shapes/shape.hh"
@@ -24,6 +24,8 @@ namespace Proton
     explicit Display(const std::string &title, int w = 480, int h = 640);
     void setScene(Scene *newScene);
     void startRendering();
+    [[nodiscard]] int getWindowHeight() const;
+    [[nodiscard]] int getWindowWidth() const;
 
     [[nodiscard]] SDL_Surface *getSurface() const;
     [[nodiscard]] SDL_Renderer *getRenderer() const;
@@ -33,7 +35,7 @@ namespace Proton
     void setIcon(const std::string &path) const;
     void setRenderScale(double x, double y) const;
 
-    int pointerX, pointerY = 0;
+    int pointerX, pointerY;
 
   private:
     void renderStart();
@@ -45,5 +47,6 @@ namespace Proton
     std::vector<Shape> objects;
     Scene *currentScene;
     bool isInit = false;
+    int windowWidth, windowHeight;
   };
 }

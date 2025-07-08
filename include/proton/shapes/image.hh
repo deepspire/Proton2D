@@ -9,10 +9,8 @@ namespace Proton
   {
   public:
     explicit Image(SDL_Texture* texture, const float x = 0, const float y = 0,
-                   const float width = 0, const float height = 0)
-    {
-      if (texture == nullptr)
-      {
+                   const float width = 0, const float height = 0) {
+      if (texture == nullptr) {
         Log("Invalid texture or didn't loaded successfully");
         return;
       }
@@ -52,7 +50,11 @@ namespace Proton
 
       const SDL_FRect rectToRender = {drawX, drawY, static_cast<float>(this->width), static_cast<float>(this->height)};
 
-      SDL_RenderTexture(render, imageTexture, nullptr, &rectToRender);
+      SDL_RenderTextureRotated(render, imageTexture, nullptr, &rectToRender, rotation, nullptr, SDL_FLIP_NONE);
+    }
+
+    void setRotation(const float angle) override {
+      this->rotation = angle;
     }
 
     void setTexture(SDL_Texture *texture)

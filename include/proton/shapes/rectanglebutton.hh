@@ -25,6 +25,10 @@ namespace Proton
             rectangle->setPosition(x, y);
         }
 
+        void setRotation(const float angle) override {
+            this->rotation = angle;
+        }
+
         void setClickListener(void (*f)())
         {
             this->clickListener = f;

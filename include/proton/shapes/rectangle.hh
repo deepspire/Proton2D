@@ -7,7 +7,7 @@
 namespace Proton
 {
 
-  class Rectangle : public Shape
+  class Rectangle final : public Shape
   {
   public:
     enum Style
@@ -16,68 +16,109 @@ namespace Proton
       Bevel
     };
 
-    explicit Rectangle(const float x = 0, const float y = 0, const int w = 10, const int h = 10,
-              const Color color = Color(), Sint16 roundness = 0, const Style style = Fill)
-        : color(color), w(w), h(h), style(style)
+    explicit Rectangle(const float x = 0, float y = 0, int w = 10, int h = 10,
+                       const Color color = Color(), Style style = Fill)
+        : w(w), h(h), color(color), style(style)
     {
       this->x = x;
       this->y = y;
     }
 
-    ~Rectangle() override = default;
-
-    void paint(SDL_Renderer *render, const float rX, const float rY) override
+    ~Rectangle() override
     {
-      const float drawX = rX + this->x;
-      const float drawY = rY + this->y;
-      const SDL_FRect rectToRender = {drawX, drawY, static_cast<float>(this->w), static_cast<float>(this->h)};
-
-      SDL_SetRenderDrawColor(render, color.getR(), color.getG(), color.getB(), color.getA());
-
-      switch (this->style)
-      {
-      case Fill:
-      {
-        SDL_RenderFillRect(render, &rectToRender);
-        break;
-      }
-      case Bevel:
-      {
-        SDL_RenderRect(render, &rectToRender);
-        break;
-      }
-      }
+      if (texture)
+        SDL_DestroyTexture(texture);
     }
 
-    void setFillColor(const Color color) override
-    {
-      this->color = color;
+    void setFillColor(const Color newColor) override {
+      color = newColor;
+      dirty = true;
     }
 
     void resize(const int width, const int height)
     {
-      if (this->w != width || this->h != height)
+      if (w != width || h != height)
       {
-        this->w = width;
-        this->h = height;
+        w = width;
+        h = height;
+        dirty = true;
       }
     }
 
-    void setPosition(const float x, const float y) override
+    void setStyle(const Style newStyle)
+    {
+      if (style != newStyle)
+      {
+        style = newStyle;
+        dirty = true;
+      }
+    }
+
+    void setPosition(float x, float y) override
     {
       this->x = x;
       this->y = y;
     }
 
-    Style getStyle() const
+    [[nodiscard]] Style getStyle() const
     {
-      return this->style;
+      return style;
+    }
+
+
+
+    void paint(SDL_Renderer *renderer, const float rX, const float rY) override
+    {
+      if (!texture || dirty)
+        rebuildTexture(renderer);
+
+      if (!texture)
+        return;
+
+      const SDL_FRect dst = {rX + x, rY + y, static_cast<float>(w), static_cast<float>(h)};
+      SDL_RenderTextureRotated(renderer, texture, nullptr, &dst, rotation, nullptr, SDL_FLIP_NONE);
     }
 
   private:
-    Color color;
-    int w, h;
-    Color lastColor;
-    Style style;
+    int w{}, h{};
+    Color color{};
+    Style style{};
+    SDL_Texture *texture{};
+    bool dirty{true};
+
+    void rebuildTexture(SDL_Renderer *renderer)
+    {
+      if (texture)
+      {
+        SDL_DestroyTexture(texture);
+        texture = nullptr;
+      }
+
+      texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888,
+                                  SDL_TEXTUREACCESS_TARGET, w, h);
+      if (!texture)
+        return;
+
+      SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+      SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_LINEAR);
+
+      SDL_SetRenderTarget(renderer, texture);
+      SDL_SetRenderDrawColor(renderer, color.getR(), color.getG(), color.getB(), color.getA());
+
+      const SDL_FRect rect = {0, 0, static_cast<float>(w), static_cast<float>(h)};
+      switch (style)
+      {
+      case Fill:
+        SDL_RenderFillRect(renderer, &rect);
+        break;
+      case Bevel:
+        SDL_RenderRect(renderer, &rect);
+        break;
+      }
+
+      SDL_SetRenderTarget(renderer, nullptr);
+      dirty = false;
+    }
   };
+
 }

@@ -1,43 +1,58 @@
 #pragma once
 
 #include "shape.hh"
+#include <cmath>
 
 namespace Proton
 {
   class Line : public Shape
   {
   public:
-    explicit Line(const float x1 = 0, const float y1 = 0, const float x2 = 5, const float y2 = 5, const Color color = Color())
+    explicit Line(float x1 = 0, float y1 = 0, float x2 = 5, float y2 = 5, Color color = Color())
+        : endX(x2), endY(y2), fillColor(color)
     {
       this->x = x1;
       this->y = y1;
-      this->endX = x2;
-      this->endY = y2;
-      this->fillColor = color;
-    };
+    }
 
-    void setPosition(const float x, const float y) override
+    void setRotation(float angle) override
     {
-      const int dx = this->endX - this->x;
-      const int dy = this->endY - this->y;
+      this->rotation = angle;
+    }
+
+    void setPosition(float x, float y) override
+    {
+      float dx = endX - this->x;
+      float dy = endY - this->y;
       this->x = x;
       this->y = y;
-      this->endX = dx + x;
-      this->endY = dy + y;
+      this->endX = x + dx;
+      this->endY = y + dy;
     }
 
-    void paint(SDL_Renderer *render, const float rX, const float rY) override
+    void setFillColor(Color color) override { this->fillColor = color; }
+
+    void paint(SDL_Renderer *render, float rX, float rY) override
     {
-      SDL_SetRenderDrawColor(render, fillColor.getR(), fillColor.getG(),
-                             fillColor.getB(), fillColor.getA());
-      SDL_RenderLine(render, this->x + rX, this->y + rY,
-                     this->endX + rX, this->endY + rY);
-    }
+      SDL_SetRenderDrawColor(render, fillColor.getR(), fillColor.getG(), fillColor.getB(), fillColor.getA());
 
-    void setFillColor(const Color color) override { this->fillColor = color; }
+      const float dx = endX - x;
+      const float dy = endY - y;
+
+      const float rad = rotation * (M_PI / 180.0f);
+      const float rotatedDX = dx * std::cos(rad) - dy * std::sin(rad);
+      const float rotatedDY = dx * std::sin(rad) + dy * std::cos(rad);
+
+      const float startX = x + rX;
+      const float startY = y + rY;
+      const float endRotatedX = x + rotatedDX + rX;
+      const float endRotatedY = y + rotatedDY + rY;
+
+      SDL_RenderLine(render, startX, startY, endRotatedX, endRotatedY);
+    }
 
   private:
     Color fillColor;
-    float x, y, endX, endY;
+    float endX, endY;
   };
 }

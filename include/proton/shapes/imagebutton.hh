@@ -16,6 +16,10 @@ namespace Proton
             delete this->image;
         }
 
+        void setRotation(const float angle) override {
+            this->rotation = angle;
+        }
+
         void setPosition(const float x, const float y) override
         {
             this->x = x;

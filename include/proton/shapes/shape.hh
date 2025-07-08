@@ -60,14 +60,22 @@ namespace Proton
       return this->isVisible;
     }
 
-    [[nodiscard]] float getX() const
+    [[nodiscard]] virtual float getX() const
     {
       return this->x;
     }
 
-    [[nodiscard]] float getY() const
+    [[nodiscard]] virtual float getY() const
     {
       return this->y;
+    }
+
+    [[nodiscard]] virtual float getRotation() const {
+      return this->rotation;
+    }
+
+    virtual void setRotation(const float angle) {
+      this->rotation = angle;
     }
 
     virtual void update(float dt) {}
@@ -76,5 +84,6 @@ namespace Proton
   protected:
     bool isVisible = true;
     float x = 0, y = 0;
+    float rotation = 0;
   };
 }
