@@ -11,16 +11,16 @@
 <img alt="Android support" src="https://img.shields.io/badge/Android-works-green">
 </p>
 
-## Android building (arch)
-you can do same step as arch for windows and other linux distro, because it's almost same
+## Android building
+you can do it the same way as arch, any other linux distro or even windows, because it's almost same
 
-install android-sdk, jdk-17, jdk-8 and android-ndk (jdk8 is needed for sdkmanager licenses)
+You'll need to install android-sdk, jdk-17, jdk-8 and android-ndk (jdk8 is needed for sdkmanager licenses)
 ```bash
 sudo pacman -S jdk17-openjdk jdk8-openjdk
 yay -S android-sdk android-ndk android-sdk-platform-tools
 ```
 
-add env paths, for linux, in `~/.bashrc` (or whatever you're using) you need to add:
+Next, add env paths, for linux, in `~/.bashrc` (or whatever you use) also its necesarry to add:
 ```bash
 export ANDROID_NDK_HOME=/opt/android-ndk
 export ANDROID_HOME=/opt/android-sdk
