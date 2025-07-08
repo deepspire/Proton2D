@@ -22,7 +22,7 @@ Menu::Menu(SDL_Renderer *render, SDL_Window *window) : Scene(render, window)
     addObject(new Proton::Circle(240, 320 + 100, 50, Proton::Color(0, 255, 0), Proton::Circle::Bevel));
 }
 
-void Menu::mouseDown(int x, int y)
+void Menu::mouseDown(const Proton::Point &mPos)
 {
     this->goNextScene = true;
     this->nextScene = new SecondScene(this->render, this->window);

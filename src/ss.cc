@@ -45,9 +45,12 @@ SecondScene::SecondScene(SDL_Renderer *render, SDL_Window *window) : Proton::Sce
     grp->addObject(bar);
 }
 
-void SecondScene::mouseDown(int x, int y)
+void SecondScene::mouseDown(const Proton::Point &mPos)
 {
-    if (x <= 100 && y <= 100)
+    float mX = mPos.x;
+    float mY = mPos.y;
+
+    if (mX <= 100 && mY <= 100)
     {
         this->goNextScene = true;
         this->nextScene = new Menu(this->render, this->window);
@@ -68,7 +71,7 @@ void SecondScene::keyPressed(Uint16 key)
 
     if (key == SDLK_A)
     {
-        grp->setPosition(rand() % 700, rand() % 500);
+        grp->setPosition(static_cast<float>(rand() % 700), static_cast<float>(rand() % 500));
         bar->setProgress(rand() % 100);
         tmp->play();
     }

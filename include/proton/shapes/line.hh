@@ -11,18 +11,18 @@ class Line : public Shape
     explicit Line(float x1 = 0, float y1 = 0, float x2 = 5, float y2 = 5, Color color = Color())
         : endX(x2), endY(y2), fillColor(color)
     {
-        this->x = x1;
-        this->y = y1;
+        this->position.x = x1;
+        this->position.y = y1;
     }
 
     void setRotation(float angle) override { this->rotation = angle; }
 
     void setPosition(const float x, const float y) override
     {
-        float dx = endX - this->x;
-        float dy = endY - this->y;
-        this->x = x;
-        this->y = y;
+        float dx = endX - this->position.x;
+        float dy = endY - this->position.y;
+        this->position.x = x;
+        this->position.y = y;
         this->endX = x + dx;
         this->endY = y + dy;
     }
@@ -33,17 +33,17 @@ class Line : public Shape
     {
         SDL_SetRenderDrawColor(render, fillColor.getR(), fillColor.getG(), fillColor.getB(), fillColor.getA());
 
-        const float dx = endX - x;
-        const float dy = endY - y;
+        const float dx = endX - this->position.x;
+        const float dy = endY - this->position.y;
 
-        const float rad = rotation * (M_PI / 180.0f);
+        const float rad = rotation * (static_cast<float>(M_PI) / 180.0f);
         const float rotatedDX = dx * std::cos(rad) - dy * std::sin(rad);
         const float rotatedDY = dx * std::sin(rad) + dy * std::cos(rad);
 
-        const float startX = x + rX;
-        const float startY = y + rY;
-        const float endRotatedX = x + rotatedDX + rX;
-        const float endRotatedY = y + rotatedDY + rY;
+        const float startX = this->position.x + rX;
+        const float startY = this->position.y + rY;
+        const float endRotatedX = this->position.x + rotatedDX + rX;
+        const float endRotatedY = this->position.y + rotatedDY + rY;
 
         SDL_RenderLine(render, startX, startY, endRotatedX, endRotatedY);
     }

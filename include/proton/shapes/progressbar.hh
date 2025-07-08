@@ -10,8 +10,8 @@ class ProgressBar : public Shape
     explicit ProgressBar(float x = 0, float y = 0, int width = 100, int height = 20, int defaultProgress = 100)
         : width(width), height(height), progress(defaultProgress), texture(nullptr), dirty(true)
     {
-        this->x = x;
-        this->y = y;
+        this->position.x = x;
+        this->position.y = y;
     }
 
     ~ProgressBar() override
@@ -22,8 +22,8 @@ class ProgressBar : public Shape
 
     void setPosition(float x, float y) override
     {
-        this->x = x;
-        this->y = y;
+        this->position.x = x;
+        this->position.y = y;
     }
 
     void setFillColor(const Color newColor) override
@@ -60,7 +60,7 @@ class ProgressBar : public Shape
         if (!texture)
             return;
 
-        const SDL_FRect dst = {x + pX, y + pY, static_cast<float>(width), static_cast<float>(height)};
+        const SDL_FRect dst = {this->position.x + pX, this->position.y + pY, static_cast<float>(width), static_cast<float>(height)};
         SDL_RenderTextureRotated(render, texture, nullptr, &dst, rotation, nullptr, SDL_FLIP_NONE);
     }
 

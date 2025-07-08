@@ -19,8 +19,8 @@ class Circle : public Shape
     explicit Circle(float x = 0, float y = 0, int radius = 40, Color fillColor = Color(), Style style = Fill)
         : radius(radius), color(fillColor), style(style), texture(nullptr), dirty(true)
     {
-        this->x = x;
-        this->y = y;
+        this->position.x = x;
+        this->position.y = y;
     }
 
     ~Circle() override
@@ -31,8 +31,8 @@ class Circle : public Shape
 
     void setPosition(float x, float y) override
     {
-        this->x = x;
-        this->y = y;
+        this->position.x = x;
+        this->position.y = y;
     }
 
     void setFillColor(Color newColor) override
@@ -58,7 +58,7 @@ class Circle : public Shape
         if (!texture)
             return;
 
-        SDL_FRect dst = {x + rX - radius, y + rY - radius, static_cast<float>(2 * radius),
+        SDL_FRect dst = {this->position.x + rX - radius, this->position.y + rY - radius, static_cast<float>(2 * radius),
                          static_cast<float>(2 * radius)};
         SDL_RenderTextureRotated(render, texture, nullptr, &dst, getRotation(), nullptr, SDL_FLIP_NONE);
     }

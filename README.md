@@ -23,6 +23,8 @@ if external submodule updated:
 git submodule update --remote --recursive
 ```
 
+for VSCode, use [Clangd](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd) extension instead of default Microsoft one.
+
 ## Android building
 you can do it the same way as on arch, any other linux distro or even windows, because it's almost same
 

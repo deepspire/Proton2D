@@ -3,6 +3,16 @@
 
 namespace Proton
 {
+struct Point
+{
+    float x;
+    float y;
+
+    auto operator+(const Point &other) const -> Point { return {x + other.x, y + other.y}; }
+
+    auto operator*(float mul) const -> Point { return {x * mul, y * mul}; }
+};
+
 class Color
 {
   public:
@@ -15,10 +25,10 @@ class Color
         this->a = a;
     }
 
-    [[nodiscard]] unsigned char getR() const { return this->r; }
-    [[nodiscard]] unsigned char getG() const { return this->g; }
-    [[nodiscard]] unsigned char getB() const { return this->b; }
-    [[nodiscard]] unsigned char getA() const { return this->a; }
+    [[nodiscard]] auto getR() const -> unsigned char { return this->r; }
+    [[nodiscard]] auto getG() const -> unsigned char { return this->g; }
+    [[nodiscard]] auto getB() const -> unsigned char { return this->b; }
+    [[nodiscard]] auto getA() const -> unsigned char { return this->a; }
 
     void setR(const unsigned char v) { this->r = v; }
 
@@ -41,13 +51,13 @@ class Shape
 
     void setVisible(const bool a) { this->isVisible = a; }
 
-    [[nodiscard]] bool getVisible() const { return this->isVisible; }
+    [[nodiscard]] auto getVisible() const -> bool { return this->isVisible; }
 
-    [[nodiscard]] virtual float getX() const { return this->x; }
+    [[nodiscard]] virtual auto getX() const -> float { return this->position.x; }
 
-    [[nodiscard]] virtual float getY() const { return this->y; }
+    [[nodiscard]] virtual auto getY() const -> float { return this->position.y; }
 
-    [[nodiscard]] virtual float getRotation() const { return this->rotation; }
+    [[nodiscard]] virtual auto getRotation() const -> float { return this->rotation; }
 
     virtual void setRotation(const float angle) { this->rotation = angle; }
 
@@ -56,7 +66,7 @@ class Shape
 
   protected:
     bool isVisible = true;
-    float x = 0, y = 0;
+    Point position = {0, 0};
     float rotation = 0;
 };
 } // namespace Proton

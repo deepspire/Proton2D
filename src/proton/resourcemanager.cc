@@ -115,7 +115,7 @@ TTF_Font *ResourceManager::getFont(const std::string &path, int fontSize)
     std::string fullPath = path;
 #endif
 
-    TTF_Font *font = TTF_OpenFont(fullPath.c_str(), fontSize);
+    TTF_Font *font = TTF_OpenFont(fullPath.c_str(), static_cast<float>(fontSize)); // TODO font size float too?
     if (!font)
     {
         Log("Failed to load font: ", SDL_GetError());

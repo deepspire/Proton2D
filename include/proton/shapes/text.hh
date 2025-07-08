@@ -6,7 +6,6 @@
 #include <string>
 #include <utility>
 
-
 namespace Proton
 {
 class Text : public Shape
@@ -28,8 +27,8 @@ class Text : public Shape
 
     void setPosition(const float x, const float y) override
     {
-        this->x = x;
-        this->y = y;
+        this->position.x = x;
+        this->position.y = y;
     }
 
     void resize(const int w, const int h)
@@ -67,8 +66,8 @@ class Text : public Shape
 
         if (textTexture)
         {
-            const auto drawX = rX + this->x;
-            const auto drawY = rY + this->y;
+            const auto drawX = rX + this->position.x;
+            const auto drawY = rY + this->position.y;
 
             const SDL_FRect rectToRender = {drawX, drawY, static_cast<float>(this->w), static_cast<float>(this->h)};
 

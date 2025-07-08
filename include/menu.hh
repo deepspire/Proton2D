@@ -9,7 +9,7 @@ class Menu : public Proton::Scene
 public:
     Menu(SDL_Renderer *render, SDL_Window *window);
 
-    void mouseDown(int x, int y) override;
+    void mouseDown(const Proton::Point &mPos) override;
     void keyPressed(Uint16 key) override;
     Proton::Scene* update(float dt) override;
 };

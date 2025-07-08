@@ -1,0 +1,7 @@
+Checks: 'clang-analyzer-*,bugprone-*,performance-*,modernize-*,-bugprone-easily-swappable-parameters'
+WarningsAsErrors: ''
+CheckOptions:
+  - key: clang-analyzer-core.CallAndMessage
+    value: true
+  - key: performance-unnecessary-copy-initialization
+    value: true

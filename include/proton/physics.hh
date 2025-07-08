@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include <cstdint>
 #include <vector>
 
 #include "box2d/types.h"
@@ -19,7 +20,7 @@ namespace Proton {
 
     class PhysicsBody {
     public:
-        enum BodyType {
+        enum BodyType : uint8_t {
             Dynamic,
             Static
         };

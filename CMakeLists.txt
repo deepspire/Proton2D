@@ -21,12 +21,12 @@ set(SOURCE_FILES
 
 if(ANDROID)
     add_library(main SHARED ${SOURCE_FILES}
-            include/proton/physics.hh)
+        include/proton/physics.hh)
     set(SDL_MAIN_TARGET main)
     set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries" FORCE)
 else()
     add_executable(Proton2D ${SOURCE_FILES}
-            src/proton/physics.cc)
+        src/proton/physics.cc)
     set(SDL_MAIN_TARGET Proton2D)
     set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries" FORCE)
 endif()
@@ -51,7 +51,7 @@ add_subdirectory(ext/SDL3_image)
 add_subdirectory(ext/SDL3_ttf)
 add_subdirectory(ext/box2d)
 
-target_include_directories(${SDL_MAIN_TARGET} PUBLIC 
+target_include_directories(${SDL_MAIN_TARGET} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/ext
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 ) # ext/miniaudio.h !!!

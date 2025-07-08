@@ -1,4 +1,5 @@
 #include "proton/scene.hh"
+#include "proton/shapes/shape.hh"
 
 namespace Proton
 {
@@ -45,8 +46,11 @@ void Scene::paint()
     }
 }
 
-void Scene::handleButtonClick(int mX, int mY)
+void Scene::handleButtonClick(const Point &mPos)
 {
+    float mX = mPos.x;
+    float mY = mPos.y;
+
     for (ButtonArea *button : this->buttons)
     {
         if ((button->getX() <= mX && mX <= button->getX() + button->getW()) &&
@@ -59,8 +63,9 @@ void Scene::handleButtonClick(int mX, int mY)
     TextBox *clickedTextBox = nullptr;
     for (TextBox *textbox : this->textboxes)
     {
-        if ((textbox->getX() <= mX && mX <= textbox->getX() + textbox->getBoxW()) &&
-            (textbox->getY() <= mY && mY <= textbox->getY() + textbox->getH()))
+        if ((textbox->getX() <= mX &&
+             mX <= textbox->getX() + static_cast<float>(textbox->getBoxW())) && // TODO make size as float
+            (textbox->getY() <= mY && mY <= textbox->getY() + static_cast<float>(textbox->getH())))
         {
             clickedTextBox = textbox;
             break;
@@ -79,7 +84,7 @@ void Scene::handleButtonClick(int mX, int mY)
         this->focusedTextBox = clickedTextBox;
         this->focusedTextBox->setFocused(true);
 
-        int relativeX = mX - clickedTextBox->getX();
+        int relativeX = static_cast<int>(mX - clickedTextBox->getX());
         int charIndex = clickedTextBox->getCharIndexAt(relativeX);
         if (relativeX > clickedTextBox->getW() || charIndex >= clickedTextBox->getTextLength())
         {
@@ -211,7 +216,7 @@ void Scene::handleMouseDrag(int mX, int mY)
             this->focusedTextBox->setSelectionAnchor(this->focusedTextBox->getCursorPosition());
         }
 
-        int relativeX = mX - focusedTextBox->getX();
+        int relativeX = static_cast<int>(static_cast<float>(mX) - focusedTextBox->getX());
         if (relativeX < 0)
         {
             focusedTextBox->setCursorPosition(0);

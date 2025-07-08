@@ -21,8 +21,8 @@ class Image : public Shape
         this->width = width;
         this->height = height;
         this->isVisible = true;
-        this->x = x;
-        this->y = y;
+        this->position.x = x;
+        this->position.y = y;
         if (width == 0)
             this->width = imageTexture->w;
         if (height == 0)
@@ -41,14 +41,14 @@ class Image : public Shape
 
     void setPosition(const float x, const float y) override
     {
-        this->x = x;
-        this->y = y;
+        this->position.x = x;
+        this->position.y = y;
     }
 
     void paint(SDL_Renderer *render, const float rX, const float rY) override
     {
-        const auto drawX = rX + this->x;
-        const auto drawY = rY + this->y;
+        const float drawX = rX + this->position.x;
+        const float drawY = rY + this->position.y;
 
         const SDL_FRect rectToRender = {drawX, drawY, static_cast<float>(this->width),
                                         static_cast<float>(this->height)};

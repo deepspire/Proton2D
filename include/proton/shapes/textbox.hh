@@ -257,7 +257,7 @@ class TextBox : public Text
         const auto box_height = static_cast<float>(this->getH());
 
         SDL_SetRenderDrawColor(render, 200, 200, 200, 255);
-        const SDL_FRect bgRect = {static_cast<float>(this->x + rX), static_cast<float>(this->y + rY), box_width,
+        const SDL_FRect bgRect = {this->position.x + rX, this->position.y + rY, box_width,
                                   box_height};
         SDL_RenderFillRect(render, &bgRect);
 
@@ -274,7 +274,7 @@ class TextBox : public Text
             if (srcRect.w < 0)
                 srcRect.w = 0;
 
-            const SDL_FRect destRect = {static_cast<float>(this->x + rX), static_cast<float>(this->y + rY), srcRect.w,
+            const SDL_FRect destRect = {this->position.x + rX, this->position.y + rY, srcRect.w,
                                         srcRect.h};
 
             if (this->selectionAnchor != -1)
@@ -290,8 +290,8 @@ class TextBox : public Text
                         std::min(static_cast<float>(selEndPixel), static_cast<float>(scrollX + boxW));
                     if (visibleSelStart < visibleSelEnd)
                     {
-                        const float drawX = static_cast<float>(this->x + rX) + (visibleSelStart - scrollX);
-                        const auto drawY = static_cast<float>(this->y + rY);
+                        const float drawX = this->position.x + rX + (visibleSelStart - scrollX);
+                        const auto drawY = this->position.y + rY;
                         const float drawW = visibleSelEnd - visibleSelStart;
                         const auto drawH = static_cast<float>(this->h);
                         const SDL_FRect selRect = {drawX, drawY, drawW, drawH};
@@ -311,13 +311,13 @@ class TextBox : public Text
                 const int fontHeight = TTF_GetFontHeight(font);
                 const int cursorPixelX = getCursorPixelPosition();
 
-                if (const auto cursorDrawX = static_cast<float>(this->x + rX + cursorPixelX - this->scrollX);
-                    cursorDrawX >= (this->x + rX) && cursorDrawX <= (this->x + rX + this->boxW))
+                if (const auto cursorDrawX = static_cast<float>(this->position.x + rX + cursorPixelX - this->scrollX);
+                    cursorDrawX >= (this->position.x + rX) && cursorDrawX <= (this->position.x + rX + this->boxW))
                 {
                     SDL_SetRenderDrawColor(render, this->fillColor.getR(), this->fillColor.getG(),
                                            this->fillColor.getB(), this->fillColor.getA());
-                    SDL_RenderLine(render, cursorDrawX, static_cast<float>(this->y + rY), cursorDrawX,
-                                   static_cast<float>(this->y + rY + fontHeight));
+                    SDL_RenderLine(render, cursorDrawX, static_cast<float>(this->position.y + rY), cursorDrawX,
+                                   static_cast<float>(this->position.y + rY + fontHeight));
                 }
             }
         }

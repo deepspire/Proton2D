@@ -9,7 +9,7 @@ namespace Proton
 class Rectangle final : public Shape
 {
   public:
-    enum Style
+    enum Style : uint8_t 
     {
         Fill,
         Bevel
@@ -19,8 +19,8 @@ class Rectangle final : public Shape
                        Style style = Fill)
         : w(w), h(h), color(color), style(style)
     {
-        this->x = x;
-        this->y = y;
+        this->position.x = x;
+        this->position.y = y;
     }
 
     ~Rectangle() override
@@ -56,8 +56,8 @@ class Rectangle final : public Shape
 
     void setPosition(float x, float y) override
     {
-        this->x = x;
-        this->y = y;
+        this->position.x = x;
+        this->position.y = y;
     }
 
     [[nodiscard]] Style getStyle() const { return style; }
@@ -70,7 +70,7 @@ class Rectangle final : public Shape
         if (!texture)
             return;
 
-        const SDL_FRect dst = {rX + x, rY + y, static_cast<float>(w), static_cast<float>(h)};
+        const SDL_FRect dst = {rX + this->position.x, rY + this->position.y, static_cast<float>(w), static_cast<float>(h)};
         SDL_RenderTextureRotated(renderer, texture, nullptr, &dst, rotation, nullptr, SDL_FLIP_NONE);
     }
 

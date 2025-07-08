@@ -9,8 +9,8 @@ class Group final : public Shape
   public:
     Group(const float x, const float y)
     {
-        this->x = x;
-        this->y = y;
+        this->position.x = x;
+        this->position.y = y;
     }
 
     void paint(SDL_Renderer *render, const float gX, const float gY) override
@@ -19,7 +19,7 @@ class Group final : public Shape
         {
             const float originalRotation = shape->getRotation();
             shape->setRotation(originalRotation + this->rotation);
-            shape->paint(render, this->x + gX, this->y + gY);
+            shape->paint(render, this->position.x + gX, this->position.y + gY);
             shape->setRotation(originalRotation);
         }
     }
@@ -38,8 +38,8 @@ class Group final : public Shape
 
     void setPosition(const float x, const float y) override
     {
-        this->x = x;
-        this->y = y;
+        this->position.x = x;
+        this->position.y = y;
     }
 
     void addObject(Shape *shape) { shapes.push_back(shape); }

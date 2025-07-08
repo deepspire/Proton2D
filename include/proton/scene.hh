@@ -14,7 +14,7 @@ namespace Proton
     {
     public:
         virtual void keyPressed(Uint16 key) = 0;
-        virtual void mouseDown(int x, int y) = 0;
+        virtual void mouseDown(const Point &mPos) = 0;
         virtual Scene *update(float dt) = 0;
 
         Scene(SDL_Renderer *render, SDL_Window *window);
@@ -33,7 +33,7 @@ namespace Proton
 
         void paint();
 
-        void handleButtonClick(int mX, int mY);
+        void handleButtonClick(const Point& mPos);
 
         void handleKeyDown(SDL_Event event);
 

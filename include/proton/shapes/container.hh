@@ -10,15 +10,15 @@ class Container final : public Shape
   public:
     explicit Container(const float x, const float y, const int width, const int height)
     {
-        this->x = x;
-        this->y = y;
+        this->position.x = x;
+        this->position.y = y;
 
         this->containerRect = {x, y, static_cast<float>(width), static_cast<float>(height)};
     }
 
     void paint(SDL_Renderer *render, const float rX, const float rY) override
     {
-        const SDL_Rect absoluteClipRect = {static_cast<int>(this->x + rX), static_cast<int>(this->y + rY),
+        const SDL_Rect absoluteClipRect = {static_cast<int>(this->position.x + rX), static_cast<int>(this->position.y + rY),
                                            static_cast<int>(this->containerRect.w),
                                            static_cast<int>(this->containerRect.h)};
 
@@ -26,7 +26,7 @@ class Container final : public Shape
         for (Shape *shape : this->shapes)
         {
             shape->setRotation(this->rotation);
-            shape->paint(render, this->x + rX, this->y + rY);
+            shape->paint(render, this->position.x + rX, this->position.y + rY);
         }
         SDL_SetRenderClipRect(render, nullptr);
     }
@@ -46,8 +46,8 @@ class Container final : public Shape
 
     void setPosition(float x, float y) override
     {
-        this->x = x;
-        this->y = y;
+        this->position.x = x;
+        this->position.y = y;
         this->containerRect = {x, y, this->containerRect.w, this->containerRect.h};
     }
 
