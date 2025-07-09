@@ -24,7 +24,7 @@ namespace Proton {
             Dynamic,
             Static
         };
-        explicit PhysicsBody(BodyType type, float bWidth=1.0f, float bHeight=1.0f, float density=1.0f);
+        explicit PhysicsBody(BodyType type, float bWidth=1.0f, float bHeight=1.0f, float density=1.0f, double rotation=0);
         void bindShape(Shape* shape);
         ~PhysicsBody();
         [[nodiscard]] auto getUsedShape() const -> Shape*;

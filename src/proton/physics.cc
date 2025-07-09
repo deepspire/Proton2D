@@ -29,7 +29,7 @@ namespace Proton
 
     void Physics::simulationStep() { b2World_Step(worldGame, 1.0f / 60.0f, 6); }
 
-    PhysicsBody::PhysicsBody(const BodyType type, const float bWidth, const float bHeight, const float density)
+    PhysicsBody::PhysicsBody(const BodyType type, const float bWidth, const float bHeight, const float density, const double rotation)
     {
         switch (type)
         {
@@ -58,6 +58,7 @@ namespace Proton
         b2BodyDef b2d = b2DefaultBodyDef();
         b2d.type = this->type;
         b2d.position = b2Vec2{this->posX, this->posY};
+        b2d.rotation = b2MakeRot(rotation * 180.0f/M_PI);
         this->bodyId = b2CreateBody(worldGame, &b2d);
         this->shapeId = b2CreatePolygonShape(bodyId, &shape, &box);
         this->usedShape = nullptr;
