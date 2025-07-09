@@ -1,7 +1,3 @@
-//
-// Created by Monsler on 08.07.2025.
-//
-
 #pragma once
 
 #include "box2d/types.h"
@@ -10,7 +6,7 @@ namespace Proton {
     class Shape;
     class Physics {
     public:
-        static void initPhysicsDevice();
+        static void initPhysicsDevice(float gravityY);
         static void destroyPhysicsDevice();
         static void simulationStep();
     };
@@ -21,19 +17,36 @@ namespace Proton {
             Dynamic,
             Static
         };
-        explicit PhysicsBody(BodyType type, float bWidth=1.0f, float bHeight=1.0f, float density=1.0f, double rotation=0);
+        explicit PhysicsBody(BodyType type, float bWidth = 1.0f, float bHeight = 1.0f, float density = 1.0f, double rotation = 0, bool isCircle = false);
         void bindShape(Shape* shape);
-        ~PhysicsBody();
-        [[nodiscard]] auto getUsedShape() const -> Shape*;
+
+        virtual ~PhysicsBody();
+        [[nodiscard]] virtual auto getUsedShape() const -> Shape*;
         [[nodiscard]] auto getPosX() const -> float;
         [[nodiscard]] auto getPosY() const -> float;
         [[nodiscard]] auto getBody() const -> b2BodyId;
+        [[nodiscard]] auto getWidth() const -> float;
+        [[nodiscard]] auto getHeight() const -> float;
         void setPosition(float x, float y);
-    private:
+        void setRotation(float angle);
+    protected:
         b2BodyType type;
         b2BodyId bodyId{};
         b2ShapeId shapeId{};
-        float posX, posY;
-        Shape* usedShape;
+        float width{}, height{};
+        float posX{}, posY{};
+        Shape* usedShape{};
+    };
+
+    class PhysicsBoxBody final : public PhysicsBody {
+    public:
+        PhysicsBoxBody(BodyType type, float bWidth, float bHeight, float density, double rotation)
+            : PhysicsBody(type, bWidth, bHeight, density, rotation, false) {}
+    };
+
+    class PhysicsCircleBody final : public PhysicsBody {
+    public:
+        PhysicsCircleBody(BodyType type, float radius, float density, double rotation)
+            : PhysicsBody(type, radius, radius, density, rotation, true) {}
     };
 }

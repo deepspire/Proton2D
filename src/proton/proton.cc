@@ -60,7 +60,7 @@ Display::Display(const std::string &title, const int w, const int h)
     Log("display init is successful");
 
     ResourceManager::getInstance().initAudioEngine();
-    Physics::initPhysicsDevice();
+    Physics::initPhysicsDevice(-9.8f);
     this->isInit = true;
     this->currentScene = nullptr;
 }
@@ -226,7 +226,7 @@ void Display::renderStart()
             {
                 const auto [x, y] = b2Body_GetPosition(bodyId);
                 const double angle = b2Rot_GetAngle(b2Body_GetRotation(bodyId));
-                shape->setPosition(x, -y);
+                shape->setPosition(x, -(y+body->getHeight()/2.0f));
                 //Log("Setting shape position to ", x, ":",y);
                 shape->setRotation(-(angle * (180 / M_PI)));
                 //Log("Setting shape angle to ", angle);

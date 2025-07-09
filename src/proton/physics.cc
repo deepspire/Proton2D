@@ -10,9 +10,9 @@ namespace Proton
 {
     b2WorldId worldGame;
 
-    void Physics::initPhysicsDevice()
+    void Physics::initPhysicsDevice(float gravityY)
     {
-        constexpr b2Vec2 gravity = {0.0f, -15.8f};
+        b2Vec2 gravity = {0.0f, gravityY};
         b2WorldDef world = b2DefaultWorldDef();
         world.gravity = gravity;
         worldGame = b2CreateWorld(&world);
@@ -29,40 +29,45 @@ namespace Proton
 
     void Physics::simulationStep() { b2World_Step(worldGame, 1.0f / 60.0f, 6); }
 
-    PhysicsBody::PhysicsBody(const BodyType type, const float bWidth, const float bHeight, const float density, const double rotation)
+    PhysicsBody::PhysicsBody(const BodyType type, const float bWidth, const float bHeight, const float density, const double rotation, const bool isCircle)
     {
         switch (type)
         {
-        case Dynamic:
-        {
-            this->type = b2_dynamicBody;
-            break;
+            case Dynamic: this->type = b2_dynamicBody; break;
+            case Static: this->type = b2_staticBody; break;
+            default: this->type = b2_staticBody; break;
         }
-        case Static:
-        {
-            this->type = b2_staticBody;
-            break;
-        }
-        default:
-        {
-            this->type = b2_staticBody;
-            break;
-        };
-        }
-        const b2Polygon box = b2MakeBox(bWidth, bHeight);
+
         b2ShapeDef shape = b2DefaultShapeDef();
         shape.density = density;
         shape.isSensor = false;
+
         this->posX = 0.0f;
         this->posY = 0.0f;
+        this->width = bWidth;
+        this->height = bHeight;
         b2BodyDef b2d = b2DefaultBodyDef();
         b2d.type = this->type;
         b2d.position = b2Vec2{this->posX, this->posY};
-        b2d.rotation = b2MakeRot(rotation * 180.0f/M_PI);
+        b2d.rotation = b2MakeRot(rotation * 180.0f / M_PI);
         this->bodyId = b2CreateBody(worldGame, &b2d);
-        this->shapeId = b2CreatePolygonShape(bodyId, &shape, &box);
+
+        if (isCircle)
+        {
+            b2Circle circle;
+            circle.radius = bWidth / 2.0f;
+            circle.center = b2Vec2 {0.0f, 0.0f};
+            this->shapeId = b2CreateCircleShape(bodyId, &shape, &circle);
+        }
+        else
+        {
+            const b2Polygon box = b2MakeBox(bWidth / 2.0f, bHeight / 2.0f);
+            this->shapeId = b2CreatePolygonShape(bodyId, &shape, &box);
+        }
+
         this->usedShape = nullptr;
     }
+
     void PhysicsBody::bindShape(Shape* shape)
     {
         this->usedShape = shape;
@@ -80,10 +85,24 @@ namespace Proton
 
     auto PhysicsBody::getBody() const -> b2BodyId { return this->bodyId; }
 
+    auto PhysicsBody::getWidth() const -> float {
+        return width;
+    }
+
+    auto PhysicsBody::getHeight() const -> float {
+        return height;
+    }
+
     void PhysicsBody::setPosition(const float x, const float y)
     {
         this->posX = x;
         this->posY = -y;
-        b2Body_SetTransform(this->bodyId, b2Vec2{x, -y}, b2Body_GetRotation(this->bodyId));
+        b2Body_SetTransform(this->bodyId, b2Vec2{this->posX, this->posY}, b2Body_GetRotation(this->bodyId));
     }
+
+    void PhysicsBody::setRotation(const float angle) {
+        const float radians = -(angle*(M_PI/180));
+        b2Body_SetTransform(this->bodyId, b2Body_GetTransform(this->bodyId).p, b2MakeRot(radians));
+    }
+
 } // namespace Proton
