@@ -3,6 +3,8 @@
 //
 
 #include "proton/proton.hh"
+
+#include "box2d/box2d.h"
 #include "proton/logman.hh"
 #include "proton/physics.hh"
 #include "proton/resourcemanager.hh"
@@ -65,6 +67,7 @@ Display::Display(const std::string &title, const int w, const int h)
 
 void Display::setScene(Scene *newScene)
 {
+    Log("bodies ", physicsBodies.size());
     if (this->currentScene != nullptr)
     {
         delete currentScene;
@@ -72,6 +75,8 @@ void Display::setScene(Scene *newScene)
     }
 
     this->currentScene = newScene;
+    Log("bodies ", physicsBodies.size());
+
 }
 
 void Display::startRendering()
@@ -213,12 +218,24 @@ void Display::renderStart()
         deltaTime = (currentTime - static_cast<float>(lastFrameTime)) / 1000.0f;
         lastFrameTime = static_cast<Uint64>(currentTime);
         Physics::simulationStep();
-        for (PhysicsBody &body : physicsBodies)
+        int bodies = 0;
+        //Log("Body count ", physicsBodies.size());
+        for (const PhysicsBody* body : physicsBodies)
         {
-            b2BodyId bodyId = body.getBody();
-            Shape *shape = body.getUsedShape();
-            // shape->setPosition(bodyId.)
+            bodies++;
+            Log("Body ", bodies);
+            const b2BodyId bodyId = body->getBody();
+            if (Shape *shape = body->getUsedShape())
+            {
+                const auto [x, y] = b2Body_GetPosition(bodyId);
+                const float angle = b2Rot_GetAngle(b2Body_GetRotation(bodyId));
+                shape->setPosition(x, -y);
+                //Log("Setting shape position to ", x, ":",y);
+                shape->setRotation(angle * 180.0f / M_PI);
+                //Log("Setting shape angle to ", angle);
+            }
         }
+
     }
     SDL_GetWindowSize(this->handle, &this->windowWidth, &this->windowHeight);
 }

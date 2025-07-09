@@ -1,5 +1,6 @@
 #include "proton/resourcemanager.hh"
 #include "proton/logman.hh"
+#include "proton/physics.hh"
 
 namespace Proton
 {
@@ -145,6 +146,12 @@ void ResourceManager::clearCache()
         TTF_CloseFont(font);
     }
     fontCache.clear();
+
+    for (const auto body : physicsBodies)
+    {
+        delete body;
+    }
+    physicsBodies.clear();
 
     if (currentIcon)
     {

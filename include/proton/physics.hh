@@ -24,19 +24,21 @@ namespace Proton {
             Dynamic,
             Static
         };
-        explicit PhysicsBody(BodyType type);
+        explicit PhysicsBody(BodyType type, float bWidth=1.0f, float bHeight=1.0f, float density=1.0f);
         void bindShape(Shape* shape);
         ~PhysicsBody();
-        [[nodiscard]] Shape* getUsedShape() const;
-        [[nodiscard]] float getPosX() const;
-        [[nodiscard]] float getPosY() const;
-        [[nodiscard]] b2BodyId getBody() const;
+        [[nodiscard]] auto getUsedShape() const -> Shape*;
+        [[nodiscard]] auto getPosX() const -> float;
+        [[nodiscard]] auto getPosY() const -> float;
+        [[nodiscard]] auto getBody() const -> b2BodyId;
+        void setPosition(float x, float y);
     private:
         b2BodyType type;
         b2BodyId bodyId{};
+        b2ShapeId shapeId{};
         float posX, posY;
         Shape* usedShape;
     };
 
-    static std::vector<PhysicsBody> physicsBodies;
+    extern  std::vector<PhysicsBody*> physicsBodies;
 }

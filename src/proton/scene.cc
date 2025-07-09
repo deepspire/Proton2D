@@ -1,4 +1,6 @@
 #include "proton/scene.hh"
+
+#include "proton/physics.hh"
 #include "proton/shapes/shape.hh"
 
 namespace Proton
@@ -256,5 +258,11 @@ void Scene::destroyObjectMassive()
         delete audio;
     }
     this->audios.clear();
+
+    for (const PhysicsBody* body : physicsBodies)
+    {
+        delete body;
+    }
+    physicsBodies.clear();
 }
 }; // namespace Proton
