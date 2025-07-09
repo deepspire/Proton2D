@@ -25,10 +25,10 @@ Menu::Menu(SDL_Renderer *render, SDL_Window *window) : Scene(render, window)
 
     physicRectangle = new Proton::Rectangle(0, 0, 100, 100, Proton::Color(0, 0, 0));
     physicRectangle2 = new Proton::Rectangle(0, 300, 100, 50, Proton::Color(255, 0, 0));
-    body = new Proton::PhysicsBody(Proton::PhysicsBody::Dynamic, 50, 50, 1, -50);
+    body = new Proton::PhysicsBody(Proton::PhysicsBody::Dynamic, 50, 75, 1);
     body->bindShape(physicRectangle);
-    body->setPosition(50, 0);
-    body2 = new Proton::PhysicsBody(Proton::PhysicsBody::Static, 100, 50);
+    body->setPosition(80, 0);
+    body2 = new Proton::PhysicsBody(Proton::PhysicsBody::Static, 50, 25);
     body2->bindShape(physicRectangle2);
     body2->setPosition(0, 300);
     addObject(physicRectangle);

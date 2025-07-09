@@ -225,10 +225,10 @@ void Display::renderStart()
             if (Shape *shape = body->getUsedShape())
             {
                 const auto [x, y] = b2Body_GetPosition(bodyId);
-                const float angle = b2Rot_GetAngle(b2Body_GetRotation(bodyId));
+                const double angle = b2Rot_GetAngle(b2Body_GetRotation(bodyId));
                 shape->setPosition(x, -y);
                 //Log("Setting shape position to ", x, ":",y);
-                shape->setRotation(angle * 180.0f / M_PI);
+                shape->setRotation(-(angle * (180 / M_PI)));
                 //Log("Setting shape angle to ", angle);
             }
         }
