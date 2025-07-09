@@ -67,7 +67,6 @@ Display::Display(const std::string &title, const int w, const int h)
 
 void Display::setScene(Scene *newScene)
 {
-    Log("bodies ", physicsBodies.size());
     if (this->currentScene != nullptr)
     {
         delete currentScene;
@@ -75,7 +74,7 @@ void Display::setScene(Scene *newScene)
     }
 
     this->currentScene = newScene;
-    Log("bodies ", physicsBodies.size());
+    Log("bodies ", this->currentScene->getPhysicsBodies().size());
 
 }
 
@@ -218,12 +217,10 @@ void Display::renderStart()
         deltaTime = (currentTime - static_cast<float>(lastFrameTime)) / 1000.0f;
         lastFrameTime = static_cast<Uint64>(currentTime);
         Physics::simulationStep();
-        int bodies = 0;
         //Log("Body count ", physicsBodies.size());
-        for (const PhysicsBody* body : physicsBodies)
+        for (const PhysicsBody* body : currentScene->getPhysicsBodies())
         {
-            bodies++;
-            Log("Body ", bodies);
+            //Log("Body ", bodies);
             const b2BodyId bodyId = body->getBody();
             if (Shape *shape = body->getUsedShape())
             {

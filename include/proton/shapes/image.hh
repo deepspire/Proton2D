@@ -39,12 +39,6 @@ class Image : public Shape
         this->height = height;
     }
 
-    void setPosition(const float x, const float y) override
-    {
-        this->position.x = x;
-        this->position.y = y;
-    }
-
     void paint(SDL_Renderer *render, const float rX, const float rY) override
     {
         const float drawX = rX + this->position.x;

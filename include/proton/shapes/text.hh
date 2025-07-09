@@ -25,12 +25,6 @@ class Text : public Shape
             SDL_DestroyTexture(textTexture);
     }
 
-    void setPosition(const float x, const float y) override
-    {
-        this->position.x = x;
-        this->position.y = y;
-    }
-
     void resize(const int w, const int h)
     {
         this->w = w;

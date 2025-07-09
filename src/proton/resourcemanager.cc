@@ -147,12 +147,6 @@ void ResourceManager::clearCache()
     }
     fontCache.clear();
 
-    for (const auto body : physicsBodies)
-    {
-        delete body;
-    }
-    physicsBodies.clear();
-
     if (currentIcon)
     {
         SDL_DestroySurface(currentIcon);

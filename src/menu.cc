@@ -4,7 +4,9 @@
 #include "ss.hh"
 #include "proton/physics.hh"
 Proton::PhysicsBody* body;
+Proton::PhysicsBody* body2;
 Proton::Rectangle* physicRectangle;
+Proton::Rectangle* physicRectangle2;
 Proton::Rectangle *moving;
 Proton::Circle *r1;
 
@@ -20,11 +22,19 @@ Menu::Menu(SDL_Renderer *render, SDL_Window *window) : Scene(render, window)
     {
         addObject(new Proton::Rectangle(i, 640, 25, 50, Proton::Color()));
     }*/
-    body = new Proton::PhysicsBody(Proton::PhysicsBody::Dynamic);
+
     physicRectangle = new Proton::Rectangle(0, 0, 100, 100, Proton::Color(0, 0, 0));
+    physicRectangle2 = new Proton::Rectangle(0, 300, 100, 50, Proton::Color(255, 0, 0));
+    body = new Proton::PhysicsBody(Proton::PhysicsBody::Dynamic, 50, 50, 1, -50);
     body->bindShape(physicRectangle);
-    body->setPosition(0, 0);
+    body->setPosition(50, 0);
+    body2 = new Proton::PhysicsBody(Proton::PhysicsBody::Static, 100, 50);
+    body2->bindShape(physicRectangle2);
+    body2->setPosition(0, 300);
     addObject(physicRectangle);
+    addObject(physicRectangle2);
+    addBody(body2);
+    addBody(body);
     r1 = new Proton::Circle(240, 320 + 100, 50, Proton::Color(255, 0, 255), Proton::Circle::Fill);
     addObject(r1);
     addObject(new Proton::Circle(240, 320 + 100, 50, Proton::Color(0, 255, 0), Proton::Circle::Bevel));

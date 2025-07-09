@@ -243,6 +243,16 @@ void Scene::handleTextInput(SDL_Event event)
     }
 }
 
+void Scene::addBody(PhysicsBody *body)
+{
+    this->physicsBodies.push_back(body);
+}
+
+std::vector<PhysicsBody *> Scene::getPhysicsBodies()
+{
+    return this->physicsBodies;
+}
+
 Color Scene::getBackgroundColor() const { return this->background; }
 
 void Scene::destroyObjectMassive()
@@ -259,7 +269,7 @@ void Scene::destroyObjectMassive()
     }
     this->audios.clear();
 
-    for (const PhysicsBody* body : physicsBodies)
+    for (PhysicsBody* body : physicsBodies)
     {
         delete body;
     }

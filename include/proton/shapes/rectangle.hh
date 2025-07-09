@@ -54,12 +54,6 @@ class Rectangle final : public Shape
         }
     }
 
-    void setPosition(float x, float y) override
-    {
-        this->position.x = x;
-        this->position.y = y;
-    }
-
     [[nodiscard]] Style getStyle() const { return style; }
 
     void paint(SDL_Renderer *renderer, const float rX, const float rY) override

@@ -1,8 +1,11 @@
 #pragma once
 #include <SDL3/SDL.h>
 
+#include "proton/logman.hh"
+
 namespace Proton
 {
+  class PhysicsBody;
 struct Point
 {
     float x;
@@ -10,7 +13,7 @@ struct Point
 
     auto operator+(const Point &other) const -> Point { return {x + other.x, y + other.y}; }
 
-    auto operator*(float mul) const -> Point { return {x * mul, y * mul}; }
+    auto operator*(const float mul) const -> Point { return {x * mul, y * mul}; }
 };
 
 class Color
@@ -47,26 +50,35 @@ class Shape
   public:
     virtual void paint(SDL_Renderer *render, float rX, float rY) = 0;
     virtual void setFillColor(Color color) = 0;
-    virtual void setPosition(float x, float y) = 0;
+
+    virtual void setPosition(float x, float y);
 
     void setVisible(const bool a) { this->isVisible = a; }
 
     [[nodiscard]] auto getVisible() const -> bool { return this->isVisible; }
 
-    [[nodiscard]] virtual auto getX() const -> float { return this->position.x; }
+    [[nodiscard]] auto getX() const -> float { return this->position.x; }
 
-    [[nodiscard]] virtual auto getY() const -> float { return this->position.y; }
+    [[nodiscard]] auto getY() const -> float { return this->position.y; }
 
-    [[nodiscard]] virtual auto getRotation() const -> float { return this->rotation; }
+    [[nodiscard]] auto getRotation() const -> float { return this->rotation; }
 
-    virtual void setRotation(const float angle) { this->rotation = angle; }
+    virtual void setRotation(float angle);
 
     virtual void update(float dt) {}
     virtual ~Shape() = default;
+    void setBody(PhysicsBody* body) {
+      Log("Body is set");
+      this->body = body;
+    }
+
+  private:
+    PhysicsBody* body = nullptr;
 
   protected:
     bool isVisible = true;
     Point position = {0, 0};
     float rotation = 0;
+
 };
 } // namespace Proton

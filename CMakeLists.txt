@@ -11,7 +11,7 @@ set(SOURCE_FILES
     src/main.cc
     src/menu.cc
     src/ss.cc
-
+    src/proton/shapes/shape.cc
     src/proton/audio.cc
     src/proton/proton.cc
     src/proton/resourcemanager.cc

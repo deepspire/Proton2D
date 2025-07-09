@@ -4,11 +4,11 @@
 #include "proton/physics.hh"
 #include "box2d/box2d.h"
 #include "proton/logman.hh"
+#include "proton/shapes/shape.hh"
 
 namespace Proton
 {
     b2WorldId worldGame;
-    std::vector<PhysicsBody*> physicsBodies;
 
     void Physics::initPhysicsDevice()
     {
@@ -66,12 +66,11 @@ namespace Proton
     void PhysicsBody::bindShape(Shape* shape)
     {
         this->usedShape = shape;
-        physicsBodies.push_back(this);
-        Log("[PHYSICS] body added. Total: ", physicsBodies.size());
+        shape->setBody(this);
     }
 
 
-    PhysicsBody::~PhysicsBody() { b2DestroyBody(this->bodyId); this->bodyId = b2_nullBodyId; this->shapeId = b2_nullShapeId; }
+    PhysicsBody::~PhysicsBody() { Log("PhysicsBody destroyed"); b2DestroyBody(this->bodyId); this->bodyId = b2_nullBodyId; this->shapeId = b2_nullShapeId; }
 
     auto PhysicsBody::getUsedShape() const -> Shape * { return this->usedShape; }
 
@@ -84,7 +83,7 @@ namespace Proton
     void PhysicsBody::setPosition(const float x, const float y)
     {
         this->posX = x;
-        this->posY = y;
-        b2Body_SetTransform(this->bodyId, b2Vec2{x, y}, b2Body_GetRotation(this->bodyId));
+        this->posY = -y;
+        b2Body_SetTransform(this->bodyId, b2Vec2{x, -y}, b2Body_GetRotation(this->bodyId));
     }
 } // namespace Proton

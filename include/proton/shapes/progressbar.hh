@@ -20,12 +20,6 @@ class ProgressBar : public Shape
             SDL_DestroyTexture(texture);
     }
 
-    void setPosition(float x, float y) override
-    {
-        this->position.x = x;
-        this->position.y = y;
-    }
-
     void setFillColor(const Color newColor) override
     {
         progressBarColor = newColor;

@@ -5,6 +5,7 @@
 #include "shapes/buttonarea.hh"
 #include "shapes/textbox.hh"
 #include "audio.hh"
+#include "physics.hh"
 
 #define ROOT_POSITION 0.0f, 0.0f
 
@@ -40,11 +41,14 @@ namespace Proton
         void handleMouseDrag(int mX, int mY);
 
         void handleTextInput(SDL_Event event);
+        void addBody(PhysicsBody* body);
+        std::vector<PhysicsBody*> getPhysicsBodies();
 
         Color getBackgroundColor() const;
 
     private:
         void destroyObjectMassive();
+        std::vector<PhysicsBody*> physicsBodies;
 
     protected:
         SDL_Renderer *render;

@@ -36,12 +36,6 @@ class Group final : public Shape
         }
     }
 
-    void setPosition(const float x, const float y) override
-    {
-        this->position.x = x;
-        this->position.y = y;
-    }
-
     void addObject(Shape *shape) { shapes.push_back(shape); }
 
     void clear() const

@@ -29,12 +29,6 @@ class Circle : public Shape
             SDL_DestroyTexture(texture);
     }
 
-    void setPosition(float x, float y) override
-    {
-        this->position.x = x;
-        this->position.y = y;
-    }
-
     void setFillColor(Color newColor) override
     {
         color = newColor;

@@ -3,14 +3,11 @@
 //
 
 #pragma once
-#include <cstdint>
-#include <vector>
 
 #include "box2d/types.h"
-#include "shapes/shape.hh"
 
 namespace Proton {
-
+    class Shape;
     class Physics {
     public:
         static void initPhysicsDevice();
@@ -39,6 +36,4 @@ namespace Proton {
         float posX, posY;
         Shape* usedShape;
     };
-
-    extern  std::vector<PhysicsBody*> physicsBodies;
 }
