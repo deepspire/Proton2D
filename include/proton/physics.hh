@@ -40,8 +40,11 @@ class PhysicsBody
     [[nodiscard]] auto getWidth() const -> float;
     [[nodiscard]] auto getHeight() const -> float;
     void setPosition(float x, float y);
-    void setPositionInPixels(const float px, const float py);
-    void setRotation(float angle);
+    void setPositionInPixels(float px, float py);
+    void setRotation(float angle) const;
+    void applyForce(float xForce, float yForce) const;
+    void applyLinearImpulse(float xForce, float yForce) const;
+    void applyAngularImpulse(float angle) const;
 
   protected:
     b2BodyType type;

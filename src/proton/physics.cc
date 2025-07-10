@@ -126,10 +126,21 @@ void PhysicsBody::setPositionInPixels(const float px, const float py)
     setPosition(px * METERS_PER_PIXEL, py * METERS_PER_PIXEL);
 }
 
-void PhysicsBody::setRotation(const float angle)
-{
+void PhysicsBody::setRotation(const float angle) const {
     const float radians = -(angle * (M_PI / 180));
     b2Body_SetTransform(this->bodyId, b2Body_GetTransform(this->bodyId).p, b2MakeRot(radians));
 }
 
+void PhysicsBody::applyForce(const float xForce, const float yForce) const {
+    b2Body_ApplyForce(this->bodyId, b2Vec2{xForce, yForce}, b2Vec2{this->posX, this->posY}, true);
+}
+
+void PhysicsBody::applyLinearImpulse(const float xForce, const float yForce) const {
+    b2Body_ApplyLinearImpulseToCenter(this->bodyId, b2Vec2{xForce, yForce}, true);
+}
+
+void PhysicsBody::applyAngularImpulse(const float angle) const {
+    const float radians = -(angle * (M_PI / 180));
+    b2Body_ApplyAngularImpulse(this->bodyId, radians, true);
+}
 } // namespace Proton

@@ -37,6 +37,8 @@ Menu::Menu(SDL_Renderer *render, SDL_Window *window) : Scene(render, window)
     body = new Proton::PhysicsBoxBody(Proton::PhysicsBody::Dynamic, 100 * Proton::METERS_PER_PIXEL, 100 * Proton::METERS_PER_PIXEL, 1, 0);
     body->setPositionInPixels(150, 50);
     body->bindShape(physicRectangle);
+    body->applyLinearImpulse(15.0f, 100.0f);
+    body->applyAngularImpulse(90);
 
     physicRectangle2 = new Proton::Rectangle(100, 350, 100, 50, Proton::Color(255, 0, 0));
     body2 = new Proton::PhysicsBoxBody(Proton::PhysicsBody::Static, 100 * Proton::METERS_PER_PIXEL, 50 * Proton::METERS_PER_PIXEL, 1, 0);
