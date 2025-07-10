@@ -17,7 +17,7 @@ Proton::Audio *tmp;
 SecondScene::SecondScene(SDL_Renderer *render, SDL_Window *window) : Proton::Scene(render, window)
 {
 
-    this->background = Proton::Color(125, 125, 125);
+    this->background = Proton::Color(0, 0, 0);
     cnt = new Proton::Container(0, 0, 200, 500);
     cnt->addObject(new Proton::Rectangle(0, 0, 30, 30, Proton::Color(255, 0, 0)));
     cnt->addObject(new Proton::Circle(35.0f, 35.0f, 10, Proton::Color(0, 255, 0)));

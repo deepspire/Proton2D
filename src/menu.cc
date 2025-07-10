@@ -27,7 +27,7 @@ Menu::Menu(SDL_Renderer *render, SDL_Window *window) : Scene(render, window)
         addObject(new Proton::Rectangle(i, 640, 25, 50, Proton::Color()));
     }*/
 
-    physicRectangle = new Proton::Image(Proton::ResourceManager::getInstance().getTexture(render, "kachan.png"), 0, 0, 100, 100);
+    physicRectangle = new Proton::Image(Proton::ResourceManager::getInstance().getTexture(render, "kachan1.png"), 0, 0, 100, 100);
     physicRectangle2 = new Proton::Rectangle(0, 300, 100, 50, Proton::Color(255, 0, 0));
     physicRectangle3 = new Proton::Rectangle(0, 300, 100, 50, Proton::Color(0, 0, 255));
     body = new Proton::PhysicsBoxBody(Proton::PhysicsBody::Dynamic, 100, 100, 1, 0);

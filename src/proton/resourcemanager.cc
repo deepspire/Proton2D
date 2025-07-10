@@ -1,6 +1,10 @@
 #include "proton/resourcemanager.hh"
+
+#include <vector>
+
 #include "proton/logman.hh"
 #include "proton/physics.hh"
+#include "proton/errorTexture.hh"
 
 namespace Proton
 {
@@ -62,8 +66,38 @@ SDL_Texture *ResourceManager::getTexture(SDL_Renderer *render, const std::string
     SDL_Surface *surface = IMG_Load(fullPath.c_str());
     if (!surface)
     {
-        Proton::Log("Failed to load image: ", fullPath, ". error: ", SDL_GetError());
-        return nullptr;
+        Log("Failed to load image: ", fullPath, ". error: ", SDL_GetError(), "; Falling back to error texture");
+
+        constexpr int width = __WIDTH;
+        constexpr int height = __HEIGHT;
+
+        std::vector<uint8_t> pixels;
+        pixels.reserve(width * height * 3);
+
+        for (uint32_t c : errorBox) {
+            uint8_t r = (c >> 16) & 0xFF;
+            uint8_t g = (c >> 8) & 0xFF;
+            uint8_t b = c & 0xFF;
+            pixels.push_back(r);
+            pixels.push_back(g);
+            pixels.push_back(b);
+        }
+        SDL_Surface* surface = SDL_CreateSurfaceFrom(width, height,  SDL_PIXELFORMAT_RGB24, pixels.data(), width*3);
+        if (!surface) {
+            Log("Error creating ERROR surface: ", SDL_GetError());
+            return nullptr;
+        }
+        SDL_Texture *texture = SDL_CreateTextureFromSurface(render, surface);
+        SDL_DestroySurface(surface);
+        if (!texture)
+        {
+            Log("Failed to create texture from surface: ", fullPath, ". error: ", SDL_GetError());
+            SDL_DestroyTexture(texture);
+            return nullptr;
+        }
+        this->textureCache[path] = texture;
+        return texture;
+
     }
 
     SDL_Texture *texture = SDL_CreateTextureFromSurface(render, surface);

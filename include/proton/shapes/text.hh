@@ -110,6 +110,7 @@ class Text : public Shape
         }
 
         textTexture = SDL_CreateTextureFromSurface(render, surface);
+        SDL_SetTextureScaleMode(textTexture, SDL_SCALEMODE_NEAREST);
         if (!textTexture)
         {
             Log("SDL_CreateTextureFromSurface error: ", SDL_GetError());
