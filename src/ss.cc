@@ -1,4 +1,5 @@
 #include "ss.hh"
+#include "proton/resourcemanager.hh"
 #include "proton/shapes/circle.hh"
 #include "proton/shapes/container.hh"
 #include "proton/shapes/group.hh"
@@ -65,9 +66,10 @@ void SecondScene::mouseDown(const Proton::Point &mPos)
 
 void SecondScene::keyPressed(Uint16 key)
 {
-    if (this->focusedTextBox != nullptr) {
+    if (this->focusedTextBox != nullptr)
+    {
         return;
-}
+    }
 
     if (key == SDLK_A)
     {

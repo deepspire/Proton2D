@@ -75,7 +75,6 @@ void Display::setScene(Scene *newScene)
 
     this->currentScene = newScene;
     Log("bodies ", this->currentScene->getPhysicsBodies().size());
-
 }
 
 void Display::startRendering()
@@ -192,9 +191,6 @@ void Display::renderStart()
 
         float px, py;
         SDL_GetMouseState(&px, &py);
-        pointerX = static_cast<int>(px);
-        pointerY = static_cast<int>(py);
-
         SDL_RenderClear(this->render);
 
         if (Scene *nextScene = this->currentScene->update(deltaTime); nextScene != this->currentScene)
@@ -216,23 +212,26 @@ void Display::renderStart()
         const auto currentTime = static_cast<float>(SDL_GetTicks());
         deltaTime = (currentTime - static_cast<float>(lastFrameTime)) / 1000.0f;
         lastFrameTime = static_cast<Uint64>(currentTime);
-        Physics::simulationStep();
-        //Log("Body count ", physicsBodies.size());
-        for (const PhysicsBody* body : currentScene->getPhysicsBodies())
+        Physics::update(deltaTime);
+        // Log("Body count ", physicsBodies.size());
+        for (const PhysicsBody *body : currentScene->getPhysicsBodies())
         {
-            //Log("Body ", bodies);
+            // Log("Body ", bodies);
             const b2BodyId bodyId = body->getBody();
             if (Shape *shape = body->getUsedShape())
             {
                 const auto [x, y] = b2Body_GetPosition(bodyId);
                 const double angle = b2Rot_GetAngle(b2Body_GetRotation(bodyId));
-                shape->setPosition(x, -(y+body->getHeight()/2.0f));
-                //Log("Setting shape position to ", x, ":",y);
-                shape->setRotation(-(angle * (180 / M_PI)));
-                //Log("Setting shape angle to ", angle);
+                shape->setRotation(static_cast<float>(-(angle * (180 / M_PI))));
+
+                const float pixelX = x * PIXELS_PER_METER;
+                const float pixelY = -y * PIXELS_PER_METER;
+
+                shape->setPosition(pixelX - shape->getW() / 2.0f, pixelY - shape->getH() / 2.0f);
+                // Log("Setting shape position to ", x, ":",y);
+                // Log("Setting shape angle to ", angle);
             }
         }
-
     }
     SDL_GetWindowSize(this->handle, &this->windowWidth, &this->windowHeight);
 }

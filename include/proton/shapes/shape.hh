@@ -1,8 +1,6 @@
 #pragma once
 #include <SDL3/SDL.h>
 
-#include "proton/logman.hh"
-
 namespace Proton
 {
   class PhysicsBody;
@@ -58,8 +56,10 @@ class Shape
     [[nodiscard]] auto getVisible() const -> bool { return this->isVisible; }
 
     [[nodiscard]] auto getX() const -> float { return this->position.x; }
-
     [[nodiscard]] auto getY() const -> float { return this->position.y; }
+
+    [[nodiscard]] virtual auto getW() const -> float = 0;
+    [[nodiscard]] virtual auto getH() const -> float = 0;
 
     [[nodiscard]] auto getRotation() const -> float { return this->rotation; }
 
@@ -67,10 +67,7 @@ class Shape
 
     virtual void update(float dt) {}
     virtual ~Shape() = default;
-    void setBody(PhysicsBody* body) {
-      Log("Body is set");
-      this->body = body;
-    }
+    void setBody(PhysicsBody* body);
 
   private:
     PhysicsBody* body = nullptr;

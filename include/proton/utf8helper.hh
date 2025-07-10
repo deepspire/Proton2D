@@ -2,7 +2,7 @@
 
 namespace Proton
 {
-inline unsigned int getCharLength(const unsigned char firstByte)
+inline auto getCharLength(const unsigned char firstByte) -> int
 {
     if (firstByte < 0x80)
         return 1;

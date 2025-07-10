@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../logman.hh"
 #include "shape.hh"
 
 namespace Proton
@@ -9,55 +8,22 @@ class Image : public Shape
 {
   public:
     explicit Image(SDL_Texture *texture, const float x = 0, const float y = 0, const float width = 0,
-                   const float height = 0)
-    {
-        if (texture == nullptr)
-        {
-            Log("Invalid texture or didn't loaded successfully");
-            return;
-        }
-        this->imageTexture = texture;
-
-        this->width = width;
-        this->height = height;
-        this->isVisible = true;
-        this->position.x = x;
-        this->position.y = y;
-        if (width == 0)
-            this->width = imageTexture->w;
-        if (height == 0)
-            this->height = imageTexture->h;
-    }
+                   const float height = 0);
 
     ~Image() override = default;
 
     void setFillColor([[maybe_unused]] Color c) override {}
 
-    void resize(const int width, const int height)
-    {
-        this->width = width;
-        this->height = height;
-    }
+    void resize(const float width, const float height);
 
-    void paint(SDL_Renderer *render, const float rX, const float rY) override
-    {
-        const float drawX = rX + this->position.x;
-        const float drawY = rY + this->position.y;
+    [[nodiscard]] auto getW() const -> float override { return this->width; }
+    [[nodiscard]] auto getH() const -> float override { return this->height; }
 
-        const SDL_FRect rectToRender = {drawX, drawY, static_cast<float>(this->width),
-                                        static_cast<float>(this->height)};
-
-        SDL_RenderTextureRotated(render, imageTexture, nullptr, &rectToRender, rotation, nullptr, SDL_FLIP_NONE);
-    }
+    void paint(SDL_Renderer *render, const float rX, const float rY) override;
 
     void setRotation(const float angle) override { this->rotation = angle; }
 
-    void setTexture(SDL_Texture *texture)
-    {
-        this->imageTexture = texture;
-        this->width = this->imageTexture->w;
-        this->height = this->imageTexture->h;
-    }
+    void setTexture(SDL_Texture *texture);
 
   private:
     float width, height;

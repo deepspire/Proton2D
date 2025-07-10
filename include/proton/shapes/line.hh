@@ -1,52 +1,21 @@
 #pragma once
 
 #include "shape.hh"
-#include <cmath>
 
 namespace Proton
 {
 class Line : public Shape
 {
   public:
-    explicit Line(float x1 = 0, float y1 = 0, float x2 = 5, float y2 = 5, Color color = Color())
-        : endX(x2), endY(y2), fillColor(color)
-    {
-        this->position.x = x1;
-        this->position.y = y1;
-    }
+    explicit Line(float x1 = 0, float y1 = 0, float x2 = 5, float y2 = 5, Color color = Color());
 
     void setRotation(float angle) override { this->rotation = angle; }
-
-    void setPosition(const float x, const float y) override
-    {
-        float dx = endX - this->position.x;
-        float dy = endY - this->position.y;
-        this->position.x = x;
-        this->position.y = y;
-        this->endX = x + dx;
-        this->endY = y + dy;
-    }
-
+    void setPosition(const float x, const float y) override;
     void setFillColor(Color color) override { this->fillColor = color; }
+    void paint(SDL_Renderer *render, float rX, float rY) override;
 
-    void paint(SDL_Renderer *render, float rX, float rY) override
-    {
-        SDL_SetRenderDrawColor(render, fillColor.getR(), fillColor.getG(), fillColor.getB(), fillColor.getA());
-
-        const float dx = endX - this->position.x;
-        const float dy = endY - this->position.y;
-
-        const float rad = rotation * (static_cast<float>(M_PI) / 180.0f);
-        const float rotatedDX = dx * std::cos(rad) - dy * std::sin(rad);
-        const float rotatedDY = dx * std::sin(rad) + dy * std::cos(rad);
-
-        const float startX = this->position.x + rX;
-        const float startY = this->position.y + rY;
-        const float endRotatedX = this->position.x + rotatedDX + rX;
-        const float endRotatedY = this->position.y + rotatedDY + rY;
-
-        SDL_RenderLine(render, startX, startY, endRotatedX, endRotatedY);
-    }
+    [[nodiscard]] auto getW() const -> float override;
+    [[nodiscard]] auto getH() const -> float override;
 
   private:
     Color fillColor;

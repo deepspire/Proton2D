@@ -1,10 +1,8 @@
 #pragma once
-#include "../logman.hh"
-#include "../resourcemanager.hh"
+
 #include "shape.hh"
 #include <SDL3_ttf/SDL_ttf.h>
 #include <string>
-#include <utility>
 
 namespace Proton
 {
@@ -13,62 +11,23 @@ class Text : public Shape
   public:
     explicit Text(std::string text = "Label", const float x = 0, const float y = 0,
                   std::string fontPath = "fonts/Roboto-Regular.ttf", const int fontSize = 12,
-                  const Color color = Color(255, 255, 255, 255))
-        : labelText(std::move(text)), path(std::move(fontPath)), fontSize(fontSize), fillColor(color)
-    {
-        this->Text::setPosition(x, y);
-    }
+                  const Color color = Color(255, 255, 255, 255));
 
-    ~Text() override
-    {
-        if (this->textTexture)
-            SDL_DestroyTexture(textTexture);
-    }
+    ~Text() override;
 
-    void resize(const int w, const int h)
-    {
-        this->w = w;
-        this->h = h;
-    }
+    void resize(const int w, const int h);
 
-    [[nodiscard]] int getW() const { return this->w; }
+    [[nodiscard]] auto getW() const -> float override { return static_cast<float>(this->w); }
+    [[nodiscard]] auto getH() const -> float override { return static_cast<float>(this->h); }
 
-    [[nodiscard]] virtual int getH() const { return this->h; }
+    void setFillColor(const Color newColor) override;
 
-    void setFillColor(const Color newColor) override
-    {
-        this->fillColor = newColor;
-        this->isDirty = true;
-    }
+    virtual void setText(const std::string &text);
 
-    virtual void setText(const std::string &text)
-    {
-        this->labelText = text;
-        this->isDirty = true;
-    }
+    auto getText() -> const std::string & { return this->labelText; }
+    [[nodiscard]] auto getTextLength() const -> int { return static_cast<int>(this->labelText.length()); }
 
-    const std::string &getText() { return this->labelText; }
-
-    [[nodiscard]] int getTextLength() const { return this->labelText.length(); }
-
-    void paint(SDL_Renderer *render, const float rX, const float rY) override
-    {
-        if (this->isDirty)
-        {
-            this->createTexture(render);
-        }
-
-        if (textTexture)
-        {
-            const auto drawX = rX + this->position.x;
-            const auto drawY = rY + this->position.y;
-
-            const SDL_FRect rectToRender = {drawX, drawY, static_cast<float>(this->w), static_cast<float>(this->h)};
-
-            SDL_RenderTextureRotated(render, textTexture, nullptr, &rectToRender, this->rotation, nullptr,
-                                     SDL_FLIP_NONE);
-        }
-    }
+    void paint(SDL_Renderer *render, const float rX, const float rY) override;
 
   protected:
     std::string labelText;
@@ -79,57 +38,8 @@ class Text : public Shape
     bool isDirty = true;
     int w{}, h{};
 
-    void createTexture(SDL_Renderer *render)
-    {
-        if (textTexture)
-        {
-            SDL_DestroyTexture(textTexture);
-            textTexture = nullptr;
-        }
+    void createTexture(SDL_Renderer *render);
 
-        this->w = 0;
-        this->h = 0;
-
-        if (this->labelText.empty())
-        {
-            this->isDirty = false;
-            return;
-        }
-
-        TTF_Font *font = ResourceManager::getInstance().getFont(this->path, fontSize);
-        if (!font)
-            return;
-
-        const SDL_Color sdlColor = {(fillColor.getR()), (fillColor.getG()), (fillColor.getB()), (fillColor.getA())};
-
-        SDL_Surface *surface = TTF_RenderText_Blended(font, labelText.c_str(), labelText.length(), sdlColor);
-        if (!surface)
-        {
-            Log("TTF_RenderText_Blended error: ", SDL_GetError());
-            return;
-        }
-
-        textTexture = SDL_CreateTextureFromSurface(render, surface);
-        SDL_SetTextureScaleMode(textTexture, SDL_SCALEMODE_NEAREST);
-        if (!textTexture)
-        {
-            Log("SDL_CreateTextureFromSurface error: ", SDL_GetError());
-        }
-
-        this->w = static_cast<float>(surface->w);
-        this->h = static_cast<float>(surface->h);
-
-        SDL_DestroySurface(surface);
-        this->isDirty = false;
-    }
-
-    [[nodiscard]] int getFontHeight() const
-    {
-        if (const TTF_Font *font = ResourceManager::getInstance().getFont(this->path, this->fontSize))
-        {
-            return TTF_GetFontHeight(font);
-        }
-        return 0;
-    }
+    [[nodiscard]] auto getFontHeight() const -> int;
 };
 } // namespace Proton

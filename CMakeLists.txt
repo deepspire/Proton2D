@@ -11,13 +11,26 @@ set(SOURCE_FILES
     src/main.cc
     src/menu.cc
     src/ss.cc
-    src/proton/shapes/shape.cc
     src/proton/audio.cc
     src/proton/proton.cc
     src/proton/physics.cc
     src/proton/resourcemanager.cc
     src/proton/scene.cc
     src/jni/JNIBindings.cpp
+
+    src/proton/shapes/shape.cc
+    src/proton/shapes/rectangle.cc
+    src/proton/shapes/line.cc
+    src/proton/shapes/circle.cc
+    src/proton/shapes/text.cc
+    src/proton/shapes/textbox.cc
+    src/proton/shapes/rectanglebutton.cc
+    src/proton/shapes/container.cc
+    src/proton/shapes/buttonarea.cc
+    src/proton/shapes/group.cc
+    src/proton/shapes/image.cc
+    src/proton/shapes/imagebutton.cc
+    src/proton/shapes/progressbar.cc
 )
 
 if(ANDROID)

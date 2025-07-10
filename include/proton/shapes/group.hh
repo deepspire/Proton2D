@@ -4,49 +4,27 @@
 
 namespace Proton
 {
-class Group final : public Shape
+class Group : public Shape
 {
   public:
-    Group(const float x, const float y)
-    {
-        this->position.x = x;
-        this->position.y = y;
-    }
+    explicit Group(const float x, const float y);
 
-    void paint(SDL_Renderer *render, const float gX, const float gY) override
-    {
-        for (Shape *shape : this->shapes)
-        {
-            const float originalRotation = shape->getRotation();
-            shape->setRotation(originalRotation + this->rotation);
-            shape->paint(render, this->position.x + gX, this->position.y + gY);
-            shape->setRotation(originalRotation);
-        }
-    }
+    void paint(SDL_Renderer *render, const float gX, const float gY) override;
 
     void setRotation(const float angle) override { this->rotation = angle; }
 
     void setFillColor(Color /*unused*/) override {}
 
-    void update(const float dt) override
-    {
-        for (Shape *shape : this->shapes)
-        {
-            shape->update(dt);
-        }
-    }
+    void update(const float dt) override;
 
     void addObject(Shape *shape) { shapes.push_back(shape); }
 
-    void clear() const
-    {
-        for (const Shape *shape : this->shapes)
-        {
-            delete shape;
-        }
-    }
+    void clear() const;
 
-    ~Group() override { clear(); }
+    [[nodiscard]] auto getW() const -> float override { return 0.0f; }
+    [[nodiscard]] auto getH() const -> float override { return 0.0f; }
+
+    ~Group() override;
 
   protected:
     std::vector<Shape *> shapes;
