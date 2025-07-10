@@ -13,7 +13,7 @@ class RectangleButton final : public ButtonArea
     ~RectangleButton() override { delete this->rectangle; }
 
     void setPosition(const float x, const float y) override;
-    void setRotation(const float angle) override { this->rotation = angle; }
+    void setRotation(const float angle) override { this->rectangle->setRotation(angle); }
 
     void resize(const float w, const float h) override;
 

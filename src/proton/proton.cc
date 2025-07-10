@@ -140,6 +140,14 @@ void Display::renderStart()
                 isDone = true;
                 break;
             }
+            case SDL_EVENT_MOUSE_BUTTON_UP:
+            {
+                if (!this->currentScene)
+                    break;
+                Point mousePoint{e.button.x, e.button.y};
+                this->currentScene->handleButtonClickEnd(mousePoint);
+                break;
+            }
             case SDL_EVENT_MOUSE_BUTTON_DOWN:
             {
                 if (!this->currentScene)

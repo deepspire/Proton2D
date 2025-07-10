@@ -22,10 +22,19 @@ void ButtonArea::resize(const float w, const float h)
     this->h = h;
 }
 
-void ButtonArea::onClick()
-{
+void ButtonArea::onClick() const {
     if (clickListener)
         clickListener();
 }
+
+void ButtonArea::onClickEnded() const {
+    if (unclickListener)
+        unclickListener();
+}
+
 void ButtonArea::setClickListener(void (*f)()) { this->clickListener = f; }
+
+void ButtonArea::setClickEndedListener(void(*f)()) {
+    this->unclickListener = f;
+}
 } // namespace Proton

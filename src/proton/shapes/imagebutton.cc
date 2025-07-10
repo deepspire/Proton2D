@@ -9,7 +9,7 @@ ImageButton::ImageButton(SDL_Texture *texture, const float x, const float y, con
 }
 ImageButton::~ImageButton() { delete this->image; }
 
-void ImageButton::setRotation(const float angle) { this->rotation = angle; }
+void ImageButton::setRotation(const float angle) { this->image->setRotation(angle); }
 
 void ImageButton::setPosition(const float x, const float y)
 {

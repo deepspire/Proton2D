@@ -19,11 +19,14 @@ class ButtonArea : public Shape
     [[nodiscard]] auto getW() const -> float override { return this->w; }
     [[nodiscard]] auto getH() const -> float override { return this->h; }
 
-    void onClick();
+    void onClick() const;
+    void onClickEnded() const;
     void setClickListener(void (*f)());
+    void setClickEndedListener(void (*f)());
 
   protected:
     float w, h;
     void (*clickListener)() = nullptr;
+    void (*unclickListener)() = nullptr;
 };
 }; // namespace Proton

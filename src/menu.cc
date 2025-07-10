@@ -5,12 +5,13 @@
 #include "proton/shapes/image.hh"
 #include "proton/shapes/rectangle.hh"
 #include "ss.hh"
+#include "proton/shapes/imagebutton.hh"
 
 Proton::PhysicsBody *body;
 Proton::PhysicsBody *body2;
 Proton::PhysicsBody *body3;
 Proton::PhysicsBody *body4;
-Proton::Image *physicRectangle;
+Proton::ImageButton *physicRectangle;
 Proton::Rectangle *physicRectangle2;
 Proton::Rectangle *physicRectangle3;
 Proton::Rectangle *moving;
@@ -25,7 +26,14 @@ Menu::Menu(SDL_Renderer *render, SDL_Window *window) : Scene(render, window)
     addObject(moving);
 
     physicRectangle =
-        new Proton::Image(Proton::ResourceManager::getInstance().getTexture(render, "kachan1.png"), 150, 50, 100, 100);
+        new Proton::ImageButton(Proton::ResourceManager::getInstance().getTexture(render, ""), 0, 0, 100, 100);
+    physicRectangle->setClickListener([]() {
+        Proton::Log("Click");
+    });
+    physicRectangle->setClickEndedListener([]() {
+        Proton::Log("Click ended");
+    });
+    addButton(physicRectangle);
     body = new Proton::PhysicsBoxBody(Proton::PhysicsBody::Dynamic, 100 * Proton::METERS_PER_PIXEL, 100 * Proton::METERS_PER_PIXEL, 1, 0);
     body->setPositionInPixels(150, 50);
     body->bindShape(physicRectangle);
@@ -47,7 +55,6 @@ Menu::Menu(SDL_Renderer *render, SDL_Window *window) : Scene(render, window)
     body4->setPositionInPixels(240, 420);
     body4->bindShape(r1);
 
-    addObject(physicRectangle);
     addObject(physicRectangle2);
     addObject(physicRectangle3);
     addObject(r1);
@@ -61,12 +68,16 @@ Menu::Menu(SDL_Renderer *render, SDL_Window *window) : Scene(render, window)
 
 void Menu::mouseDown(const Proton::Point &mPos)
 {
-    this->goNextScene = true;
-    this->nextScene = new SecondScene(this->render, this->window);
+    if (mPos.x < 50 && mPos.y < 50) {
+        {
+            this->goNextScene = true;
+            this->nextScene = new SecondScene(this->render, this->window);
+        }
+    }
 }
 
 void Menu::keyPressed([[maybe_unused]] Uint16 ev) {}
-Proton::Scene *Menu::update(const float dt)
+auto Menu::update(const float dt) -> Scene *
 {
     moving->setRotation(moving->getRotation() + dt * 40);
     body4->setRotation(r1->getRotation() + dt * 100);

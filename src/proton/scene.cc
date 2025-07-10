@@ -107,6 +107,20 @@ void Scene::handleButtonClick(const Point &mPos)
     }
 }
 
+void Scene::handleButtonClickEnd(const Point &mPos) const {
+    const float mX = mPos.x;
+    const float mY = mPos.y;
+
+    for (const ButtonArea *button : this->buttons)
+    {
+        if ((button->getX() <= mX && mX <= button->getX() + button->getW()) &&
+            (button->getY() <= mY && mY <= button->getY() + button->getH()))
+        {
+            button->onClickEnded();
+        }
+    }
+}
+
 void Scene::handleKeyDown(SDL_Event event)
 {
     if (this->focusedTextBox != nullptr)

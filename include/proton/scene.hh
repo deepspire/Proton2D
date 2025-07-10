@@ -35,6 +35,7 @@ namespace Proton
         void paint();
 
         void handleButtonClick(const Point& mPos);
+        void handleButtonClickEnd(const Point& mPos) const;
 
         void handleKeyDown(SDL_Event event);
 
