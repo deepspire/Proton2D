@@ -14,19 +14,18 @@ set(SOURCE_FILES
     src/proton/shapes/shape.cc
     src/proton/audio.cc
     src/proton/proton.cc
+    src/proton/physics.cc
     src/proton/resourcemanager.cc
     src/proton/scene.cc
     src/jni/JNIBindings.cpp
 )
 
 if(ANDROID)
-    add_library(main SHARED ${SOURCE_FILES}
-        include/proton/physics.hh)
+    add_library(main SHARED ${SOURCE_FILES})
     set(SDL_MAIN_TARGET main)
     set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries" FORCE)
 else()
-    add_executable(Proton2D ${SOURCE_FILES}
-        src/proton/physics.cc)
+    add_executable(Proton2D ${SOURCE_FILES})
     set(SDL_MAIN_TARGET Proton2D)
     set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries" FORCE)
 endif()
