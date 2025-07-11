@@ -10,3 +10,6 @@
 [submodule "ext/box2d"]
 	path = ext/box2d
 	url = https://github.com/erincatto/box2d.git
+[submodule "ext/luajit"]
+	path = ext/luajit
+	url = https://github.com/LuaJIT/LuaJIT
