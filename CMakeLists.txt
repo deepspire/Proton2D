@@ -32,14 +32,15 @@ set(SOURCE_FILES
 
 if(ANDROID)
     add_library(main SHARED ${SOURCE_FILES})
-    set(SDL_MAIN_TARGET main)
+    set(TARGET_NAME main)
     set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries" FORCE)
 else()
-
     add_library(Proton2D STATIC ${SOURCE_FILES})
+    set(TARGET_NAME Proton2D)
     set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries" FORCE)
-    set(PRO_TARGET Proton2D)
 endif()
+
+
 
 add_subdirectory(ext/SDL3)
 set(SDLIMAGE_AVIF OFF CACHE BOOL "Disable AVIF support")
@@ -61,17 +62,15 @@ add_subdirectory(ext/SDL3_image)
 add_subdirectory(ext/SDL3_ttf)
 add_subdirectory(ext/box2d)
 
-# Use SDL_MAIN_TARGET for Android, PRO_TARGET for others
-target_include_directories(${PRO_TARGET} PUBLIC
+# Далее использовать её
+target_include_directories(${TARGET_NAME} PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/ext
         ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
-
-# Use SDL_MAIN_TARGET for Android, PRO_TARGET for others
-target_link_libraries(${PRO_TARGET} PRIVATE SDL3::SDL3 SDL3_ttf::SDL3_ttf SDL3_image::SDL3_image box2d::box2d)
+target_link_libraries(${TARGET_NAME} PRIVATE SDL3::SDL3 SDL3_ttf::SDL3_ttf SDL3_image::SDL3_image box2d::box2d)
 
 if(WIN32)
-    target_link_options(${PRO_TARGET} PRIVATE -static-libgcc -static-libstdc++)
+    target_link_options(${TARGET_NAME} PRIVATE -static-libgcc -static-libstdc++)
     # The custom commands for copying assets and DLLs are typically for executables.
     # If you are building a static library, these commands might not be necessary
     # unless you have a separate executable project that links against this library
@@ -87,9 +86,9 @@ if(WIN32)
     #     $<TARGET_FILE_DIR:${PRO_TARGET}>
     # )
 elseif(ANDROID)
-    target_link_libraries(${SDL_MAIN_TARGET} PRIVATE log android)
+    target_link_libraries(${TARGET_NAME} PRIVATE log android)
 elseif(UNIX AND NOT APPLE)
-    target_link_libraries(${PRO_TARGET} PRIVATE m dl)
+    target_link_libraries(${TARGET_NAME} PRIVATE m dl)
     # Similar to Windows, these custom commands might not be needed for a static library.
     # add_custom_command(TARGET ${PRO_TARGET} POST_BUILD
     #     COMMAND_EXPAND_LISTS
