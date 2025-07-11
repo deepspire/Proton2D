@@ -138,6 +138,14 @@ void Audio::play()
 #endif
 }
 
+void Audio::setVolume(const float volume) const {
+    ma_sound_set_volume(this->sound, volume);
+}
+
+void Audio::setPitch(const float pitch) const {
+    ma_sound_set_pitch(this->sound, pitch);
+}
+
 void Audio::stop() const
 {
     if (sound != nullptr)

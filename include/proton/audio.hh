@@ -17,6 +17,8 @@ namespace Proton
 
         void setAudioPath(const char *newPath);
         void play();
+        void setVolume(float volume) const;
+        void setPitch(float pitch) const;
         void stop() const;
         [[nodiscard]] bool isPlaying() const;
 
