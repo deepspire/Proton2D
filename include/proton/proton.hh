@@ -6,6 +6,7 @@
 
 #include "scene.hh"
 #include "shapes/shape.hh"
+#include "imgui.h"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <SDL3/SDL_render.h>
@@ -45,5 +46,6 @@ class Display
     Scene *currentScene;
     bool isInit = false;
     int windowWidth, windowHeight;
+    ImGuiIO* imguiio;
 };
 } // namespace Proton

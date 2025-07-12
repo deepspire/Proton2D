@@ -13,3 +13,6 @@
 [submodule "ext/luajit"]
 	path = ext/luajit
 	url = https://github.com/LuaJIT/LuaJIT
+[submodule "ext/imgui"]
+	path = ext/imgui
+	url = https://github.com/ocornut/imgui

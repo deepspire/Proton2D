@@ -1,0 +1,3459 @@
+./CMakeLists.txt
+---
+cmake_minimum_required(VERSION 3.22)
+
+project(Proton2D)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(SOURCE_FILES
+    src/proton/audio.cc
+    src/proton/proton.cc
+    src/proton/physics.cc
+    src/proton/resourcemanager.cc
+    src/proton/scene.cc
+    src/jni/JNIBindings.cpp
+
+    src/proton/shapes/shape.cc
+    src/proton/shapes/rectangle.cc
+    src/proton/shapes/line.cc
+    src/proton/shapes/circle.cc
+    src/proton/shapes/text.cc
+    src/proton/shapes/textbox.cc
+    src/proton/shapes/rectanglebutton.cc
+    src/proton/shapes/container.cc
+    src/proton/shapes/buttonarea.cc
+    src/proton/shapes/group.cc
+    src/proton/shapes/image.cc
+    src/proton/shapes/imagebutton.cc
+    src/proton/shapes/progressbar.cc
+
+    ext/imgui/imgui.cpp
+    ext/imgui/imgui_draw.cpp
+    ext/imgui/imgui_tables.cpp
+    ext/imgui/imgui_widgets.cpp
+    ext/imgui/imgui_demo.cpp
+    ext/imgui/backends/imgui_impl_sdl3.cpp
+    ext/imgui/backends/imgui_impl_sdlrenderer3.cpp
+)
+
+if(ANDROID)
+    add_library(main SHARED ${SOURCE_FILES})
+    set(TARGET_NAME main)
+    set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries" FORCE)
+else()
+    add_library(Proton2D STATIC ${SOURCE_FILES})
+    set(TARGET_NAME Proton2D)
+    set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries" FORCE)
+endif()
+
+add_subdirectory(ext/SDL3)
+set(SDLIMAGE_AVIF OFF CACHE BOOL "Disable AVIF support")
+set(SDLIMAGE_GIF OFF CACHE BOOL "Disable GIF support")
+set(SDLIMAGE_JXL OFF CACHE BOOL "Disable JXL support")
+set(SDLIMAGE_LBM OFF CACHE BOOL "Disable LBM support")
+set(SDLIMAGE_PCX OFF CACHE BOOL "Disable PCX support")
+set(SDLIMAGE_PNM OFF CACHE BOOL "Disable PNM support")
+set(SDLIMAGE_QOI OFF CACHE BOOL "Disable QOI support")
+set(SDLIMAGE_SVG OFF CACHE BOOL "Disable SVG support")
+set(SDLIMAGE_TIF OFF CACHE BOOL "Disable TIFF support")
+set(SDLIMAGE_WEBP OFF CACHE BOOL "Disable WEBP support")
+set(SDLIMAGE_XCF OFF CACHE BOOL "Disable XCF support")
+set(SDLIMAGE_XPM OFF CACHE BOOL "Disable XPM support")
+set(SDLIMAGE_XV OFF CACHE BOOL "Disable XV support")
+set(SDLIMAGE_BMP OFF CACHE BOOL "Disable BMP support")
+set(SDLIMAGE_TGA OFF CACHE BOOL "Disable TGA support")
+add_subdirectory(ext/SDL3_image)
+add_subdirectory(ext/SDL3_ttf)
+add_subdirectory(ext/box2d)
+
+target_include_directories(${TARGET_NAME} PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/ext
+    ${CMAKE_CURRENT_SOURCE_DIR}/ext/imgui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ext/imgui/backends
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+target_link_libraries(${TARGET_NAME} PRIVATE SDL3::SDL3 SDL3_ttf::SDL3_ttf SDL3_image::SDL3_image box2d::box2d)
+
+if(WIN32)
+    target_link_options(${TARGET_NAME} PRIVATE -static-libgcc -static-libstdc++)
+elseif(ANDROID)
+    target_link_libraries(${TARGET_NAME} PRIVATE log android)
+elseif(UNIX AND NOT APPLE)
+    target_link_libraries(${TARGET_NAME} PRIVATE m dl)
+else()
+    message(FATAL_ERROR "platform pizdec")
+endif()
+
+find_package(Java)
+
+if(Java_FOUND)
+    if(WIN32)
+        set(GRADLEW_EXECUTABLE gradlew.bat)
+    else()
+        set(GRADLEW_EXECUTABLE ./gradlew)
+    endif()
+
+    add_custom_target(
+        "Build-android-Release"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/android_build
+        COMMAND ${CMAKE_COMMAND} -E env
+        "JAVA_HOME=$ENV{JAVA_HOME}"
+        ${GRADLEW_EXECUTABLE} assembleRelease
+        USES_TERMINAL
+    )
+
+    add_custom_target(
+        "Install-android-Release"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/android_build
+        COMMAND ${CMAKE_COMMAND} -E env
+        "JAVA_HOME=$ENV{JAVA_HOME}"
+        ${GRADLEW_EXECUTABLE} installRelease
+        USES_TERMINAL
+    )
+
+    add_custom_target(
+        "Clean-android"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/android_build
+        COMMAND ${CMAKE_COMMAND} -E env
+        "JAVA_HOME=$ENV{JAVA_HOME}"
+        ${GRADLEW_EXECUTABLE} clean
+        USES_TERMINAL
+    )
+else()
+    message(STATUS "Couldn't find java.")
+endif()
+
+
+---
+./LICENSE
+---
+MIT License
+
+Copyright (c) 2025 Deepspire
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+---
+./README.md
+---
+# Proton2D
+
+<p align="center">
+<img alt="GitHub last Main commit" src="https://img.shields.io/github/last-commit/deepspire/Proton2D/main">
+<img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/deepspire/Proton2D">
+</p>
+
+<p align="center">
+<img alt="Windows support" src="https://img.shields.io/badge/Windows-works-green">
+<img alt="Linux support" src="https://img.shields.io/badge/Linux-works-green">
+<img alt="Android support" src="https://img.shields.io/badge/Android-works-green">
+</p>
+
+## Cloning
+```bash
+git clone --recurse-submodules https://github.com/deepspire/Proton2D.git
+cd Proton2D
+git submodule update --init --recursive
+```
+
+if external submodule updated:
+```bash
+git submodule update --remote --recursive
+```
+
+for VSCode, use [Clangd](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd) extension instead of default Microsoft one.
+
+## Android building
+you can do it the same way as on arch, any other linux distro or even windows, because it's almost same
+
+You'll need to install android-sdk, jdk-17, jdk-8 and android-ndk (jdk8 is needed for sdkmanager licenses)
+```bash
+sudo pacman -S jdk17-openjdk jdk8-openjdk
+yay -S android-sdk android-ndk android-sdk-platform-tools
+```
+
+Next, add env paths, for linux, in `~/.bashrc` (or whatever you use) also its necesarry to add:
+```bash
+export ANDROID_NDK_HOME=/opt/android-ndk
+export ANDROID_HOME=/opt/android-sdk
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+```
+
+arch **JDK8** path is commonly `/usr/lib/jvm/java-8-openjdk`
+
+also you may need to get access for /opt/android-sdk and /opt/android-ndk
+
+(commonly, user:group is just a username, for example, santer:santer)
+```bash
+sudo chown -R user:group /opt/android-sdk
+sudo chown -R user:group /opt/android-ndk
+```
+
+agree with licenses (just input y):
+```bash
+JAVA_HOME="/usr/lib/jvm/java-8-openjdk" sdkmanager --licenses
+```
+
+for debug build:
+```bash
+cd android_build
+JAVA_HOME=/usr/lib/jvm/java-17-openjdk ./gradlew assembleDebug
+```
+
+for release build:
+```bash
+JAVA_HOME=/usr/lib/jvm/java-17-openjdk ./gradlew assembleRelease
+```
+
+for installing debug apk via ADB:
+```bash
+JAVA_HOME=/usr/lib/jvm/java-17-openjdk ./gradlew installDebug
+```
+
+for installing release apk via ADB:
+```bash
+JAVA_HOME=/usr/lib/jvm/java-17-openjdk ./gradlew releaseDebug
+```
+
+## Windows build guide
+install `msys2`, `ninja`. (choco: `choco install msys2 ninja -y`)
+
+open mingw64 terminal ("C:\tools\msys64\mingw64.exe" choco path)
+
+input `pacman -Syu` and `pacman -S mingw-w64-x86_64-toolchain`. (hit enter if it asks selection)
+
+now, with CMake vscode extension, select kit: `[Scan recursively for kits in specific directories (max depth: 5)]`, input `C:\tools\msys64\mingw64`. after scan, select mingw64 GCC.
+
+now you can press `Build`, `Debug` and `Run` buttons in vscode.
+
+## Dependencies
+- SDL3
+- SDL3_image
+- SDL3_ttf
+- [miniaudio](https://github.com/mackron/miniaudio)
+- Ninja build system
+
+
+---
+./proton2d.txt
+---
+
+
+---
+./include/proton/audio.hh
+---
+#pragma once
+
+#include <string>
+#if defined(__ANDROID__)
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
+#endif
+#include "miniaudio.h"
+
+namespace Proton
+{
+    class Audio
+    {
+    public:
+        explicit Audio(const std::string &audioPath);
+        ~Audio();
+
+        void setAudioPath(const char *newPath);
+        void play();
+        void setVolume(float volume) const;
+        void setPitch(float pitch) const;
+        void stop() const;
+        [[nodiscard]] bool isPlaying() const;
+
+    protected:
+        ma_sound *sound;
+        ma_decoder *decoder = nullptr;
+        std::string audioPath;
+    };
+}
+
+---
+./include/proton/logman.hh
+---
+#pragma once
+
+#include <iostream>
+#include <sstream>
+
+#if defined(__ANDROID__)
+#include <android/log.h>
+#define LOG_TAG "Proton2D"
+#endif
+
+namespace Proton
+{
+    template <typename... logArgs>
+    void Log(logArgs &&...args)
+    {
+        std::stringstream ss;
+        (ss << ... << args);
+
+#if defined(__ANDROID__)
+        __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "%s", ss.str().c_str());
+#else
+        std::cout << "[PROTON2D] " << ss.str() << std::endl;
+#endif
+    }
+}
+
+---
+./include/proton/physics.hh
+---
+#pragma once
+
+#include "box2d/types.h"
+
+namespace Proton
+{
+static float PIXELS_PER_METER = 32.0f;
+static float METERS_PER_PIXEL = 1.0f / PIXELS_PER_METER;
+
+class Shape;
+class Physics
+{
+  public:
+    static void initPhysicsDevice(float gravityY);
+    static void destroyPhysicsDevice();
+    static void simulationStep();
+    static void update(float dt);
+
+    static float physicsTimeStep;
+    static float timePhysics;
+};
+
+class PhysicsBody
+{
+  public:
+    enum BodyType : uint8_t
+    {
+        Dynamic,
+        Static
+    };
+    explicit PhysicsBody(BodyType type, float bWidth = 1.0f, float bHeight = 1.0f, float density = 1.0f,
+                         double rotation = 0, bool isCircle = false);
+    void bindShape(Shape *shape);
+
+    virtual ~PhysicsBody();
+    [[nodiscard]] virtual auto getUsedShape() const -> Shape *;
+    [[nodiscard]] auto getPosX() const -> float;
+    [[nodiscard]] auto getPosY() const -> float;
+    [[nodiscard]] auto getBody() const -> b2BodyId;
+    [[nodiscard]] auto getWidth() const -> float;
+    [[nodiscard]] auto getHeight() const -> float;
+    void setPosition(float x, float y);
+    void setPositionInPixels(float px, float py);
+    void setRotation(float angle) const;
+    void applyForce(float xForce, float yForce) const;
+    void applyLinearImpulse(float xForce, float yForce) const;
+    void applyAngularImpulse(float angle) const;
+
+  protected:
+    b2BodyType type;
+    b2BodyId bodyId{};
+    b2ShapeId shapeId{};
+    float width{}, height{};
+    float posX{}, posY{};
+    Shape *usedShape{};
+};
+
+class PhysicsBoxBody final : public PhysicsBody
+{
+  public:
+    PhysicsBoxBody(BodyType type, float bWidth, float bHeight, float density, double rotation)
+        : PhysicsBody(type, bWidth, bHeight, density, rotation, false)
+    {
+    }
+};
+
+class PhysicsCircleBody final : public PhysicsBody
+{
+  public:
+    PhysicsCircleBody(BodyType type, float radius, float density, double rotation)
+        : PhysicsBody(type, radius, radius, density, rotation, true)
+    {
+    }
+};
+} // namespace Proton
+
+
+---
+./include/proton/proton.hh
+---
+#pragma once
+
+#ifndef __ANDROID__
+#define SDL_MAIN_HANDLED
+#endif
+
+#include "scene.hh"
+#include "shapes/shape.hh"
+#include "imgui.h"
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_main.h>
+#include <SDL3/SDL_render.h>
+#include <SDL3_ttf/SDL_ttf.h>
+#include <string>
+#include <vector>
+
+namespace Proton
+{
+class Display
+{
+  public:
+    explicit Display(const std::string &title, int w = 480, int h = 640);
+    void setScene(Scene *newScene);
+    void startRendering();
+    [[nodiscard]] auto getWindowHeight() const -> int;
+    [[nodiscard]] auto getWindowWidth() const -> int;
+
+    [[nodiscard]] auto getSurface() const -> SDL_Surface *;
+    [[nodiscard]] auto getRenderer() const -> SDL_Renderer *;
+    [[nodiscard]] auto getNativeWindow() const -> SDL_Window *;
+
+    void setTitle(const char *title) const;
+    void setIcon(const std::string &path) const;
+    void setRenderScale(double x, double y) const;
+
+    int pointerX, pointerY;
+
+  private:
+    void renderStart();
+    static void summonError();
+
+    SDL_Window *handle;
+    SDL_Renderer *render;
+    std::string title;
+    std::vector<Shape> objects;
+    Scene *currentScene;
+    bool isInit = false;
+    int windowWidth, windowHeight;
+    ImGuiIO& imguiio;
+};
+} // namespace Proton
+
+
+---
+./include/proton/resourcemanager.hh
+---
+#pragma once
+
+#include <SDL3/SDL.h>
+#include <SDL3_ttf/SDL_ttf.h>
+#include <string>
+#include <SDL3_image/SDL_image.h>
+#include <unordered_map>
+#if defined(__ANDROID__)
+#include <android/asset_manager.h>
+#endif
+#include "miniaudio.h"
+
+namespace Proton
+{
+    class ResourceManager
+    {
+    public:
+        static ResourceManager &getInstance();
+
+        ResourceManager(const ResourceManager &) = delete;
+        ResourceManager &operator=(const ResourceManager &) = delete;
+
+        ma_engine *getAudioEngine();
+        void initAudioEngine();
+        SDL_Texture *getTexture(SDL_Renderer *render, const std::string &path);
+        TTF_Font *getFont(const std::string &path, int fontSize);
+        SDL_Surface *getIcon(const std::string &path);
+
+#if defined(__ANDROID__)
+        void setAssetManager(AAssetManager *manager);
+        AAssetManager *getAssetManager();
+#endif
+
+        void clearCache();
+
+    private:
+        ResourceManager() = default;
+        ~ResourceManager();
+
+        ma_engine currentAudioEngine{};
+        bool audioEngineInitialized{};
+
+        std::unordered_map<std::string, SDL_Texture *> textureCache;
+        std::unordered_map<std::string, TTF_Font *> fontCache;
+        SDL_Surface *currentIcon{};
+
+#if defined(__ANDROID__)
+        AAssetManager *assetManager = nullptr;
+#endif
+    };
+};
+
+---
+./include/proton/scene.hh
+---
+#pragma once
+#include "audio.hh"
+#include "physics.hh"
+#include "proton/shapes/container.hh"
+#include "shapes/buttonarea.hh"
+#include "shapes/shape.hh"
+#include "shapes/textbox.hh"
+#include <SDL3/SDL_stdinc.h>
+#include <vector>
+
+#define ROOT_POSITION 0.0f, 0.0f
+
+namespace Proton
+{
+class Scene
+{
+  public:
+    virtual void keyPressed(Uint16 key) = 0;
+    virtual void mouseDown(const Point &mPos) = 0;
+    virtual auto update(float dt) -> Scene * = 0;
+
+    Scene(SDL_Renderer *render, SDL_Window *window);
+
+    virtual ~Scene();
+
+    void addObject(Shape *shape);
+    void addButton(ButtonArea *button);
+    void addContainer(Container *container);
+
+    void addTextBox(TextBox *textbox);
+
+    void addAudio(Audio *audio);
+
+    void clearScene();
+
+    void paint();
+
+    void handleButtonClick(const Point &mPos);
+    void handleButtonClickEnd(const Point &mPos) const;
+
+    void handleKeyDown(SDL_Event event);
+
+    void handleMouseDrag(int mX, int mY);
+
+    void handleTextInput(SDL_Event event);
+    void addBody(PhysicsBody *body);
+    auto getPhysicsBodies() -> std::vector<PhysicsBody *>;
+
+    [[nodiscard]] auto getBackgroundColor() const -> Color;
+
+  private:
+    void destroyObjectMassive();
+    std::vector<PhysicsBody *> physicsBodies;
+
+  protected:
+    SDL_Renderer *render;
+    SDL_Window *window;
+
+    std::vector<Shape *> objects;
+    std::vector<ButtonArea *> buttons;
+    std::vector<TextBox *> textboxes;
+    std::vector<Container *> containers;
+    std::vector<Audio *> audios;
+
+    bool goNextScene = false;
+    Scene *nextScene = nullptr;
+
+    TextBox *focusedTextBox = nullptr;
+
+    Color background;
+};
+}; // namespace Proton
+
+---
+./include/proton/utf8helper.hh
+---
+#pragma once
+
+namespace Proton
+{
+inline auto getCharLength(const unsigned char firstByte) -> int
+{
+    if (firstByte < 0x80)
+        return 1;
+    if ((firstByte & 0xE0) == 0xC0)
+        return 2;
+    if ((firstByte & 0xF0) == 0xE0)
+        return 3;
+    if ((firstByte & 0xF8) == 0xF0)
+        return 4;
+    return 1;
+}
+} // namespace Proton
+
+---
+./include/proton/shapes/buttonarea.hh
+---
+#pragma once
+
+#include "shape.hh"
+#include <functional>
+
+namespace Proton
+{
+class ButtonArea : public Shape
+{
+  public:
+    explicit ButtonArea(const float x = 0, const float y = 0, const float w = 10, const float h = 10);
+
+    void paint(SDL_Renderer *render, float rX, float rY) override {}
+
+    void setPosition(const float x, const float y) override;
+
+    void setFillColor([[maybe_unused]] Color color) override {}
+
+    virtual void resize(const float w, const float h);
+
+    [[nodiscard]] auto getW() const -> float override { return this->w; }
+    [[nodiscard]] auto getH() const -> float override { return this->h; }
+
+    void onClick() const;
+    void onClickEnded() const;
+    void setClickListener(const std::function<void()>& f);
+    void setClickEndedListener(const std::function<void()>& f);
+
+  protected:
+    float w, h;
+    std::function<void()> clickListener;
+    std::function<void()> unclickListener;
+};
+}; // namespace Proton
+
+---
+./include/proton/shapes/circle.hh
+---
+#pragma once
+
+#include "shape.hh"
+#include <SDL3/SDL.h>
+#include <cstdint>
+
+namespace Proton
+{
+class Circle : public Shape
+{
+  public:
+    enum Style : uint8_t
+    {
+        Fill,
+        Bevel
+    };
+
+    explicit Circle(float x = 0, float y = 0, int radius = 40, Color fillColor = Color(), Style style = Fill);
+
+    ~Circle() override;
+
+    void setFillColor(Color newColor) override;
+
+    void setStyle(Style s);
+
+    void paint(SDL_Renderer *render, float rX, float rY) override;
+
+    [[nodiscard]] auto getW() const -> float override { return static_cast<float>(radius * 2); }
+    [[nodiscard]] auto getH() const -> float override { return static_cast<float>(radius * 2); }
+
+  private:
+    int radius;
+    Color color;
+    Style style;
+    SDL_Texture *texture;
+    bool dirty;
+
+    void rebuildTexture(SDL_Renderer *render);
+};
+} // namespace Proton
+
+
+---
+./include/proton/shapes/container.hh
+---
+#pragma once
+
+#include "proton/shapes/buttonarea.hh"
+#include "shape.hh"
+#include <vector>
+
+namespace Proton
+{
+class Container : public Shape
+{
+  public:
+    explicit Container(const float x, const float y, const int width, const int height);
+
+    void paint(SDL_Renderer *render, const float rX, const float rY) override;
+
+    void setFillColor(Color /*unused*/) override {}
+
+    void addObject(Shape *shape) { shapes.push_back(shape); }
+    void addButton(ButtonArea *button)
+    {
+        buttons.push_back(button);
+        shapes.push_back(button);
+    }
+
+    void clear();
+
+    void setPosition(float x, float y) override;
+
+    void update(const float dt) override;
+
+    [[nodiscard]] auto getW() const -> float override { return this->containerRect.w; }
+    [[nodiscard]] auto getH() const -> float override { return this->containerRect.h; }
+
+    auto getButtons() -> std::vector<ButtonArea *> & { return this->buttons; }
+
+    ~Container() override;
+
+  private:
+    SDL_FRect containerRect{};
+
+    std::vector<Shape *> shapes;
+    std::vector<ButtonArea *> buttons;
+};
+} // namespace Proton
+
+
+---
+./include/proton/shapes/group.hh
+---
+#pragma once
+#include "shape.hh"
+#include <vector>
+
+namespace Proton
+{
+class Group : public Shape
+{
+  public:
+    explicit Group(const float x, const float y);
+
+    void paint(SDL_Renderer *render, const float gX, const float gY) override;
+
+    void setRotation(const float angle) override { this->rotation = angle; }
+
+    void setFillColor(Color /*unused*/) override {}
+
+    void update(const float dt) override;
+
+    void addObject(Shape *shape) { shapes.push_back(shape); }
+
+    void clear() const;
+
+    [[nodiscard]] auto getW() const -> float override { return 0.0f; }
+    [[nodiscard]] auto getH() const -> float override { return 0.0f; }
+
+    ~Group() override;
+
+  protected:
+    std::vector<Shape *> shapes;
+};
+} // namespace Proton
+
+---
+./include/proton/shapes/image.hh
+---
+#pragma once
+
+#include "shape.hh"
+
+namespace Proton
+{
+class Image : public Shape
+{
+  public:
+    explicit Image(SDL_Texture *texture, const float x = 0, const float y = 0, const float width = 0,
+                   const float height = 0);
+
+    ~Image() override = default;
+
+    void setFillColor([[maybe_unused]] Color c) override {}
+
+    void resize(const float width, const float height);
+
+    [[nodiscard]] auto getW() const -> float override { return this->width; }
+    [[nodiscard]] auto getH() const -> float override { return this->height; }
+
+    void paint(SDL_Renderer *render, const float rX, const float rY) override;
+
+    void setRotation(const float angle) override { this->rotation = angle; }
+
+    void setTexture(SDL_Texture *texture);
+
+    void setAlpha(float alpha);
+    auto getAlpha() -> float;
+
+  private:
+    float width, height;
+    SDL_Texture *imageTexture;
+    float alpha = 1;
+};
+} // namespace Proton
+
+---
+./include/proton/shapes/imagebutton.hh
+---
+#pragma once
+
+#include "buttonarea.hh"
+#include "image.hh"
+
+namespace Proton
+{
+class ImageButton : public ButtonArea
+{
+  public:
+    explicit ImageButton(SDL_Texture *texture, const float x, const float y, const float w, const float h);
+    ~ImageButton() override;
+
+    void setRotation(const float angle) override;
+
+    void setPosition(const float x, const float y) override;
+
+    void resize(const float w, const float h) override;
+
+    void paint(SDL_Renderer *render, const float rX, const float rY) override;
+
+    void setFillColor([[maybe_unused]] Color color) override {}
+
+    void setAlpha(float alpha);
+    auto getAlpha() -> float;
+
+  protected:
+    Image *image;
+};
+}; // namespace Proton
+
+---
+./include/proton/shapes/line.hh
+---
+#pragma once
+
+#include "shape.hh"
+
+namespace Proton
+{
+class Line : public Shape
+{
+  public:
+    explicit Line(float x1 = 0, float y1 = 0, float x2 = 5, float y2 = 5, Color color = Color());
+
+    void setRotation(float angle) override { this->rotation = angle; }
+    void setPosition(const float x, const float y) override;
+    void setFillColor(Color color) override { this->fillColor = color; }
+    void paint(SDL_Renderer *render, float rX, float rY) override;
+
+    [[nodiscard]] auto getW() const -> float override;
+    [[nodiscard]] auto getH() const -> float override;
+
+  private:
+    Color fillColor;
+    float endX, endY;
+};
+} // namespace Proton
+
+
+---
+./include/proton/shapes/progressbar.hh
+---
+#pragma once
+#include "shape.hh"
+
+namespace Proton
+{
+class ProgressBar : public Shape
+{
+  public:
+    explicit ProgressBar(float x = 0, float y = 0, float width = 100, float height = 20, float defaultProgress = 100);
+
+    ~ProgressBar() override;
+
+    void setFillColor(const Color newColor) override;
+
+    void setProgress(float value);
+    [[nodiscard]] auto getProgress() const -> float;
+
+    [[nodiscard]] auto getW() const -> float override { return this->width; }
+    [[nodiscard]] auto getH() const -> float override { return this->height; }
+
+    void setRotation(const float angle) override;
+
+    void paint(SDL_Renderer *render, float pX, float pY) override;
+
+  private:
+    float width, height;
+    float progress;
+    Color progressBarColor;
+    SDL_Texture *texture;
+    bool dirty;
+
+    void rebuildTexture(SDL_Renderer *render);
+};
+} // namespace Proton
+
+
+---
+./include/proton/shapes/rectangle.hh
+---
+#pragma once
+
+#include "shape.hh"
+#include <SDL3/SDL.h>
+
+namespace Proton
+{
+
+class Rectangle final : public Shape
+{
+  public:
+    enum Style : uint8_t
+    {
+        Fill,
+        Bevel
+    };
+
+    Rectangle(const float x = 0, float y = 0, float w = 10, float h = 10, const Color color = Color(),
+              Style style = Fill);
+
+    ~Rectangle() override;
+
+    void setFillColor(const Color newColor) override;
+
+    void resize(const float width, const float height);
+
+    [[nodiscard]] auto getW() const -> float override { return w; }
+    [[nodiscard]] auto getH() const -> float override { return h; }
+
+    void setStyle(const Style newStyle);
+
+    [[nodiscard]] auto getStyle() const -> Style { return style; }
+
+    void paint(SDL_Renderer *renderer, const float rX, const float rY) override;
+
+  private:
+    float w{}, h{};
+    Color color{};
+    Style style{};
+    SDL_Texture *texture{};
+    bool dirty{true};
+
+    void rebuildTexture(SDL_Renderer *renderer);
+};
+
+} // namespace Proton
+
+
+---
+./include/proton/shapes/rectanglebutton.hh
+---
+#pragma once
+
+#include "buttonarea.hh"
+#include "rectangle.hh"
+
+namespace Proton
+{
+class RectangleButton final : public ButtonArea
+{
+  public:
+    explicit RectangleButton(float X = 0, float Y = 0, float W = 10, float H = 10, Color color = Color(0, 0, 0));
+
+    ~RectangleButton() override { delete this->rectangle; }
+
+    void setPosition(const float x, const float y) override;
+    void setRotation(const float angle) override { this->rectangle->setRotation(angle); }
+
+    void resize(const float w, const float h) override;
+
+    void paint(SDL_Renderer *render, const float rX, const float rY) override { rectangle->paint(render, rX, rY); }
+
+    void setFillColor(const Color color) override { rectangle->setFillColor(color); }
+
+  protected:
+    Rectangle *rectangle;
+};
+} // namespace Proton
+
+---
+./include/proton/shapes/shape.hh
+---
+#pragma once
+#include <SDL3/SDL.h>
+
+namespace Proton
+{
+  class PhysicsBody;
+struct Point
+{
+    float x;
+    float y;
+
+    auto operator+(const Point &other) const -> Point { return {x + other.x, y + other.y}; }
+
+    auto operator*(const float mul) const -> Point { return {x * mul, y * mul}; }
+};
+
+class Color
+{
+  public:
+    explicit Color(const unsigned char r = 0, const unsigned char g = 0, const unsigned char b = 0,
+                   const unsigned char a = 255)
+    {
+        this->r = r;
+        this->g = g;
+        this->b = b;
+        this->a = a;
+    }
+
+    [[nodiscard]] auto getR() const -> unsigned char { return this->r; }
+    [[nodiscard]] auto getG() const -> unsigned char { return this->g; }
+    [[nodiscard]] auto getB() const -> unsigned char { return this->b; }
+    [[nodiscard]] auto getA() const -> unsigned char { return this->a; }
+
+    void setR(const unsigned char v) { this->r = v; }
+
+    void setG(const unsigned char v) { this->g = v; }
+
+    void setB(const unsigned char v) { this->b = v; }
+
+    void setA(const unsigned char v) { this->a = v; }
+
+  private:
+    unsigned char r, g, b, a;
+};
+
+class Shape
+{
+  public:
+    virtual void paint(SDL_Renderer *render, float rX, float rY) = 0;
+    virtual void setFillColor(Color color) = 0;
+
+    virtual void setPosition(float x, float y);
+
+    void setVisible(const bool a) { this->isVisible = a; }
+
+    [[nodiscard]] auto getVisible() const -> bool { return this->isVisible; }
+
+    [[nodiscard]] auto getX() const -> float { return this->position.x; }
+    [[nodiscard]] auto getY() const -> float { return this->position.y; }
+
+    [[nodiscard]] virtual auto getW() const -> float = 0;
+    [[nodiscard]] virtual auto getH() const -> float = 0;
+
+    [[nodiscard]] auto getRotation() const -> float { return this->rotation; }
+
+    virtual void setRotation(float angle);
+
+    virtual void update(float dt) {}
+    virtual ~Shape() = default;
+    void setBody(PhysicsBody* body);
+
+  private:
+    PhysicsBody* body = nullptr;
+
+  protected:
+    bool isVisible = true;
+    Point position = {0, 0};
+    float rotation = 0;
+
+};
+} // namespace Proton
+
+---
+./include/proton/shapes/text.hh
+---
+#pragma once
+
+#include "shape.hh"
+#include <SDL3_ttf/SDL_ttf.h>
+#include <string>
+
+namespace Proton
+{
+class Text : public Shape
+{
+  public:
+    explicit Text(std::string text = "Label", const float x = 0, const float y = 0,
+                  std::string fontPath = "fonts/Roboto-Regular.ttf", const int fontSize = 12,
+                  const Color color = Color(255, 255, 255, 255));
+
+    ~Text() override;
+
+    void resize(const int w, const int h);
+
+    [[nodiscard]] auto getW() const -> float override { return static_cast<float>(this->w); }
+    [[nodiscard]] auto getH() const -> float override { return static_cast<float>(this->h); }
+
+    void setFillColor(const Color newColor) override;
+
+    virtual void setText(const std::string &text);
+
+    auto getText() -> const std::string & { return this->labelText; }
+    [[nodiscard]] auto getTextLength() const -> int { return static_cast<int>(this->labelText.length()); }
+
+    void paint(SDL_Renderer *render, const float rX, const float rY) override;
+
+  protected:
+    std::string labelText;
+    std::string path;
+    int fontSize;
+    Color fillColor;
+    SDL_Texture *textTexture = nullptr;
+    bool isDirty = true;
+    int w{}, h{};
+
+    void createTexture(SDL_Renderer *render);
+
+    [[nodiscard]] auto getFontHeight() const -> int;
+};
+} // namespace Proton
+
+---
+./include/proton/shapes/textbox.hh
+---
+#pragma once
+#include "../logman.hh"
+#include "../utf8helper.hh"
+#include "text.hh"
+#include <SDL3_ttf/SDL_ttf.h>
+
+namespace Proton
+{
+class TextBox : public Text
+{
+  public:
+    explicit TextBox(SDL_Window *window, const int boxW, const std::string &text = "Label", const float x = 0,
+                     const float y = 0, const std::string &fontPath = "fonts/Roboto-Regular.ttf",
+                     const int fontSize = 10, const Color color = Color(255, 255, 255, 255));
+
+    [[nodiscard]] auto isFocused() const -> bool { return this->focused; }
+    [[nodiscard]] auto getCursorPosition() const -> int { return this->cursorPosition; }
+    [[nodiscard]] auto getSelectionAnchor() const -> int { return this->selectionAnchor; }
+
+    void setFocused(const bool v);
+    void setCursorPosition(const unsigned int v);
+    void setSelectionAnchor(const int v);
+
+    void appendCursorLeft();
+    void appendCursorRight();
+
+    void setText(const std::string &text, const bool dontUpdateCursor = false);
+    void insertSymbol(const char *symbol);
+    void removeAtCursor();
+
+    [[nodiscard]] auto getCharIndexAt(const int pX) const -> int;
+
+    void update(const float dt) override;
+    void paint(SDL_Renderer *render, const float rX, const float rY) override;
+
+    [[nodiscard]] auto getH() const -> float override
+    {
+        if (this->h > 0)
+        {
+            return static_cast<float>(this->h);
+        }
+        else
+        {
+            return static_cast<float>(this->getFontHeight());
+        }
+    }
+    [[nodiscard]] auto getW() const -> float override { return static_cast<float>(this->boxW); }
+    
+    [[nodiscard]] auto getBoxW() const -> float { return static_cast<float>(this->boxW); }
+
+  private:
+    SDL_Window *window;
+    bool focused = false;
+    int cursorPosition = 0;
+    float currentBlinkTime = 0;
+    float requiredBlinkTime = 0.5; // в секундах
+    bool cursorVisible = true;
+    int selectionAnchor = -1;
+    int scrollX = 0;
+    int boxW = 0;
+
+    void adjustScrollX();
+
+    [[nodiscard]] auto getCursorPixelPosition() const -> int;
+    [[nodiscard]] auto getPixelPosition(const int charIndex) -> int;
+};
+}; // namespace Proton
+
+---
+./src/proton/audio.cc
+---
+#define MINIAUDIO_IMPLEMENTATION
+#include "proton/audio.hh"
+#include "proton/logman.hh"
+#include "proton/resourcemanager.hh"
+
+
+namespace Proton
+{
+Audio::Audio(const std::string &audioPath)
+{
+    this->sound = nullptr;
+#if defined(__ANDROID__)
+    this->audioPath = audioPath;
+#else
+    this->audioPath = "assets/" + audioPath;
+#endif
+}
+
+Audio::~Audio()
+{
+    if (sound != nullptr)
+    {
+        ma_sound_uninit(sound);
+        delete sound;
+        sound = nullptr;
+        Proton::Log("Audio ", audioPath, " destroyed");
+    }
+}
+
+bool Audio::isPlaying() const
+{
+    if (sound == nullptr)
+        return false;
+    return ma_sound_is_playing(sound);
+}
+
+void Audio::setAudioPath(const char *newPath) { this->audioPath = newPath; }
+
+void Audio::play()
+{
+    if (sound != nullptr)
+    {
+        ma_sound_stop(sound);
+        ma_sound_uninit(sound);
+        delete sound;
+        sound = nullptr;
+    }
+    if (decoder != nullptr)
+    {
+        ma_decoder_uninit(decoder);
+        delete decoder;
+        decoder = nullptr;
+    }
+
+#if defined(__ANDROID__)
+    AAssetManager *assetManager = ResourceManager::getInstance().getAssetManager();
+    if (assetManager == nullptr)
+    {
+        Proton::Log("AAssetManager is null!! Unable to play sound on Android!!");
+        return;
+    }
+
+    AAsset *asset = AAssetManager_open(assetManager, this->audioPath.c_str(), AASSET_MODE_BUFFER);
+    if (asset == nullptr)
+    {
+        Proton::Log("Failed to open sound asset at ", this->audioPath);
+        return;
+    }
+
+    size_t assetSize = AAsset_getLength(asset);
+    void *audioData = malloc(assetSize);
+    AAsset_read(asset, audioData, assetSize);
+    AAsset_close(asset);
+
+    this->decoder = new ma_decoder();
+    ma_result result = ma_decoder_init_memory(audioData, assetSize, nullptr, this->decoder);
+
+    if (result != MA_SUCCESS)
+    {
+        Proton::Log("Failed to init DECODER from memory for asset ", this->audioPath);
+        free(audioData);
+        delete this->decoder;
+        this->decoder = nullptr;
+        return;
+    }
+
+    this->sound = new ma_sound();
+    result = ma_sound_init_from_data_source(ResourceManager::getInstance().getAudioEngine(), this->decoder, 0, nullptr,
+                                            this->sound);
+
+    if (result == MA_SUCCESS)
+    {
+        ma_sound_start(sound);
+        Proton::Log("Sound started from memory ", this->audioPath);
+    }
+    else
+    {
+        Proton::Log("Failed to init SOUND from data source for asset ", this->audioPath);
+        ma_decoder_uninit(this->decoder);
+        delete this->decoder;
+        this->decoder = nullptr;
+        delete this->sound;
+        this->sound = nullptr;
+    }
+
+    free(audioData);
+
+#else
+
+    this->decoder = new ma_decoder();
+    ma_result result = ma_decoder_init_file(this->audioPath.c_str(), nullptr, this->decoder);
+
+    if (result != MA_SUCCESS)
+    {
+        Proton::Log("Failed to init DECODER from file ", this->audioPath);
+        delete this->decoder;
+        this->decoder = nullptr;
+        return;
+    }
+
+    this->sound = new ma_sound();
+    result = ma_sound_init_from_data_source(ResourceManager::getInstance().getAudioEngine(), this->decoder, 0, nullptr,
+                                            this->sound);
+
+    if (result == MA_SUCCESS)
+    {
+        ma_sound_start(sound);
+    }
+    else
+    {
+        Proton::Log("Failed to init sound from data source for file ", this->audioPath);
+        ma_decoder_uninit(this->decoder);
+        delete this->decoder;
+        this->decoder = nullptr;
+        delete this->sound;
+        this->sound = nullptr;
+    }
+#endif
+}
+
+void Audio::setVolume(const float volume) const {
+    ma_sound_set_volume(this->sound, volume);
+}
+
+void Audio::setPitch(const float pitch) const {
+    ma_sound_set_pitch(this->sound, pitch);
+}
+
+void Audio::stop() const
+{
+    if (sound != nullptr)
+    {
+        ma_sound_stop(sound);
+    }
+
+    if (decoder != nullptr)
+    {
+        ma_decoder_uninit(decoder);
+        delete decoder;
+    }
+}
+} // namespace Proton
+
+
+---
+./src/proton/physics.cc
+---
+//
+// Created by Monsler on 08.07.2025.
+//
+#include "proton/physics.hh"
+#include "box2d/box2d.h"
+#include "proton/logman.hh"
+#include "proton/shapes/shape.hh"
+
+namespace Proton
+{
+b2WorldId worldGame;
+float Physics::physicsTimeStep = 1.0f / 60.0f;
+float Physics::timePhysics = 0.0f;
+
+void Physics::update(float dt)
+{
+    timePhysics += dt;
+
+    while (timePhysics >= physicsTimeStep)
+    {
+        simulationStep();
+        timePhysics -= physicsTimeStep;
+    }
+}
+
+void Physics::initPhysicsDevice(float gravityY)
+{
+    b2Vec2 gravity = {0.0f, gravityY};
+    b2WorldDef world = b2DefaultWorldDef();
+    world.gravity = gravity;
+    worldGame = b2CreateWorld(&world);
+
+    Log("[PHYSICS] Box2D initialization is successful");
+}
+
+void Physics::destroyPhysicsDevice()
+{
+    b2DestroyWorld(worldGame);
+    worldGame = b2_nullWorldId;
+    Log("[PHYSICS] Box2D uninitialization is successful");
+}
+
+void Physics::simulationStep() { b2World_Step(worldGame, Physics::physicsTimeStep, 6); }
+
+PhysicsBody::PhysicsBody(const BodyType type, const float bWidth, const float bHeight, const float density,
+                         const double rotation, const bool isCircle)
+{
+    switch (type)
+    {
+    case Dynamic:
+        this->type = b2_dynamicBody;
+        break;
+    /*case Static: // Switch has 2 consecutive identical branches (clang-tidybugprone-branch-clone)
+        this->type = b2_staticBody;
+        break;*/
+    default:
+        this->type = b2_staticBody;
+        break;
+    }
+
+    b2ShapeDef shape = b2DefaultShapeDef();
+    shape.density = density;
+    shape.isSensor = false;
+
+    this->posX = 0.0f;
+    this->posY = 0.0f;
+    this->width = bWidth;
+    this->height = bHeight;
+    b2BodyDef b2d = b2DefaultBodyDef();
+    b2d.type = this->type;
+    b2d.position = b2Vec2{this->posX, this->posY};
+    b2d.rotation = b2MakeRot(rotation * 180.0f / M_PI);
+    this->bodyId = b2CreateBody(worldGame, &b2d);
+
+    if (isCircle)
+    {
+        b2Circle circle;
+        circle.radius = bWidth;
+        circle.center = b2Vec2{0.0f, 0.0f};
+        this->shapeId = b2CreateCircleShape(bodyId, &shape, &circle);
+    }
+    else
+    {
+        const b2Polygon box = b2MakeBox(bWidth / 2.0f, bHeight / 2.0f);
+        this->shapeId = b2CreatePolygonShape(bodyId, &shape, &box);
+    }
+
+    this->usedShape = nullptr;
+}
+
+void PhysicsBody::bindShape(Shape *shape)
+{
+    this->usedShape = shape;
+    shape->setBody(this);
+}
+
+PhysicsBody::~PhysicsBody()
+{
+    Log("PhysicsBody destroyed");
+    b2DestroyBody(this->bodyId);
+    this->bodyId = b2_nullBodyId;
+    this->shapeId = b2_nullShapeId;
+}
+
+auto PhysicsBody::getUsedShape() const -> Shape * { return this->usedShape; }
+
+auto PhysicsBody::getPosX() const -> float { return this->posX; }
+
+auto PhysicsBody::getPosY() const -> float { return this->posY; }
+
+auto PhysicsBody::getBody() const -> b2BodyId { return this->bodyId; }
+
+auto PhysicsBody::getWidth() const -> float { return width; }
+
+auto PhysicsBody::getHeight() const -> float { return height; }
+
+void PhysicsBody::setPosition(const float x, const float y)
+{
+    this->posX = x;
+    this->posY = -y;
+    b2Body_SetTransform(this->bodyId, b2Vec2{this->posX, this->posY}, b2Body_GetRotation(this->bodyId));
+}
+
+void PhysicsBody::setPositionInPixels(const float px, const float py)
+{
+    setPosition(px * METERS_PER_PIXEL, py * METERS_PER_PIXEL);
+}
+
+void PhysicsBody::setRotation(const float angle) const {
+    const float radians = -(angle * (M_PI / 180));
+    b2Body_SetTransform(this->bodyId, b2Body_GetTransform(this->bodyId).p, b2MakeRot(radians));
+}
+
+void PhysicsBody::applyForce(const float xForce, const float yForce) const {
+    b2Body_ApplyForce(this->bodyId, b2Vec2{xForce, yForce}, b2Vec2{this->posX, this->posY}, true);
+}
+
+void PhysicsBody::applyLinearImpulse(const float xForce, const float yForce) const {
+    b2Body_ApplyLinearImpulseToCenter(this->bodyId, b2Vec2{xForce, yForce}, true);
+}
+
+void PhysicsBody::applyAngularImpulse(const float angle) const {
+    const float radians = -(angle * (M_PI / 180));
+    b2Body_ApplyAngularImpulse(this->bodyId, radians, true);
+}
+} // namespace Proton
+
+
+---
+./src/proton/proton.cc
+---
+//
+// Created by Monsler on 04.07.2025.
+//
+
+#include "proton/proton.hh"
+
+#include "box2d/box2d.h"
+#include "imgui.h"
+#include "imgui_impl_sdl3.h"
+#include "imgui_impl_sdlrenderer3.h"
+#include "proton/logman.hh"
+#include "proton/physics.hh"
+#include "proton/resourcemanager.hh"
+
+
+namespace Proton
+{
+Display::Display(const std::string &title, const int w, const int h)
+    : pointerX(0), pointerY(0), windowWidth(w), windowHeight(h), imguiio(ImGui::GetIO())
+{
+    this->title = title;
+    SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "wayland,x11,windows,android");
+    SDL_SetHint(SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "1");
+    SDL_SetHint(SDL_HINT_RENDER_LINE_METHOD, "1");
+    SDL_SetHint(SDL_HINT_ORIENTATIONS, "LandscapeLeft LandscapeRight");
+
+    if (!SDL_Init(SDL_INIT_VIDEO))
+    {
+        Log("Error initializing SDL: ", SDL_GetError());
+        return;
+    }
+
+    TTF_Init();
+
+    int window_flags = 0;
+#ifdef __ANDROID__
+    window_flags |= SDL_WINDOW_FULLSCREEN;
+#else
+    window_flags |= SDL_WINDOW_RESIZABLE;
+#endif
+
+    this->handle = SDL_CreateWindow(this->title.c_str(), w, h, window_flags);
+    if (!this->handle)
+    {
+        Log("Error creating window: ", SDL_GetError());
+        return;
+    }
+
+    this->render = SDL_CreateRenderer(this->handle, nullptr);
+    if (!this->render)
+    {
+        Log("Error initializing display: ", SDL_GetError());
+        return;
+    }
+
+    SDL_SetRenderVSync(this->render, 1);
+
+    ResourceManager::getInstance().initAudioEngine();
+    Physics::initPhysicsDevice(-9.8f);
+
+    // imgui
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    (void)this->imguiio;
+    ImGui::StyleColorsDark();
+    ImGui_ImplSDL3_InitForSDLRenderer(this->handle, this->render);
+    ImGui_ImplSDLRenderer3_Init(this->render);
+
+    this->isInit = true;
+    this->currentScene = nullptr;
+}
+
+void Display::setScene(Scene *newScene)
+{
+    if (this->currentScene != nullptr)
+    {
+        delete currentScene;
+    }
+
+    this->currentScene = newScene;
+}
+
+void Display::startRendering()
+{
+    if (this->isInit)
+    {
+        this->renderStart();
+        delete this->currentScene;
+        SDL_DestroyWindow(this->handle);
+        SDL_DestroyRenderer(this->render);
+        ResourceManager::getInstance().clearCache();
+        TTF_Quit();
+        SDL_Quit();
+        Physics::destroyPhysicsDevice();
+    }
+    else
+    {
+        summonError();
+    }
+}
+
+auto Display::getWindowHeight() const -> int { return this->windowHeight; }
+
+auto Display::getWindowWidth() const -> int { return this->windowWidth; }
+
+auto Display::getSurface() const -> SDL_Surface * { return SDL_GetWindowSurface(this->handle); }
+
+auto Display::getRenderer() const -> SDL_Renderer * { return this->render; }
+
+auto Display::getNativeWindow() const -> SDL_Window * { return this->handle; }
+
+void Display::setTitle(const char *title) const { SDL_SetWindowTitle(this->handle, title); }
+
+void Display::setIcon(const std::string &path) const
+{
+    SDL_Surface *icon = ResourceManager::getInstance().getIcon(path);
+    SDL_SetWindowIcon(this->handle, icon);
+}
+
+void Display::setRenderScale(const double x, const double y) const
+{
+    SDL_SetRenderScale(this->render, static_cast<float>(x), static_cast<float>(y));
+}
+
+void Display::renderStart()
+{
+    SDL_Event e;
+    bool isDone = false;
+
+    Uint64 lastFrameTime = SDL_GetTicks();
+    float deltaTime = 0.0f;
+
+    while (!isDone)
+    {
+        while (SDL_PollEvent(&e))
+        {
+            SDL_ConvertEventToRenderCoordinates(render, &e);
+
+            switch (e.type)
+            {
+            case SDL_EVENT_QUIT:
+            {
+                isDone = true;
+                break;
+            }
+            case SDL_EVENT_MOUSE_BUTTON_UP:
+            {
+                if (!this->currentScene)
+                    break;
+                Point mousePoint{e.button.x, e.button.y};
+                this->currentScene->handleButtonClickEnd(mousePoint);
+                break;
+            }
+            case SDL_EVENT_MOUSE_BUTTON_DOWN:
+            {
+                if (!this->currentScene)
+                    break;
+                Point mousePoint{e.button.x, e.button.y};
+                this->currentScene->mouseDown(mousePoint);
+                this->currentScene->handleButtonClick(mousePoint);
+                break;
+            }
+            case SDL_EVENT_MOUSE_MOTION:
+            {
+                if (!this->currentScene)
+                    break;
+                if (e.motion.state & SDL_BUTTON_LMASK)
+                {
+                    this->currentScene->handleMouseDrag(static_cast<int>(e.motion.x), static_cast<int>(e.motion.y));
+                }
+                break;
+            }
+            case SDL_EVENT_KEY_DOWN:
+            {
+                if (!this->currentScene)
+                    break;
+                this->currentScene->handleKeyDown(e);
+                this->currentScene->keyPressed(e.key.key);
+                break;
+            }
+            case SDL_EVENT_TEXT_INPUT:
+            {
+                if (!this->currentScene)
+                    break;
+                this->currentScene->handleTextInput(e);
+                break;
+            }
+            default:
+                break;
+            }
+        }
+
+        if (!this->currentScene)
+        {
+            continue;
+        }
+
+        const auto currentTime = static_cast<float>(SDL_GetTicks());
+        deltaTime = (currentTime - static_cast<float>(lastFrameTime)) / 1000.0f;
+        lastFrameTime = static_cast<Uint64>(currentTime);
+        Physics::update(deltaTime);
+        // Log("Body count ", physicsBodies.size());
+        for (const PhysicsBody *body : currentScene->getPhysicsBodies())
+        {
+            // Log("Body ", bodies);
+            const b2BodyId bodyId = body->getBody();
+            if (Shape *shape = body->getUsedShape())
+            {
+                const auto [x, y] = b2Body_GetPosition(bodyId);
+                const double angle = b2Rot_GetAngle(b2Body_GetRotation(bodyId));
+                shape->setRotation(static_cast<float>(-(angle * (180 / M_PI))));
+
+                const float pixelX = x * PIXELS_PER_METER;
+                const float pixelY = -y * PIXELS_PER_METER;
+
+                shape->setPosition(pixelX - shape->getW() / 2.0f, pixelY - shape->getH() / 2.0f);
+                // Log("Setting shape position to ", x, ":",y);
+                // Log("Setting shape angle to ", angle);
+            }
+        }
+
+        SDL_SetRenderDrawColor(this->render, this->currentScene->getBackgroundColor().getR(),
+                               this->currentScene->getBackgroundColor().getG(),
+                               this->currentScene->getBackgroundColor().getB(),
+                               this->currentScene->getBackgroundColor().getA());
+
+        float px, py;
+        SDL_GetMouseState(&px, &py);
+        SDL_RenderClear(this->render);
+
+        if (Scene *nextScene = this->currentScene->update(deltaTime); nextScene != this->currentScene)
+        {
+            if (nextScene == nullptr)
+            {
+                isDone = true;
+            }
+            this->setScene(nextScene);
+        }
+
+        if (this->currentScene)
+        {
+            this->currentScene->paint();
+        }
+
+        ImGui_ImplSDLRenderer3_NewFrame();
+        ImGui_ImplSDL3_NewFrame();
+        ImGui::NewFrame();
+        ImGui::ShowDemoWindow();
+
+        SDL_RenderPresent(this->render);
+    }
+    SDL_GetWindowSize(this->handle, &this->windowWidth, &this->windowHeight);
+}
+
+void Display::summonError() { Log("Init display first!"); }
+} // namespace Proton
+
+
+---
+./src/proton/resourcemanager.cc
+---
+#include "proton/resourcemanager.hh"
+
+#include <vector>
+
+#include "proton/logman.hh"
+#include "proton/physics.hh"
+#include "proton/errorTexture.hh"
+
+namespace Proton
+{
+ResourceManager &ResourceManager::getInstance()
+{
+    static ResourceManager instance;
+    return instance;
+}
+
+ResourceManager::~ResourceManager() { this->clearCache(); }
+
+void ResourceManager::initAudioEngine()
+{
+    if (!this->audioEngineInitialized)
+    {
+        if (ma_engine_init(nullptr, &this->currentAudioEngine) != MA_SUCCESS)
+        {
+            Proton::Log("Unable to init sound engine");
+            return;
+        }
+
+        this->audioEngineInitialized = true;
+
+        return;
+    }
+
+    Log("Audio engine is defined already!!");
+}
+
+ma_engine *ResourceManager::getAudioEngine()
+{
+    if (!this->audioEngineInitialized)
+    {
+        this->initAudioEngine();
+    }
+    return &this->currentAudioEngine;
+}
+
+SDL_Texture *ResourceManager::getTexture(SDL_Renderer *render, const std::string &path)
+{
+    if (!render)
+    {
+        Proton::Log("Attempt to get texture without renderer..");
+        return nullptr;
+    }
+
+    auto it = this->textureCache.find(path);
+    if (it != this->textureCache.end())
+    {
+        return it->second;
+    }
+
+#ifndef __ANDROID__
+    std::string fullPath = "assets/" + path;
+#else
+    std::string fullPath = path;
+#endif
+
+    SDL_Surface *surface = IMG_Load(fullPath.c_str());
+    if (!surface)
+    {
+        Log("Failed to load image: ", fullPath, ". error: ", SDL_GetError(), "; Falling back to error texture");
+
+        constexpr int width = __WIDTH;
+        constexpr int height = __HEIGHT;
+
+        std::vector<uint8_t> pixels;
+        pixels.reserve(width * height * 3);
+
+        for (uint32_t c : errorBox) {
+            uint8_t r = (c >> 16) & 0xFF;
+            uint8_t g = (c >> 8) & 0xFF;
+            uint8_t b = c & 0xFF;
+            pixels.push_back(r);
+            pixels.push_back(g);
+            pixels.push_back(b);
+        }
+        SDL_Surface* surface = SDL_CreateSurfaceFrom(width, height,  SDL_PIXELFORMAT_RGB24, pixels.data(), width*3);
+        if (!surface) {
+            Log("Error creating ERROR surface: ", SDL_GetError());
+            return nullptr;
+        }
+        SDL_Texture *texture = SDL_CreateTextureFromSurface(render, surface);
+        SDL_DestroySurface(surface);
+        if (!texture)
+        {
+            Log("Failed to create texture from surface: ", fullPath, ". error: ", SDL_GetError());
+            SDL_DestroyTexture(texture);
+            return nullptr;
+        }
+        this->textureCache[path] = texture;
+        return texture;
+
+    }
+
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(render, surface);
+    SDL_DestroySurface(surface);
+
+    if (!texture)
+    {
+        Proton::Log("Failed to create texture from surface: ", fullPath, ". error: ", SDL_GetError());
+        return nullptr;
+    }
+
+    this->textureCache[path] = texture;
+    return texture;
+}
+
+SDL_Surface *ResourceManager::getIcon(const std::string &path)
+{
+#ifndef __ANDROID__
+    std::string fullPath = "assets/" + path;
+#else
+    std::string fullPath = path;
+#endif
+
+    if (this->currentIcon)
+    {
+        SDL_DestroySurface(currentIcon);
+    }
+
+    currentIcon = IMG_Load(fullPath.c_str());
+    if (!currentIcon)
+    {
+        Log("Failed to load icon: ", fullPath);
+        return nullptr;
+    }
+
+    return currentIcon;
+}
+
+TTF_Font *ResourceManager::getFont(const std::string &path, int fontSize)
+{
+    const std::string key = path + ":" + std::to_string(fontSize);
+    if (const auto it = fontCache.find(key); it != fontCache.end())
+    {
+        return it->second;
+    }
+
+#ifndef __ANDROID__
+    std::string fullPath = "assets/" + path;
+#else
+    std::string fullPath = path;
+#endif
+
+    TTF_Font *font = TTF_OpenFont(fullPath.c_str(), static_cast<float>(fontSize)); // TODO font size float too?
+    if (!font)
+    {
+        Log("Failed to load font: ", SDL_GetError());
+        return nullptr;
+    }
+
+    this->fontCache[key] = font;
+    return font;
+}
+
+#if defined(__ANDROID__)
+void ResourceManager::setAssetManager(AAssetManager *manager) { this->assetManager = manager; }
+
+AAssetManager *ResourceManager::getAssetManager() { return this->assetManager; }
+#endif
+
+void ResourceManager::clearCache()
+{
+    for (auto const &[path, texture] : textureCache)
+    {
+        SDL_DestroyTexture(texture);
+    }
+    textureCache.clear();
+
+    for (auto const &[key, font] : fontCache)
+    {
+        TTF_CloseFont(font);
+    }
+    fontCache.clear();
+
+    if (currentIcon)
+    {
+        SDL_DestroySurface(currentIcon);
+        currentIcon = nullptr;
+    }
+
+    if (this->audioEngineInitialized)
+    {
+        ma_engine_uninit(&this->currentAudioEngine);
+        this->audioEngineInitialized = false;
+    }
+}
+} // namespace Proton
+
+
+---
+./src/proton/scene.cc
+---
+#include "proton/scene.hh"
+#include "proton/shapes/container.hh"
+
+namespace Proton
+{
+Scene::Scene(SDL_Renderer *render, SDL_Window *window)
+{
+    this->render = render;
+    this->window = window;
+    this->background = Color(255, 255, 255);
+}
+
+Scene::~Scene()
+{
+    this->destroyObjectMassive();
+    this->buttons.clear();
+}
+
+void Scene::addObject(Shape *shape) { this->objects.push_back(shape); }
+void Scene::addButton(ButtonArea *button)
+{
+    this->buttons.push_back(button);
+    this->addObject(button);
+}
+void Scene::addTextBox(TextBox *textbox)
+{
+    this->textboxes.push_back(textbox);
+    this->addObject(textbox);
+}
+void Scene::addContainer(Container *container)
+{
+    this->containers.push_back(container);
+    this->addObject(container);
+}
+
+// только для того, чтобы после сцены очистить звуки
+void Scene::addAudio(Audio *audio) { this->audios.push_back(audio); }
+
+void Scene::clearScene() { this->destroyObjectMassive(); }
+
+void Scene::paint()
+{
+    for (Shape *shape : this->objects)
+    {
+        if (shape->getVisible())
+        {
+            shape->paint(this->render, ROOT_POSITION);
+        }
+    }
+}
+
+void Scene::handleButtonClick(const Point &mPos)
+{
+    float mX = mPos.x;
+    float mY = mPos.y;
+
+    for (ButtonArea *button : this->buttons)
+    {
+        if ((button->getX() <= mX && mX <= button->getX() + button->getW()) &&
+            (button->getY() <= mY && mY <= button->getY() + button->getH()))
+        {
+            button->onClick();
+        }
+    }
+
+    TextBox *clickedTextBox = nullptr;
+    for (TextBox *textbox : this->textboxes)
+    {
+        if ((textbox->getX() <= mX &&
+             mX <= textbox->getX() + static_cast<float>(textbox->getBoxW())) && // TODO make size as float
+            (textbox->getY() <= mY && mY <= textbox->getY() + static_cast<float>(textbox->getH())))
+        {
+            clickedTextBox = textbox;
+            break;
+        }
+    }
+
+    for (Container *container : this->containers)
+    {
+        if ((container->getX() <= mX && mX <= container->getX() + container->getW()) &&
+            (container->getY() <= mY && mY <= container->getY() + container->getH()))
+        {
+            for (ButtonArea *button : container->getButtons())
+            {
+                const float buttonAbsX = container->getX() + button->getX();
+                const float buttonAbsY = container->getY() + button->getY();
+
+                if ((buttonAbsX <= mX && mX <= buttonAbsX + button->getW()) &&
+                    (buttonAbsY <= mY && mY <= buttonAbsY + button->getH()))
+                {
+                    button->onClick();
+                }
+            }
+        }
+    }
+
+    if (clickedTextBox)
+    {
+        if (this->focusedTextBox && this->focusedTextBox != clickedTextBox)
+        {
+            this->focusedTextBox->setFocused(false);
+            this->focusedTextBox->setSelectionAnchor(-1);
+            this->focusedTextBox->setCursorPosition(0);
+        }
+
+        this->focusedTextBox = clickedTextBox;
+        this->focusedTextBox->setFocused(true);
+
+        int relativeX = static_cast<int>(mX - clickedTextBox->getX());
+        int charIndex = clickedTextBox->getCharIndexAt(relativeX);
+        if (relativeX > clickedTextBox->getW() || charIndex >= clickedTextBox->getTextLength())
+        {
+            charIndex = clickedTextBox->getTextLength();
+        }
+        clickedTextBox->setCursorPosition(charIndex);
+        clickedTextBox->setSelectionAnchor(-1);
+    }
+    else
+    {
+        if (this->focusedTextBox)
+        {
+            this->focusedTextBox->setFocused(false);
+            this->focusedTextBox->setCursorPosition(0);
+            this->focusedTextBox->setSelectionAnchor(-1);
+            this->focusedTextBox = nullptr;
+        }
+    }
+}
+
+void Scene::handleButtonClickEnd(const Point &mPos) const
+{
+    const float mX = mPos.x;
+    const float mY = mPos.y;
+
+    for (const ButtonArea *button : this->buttons)
+    {
+        if ((button->getX() <= mX && mX <= button->getX() + button->getW()) &&
+            (button->getY() <= mY && mY <= button->getY() + button->getH()))
+        {
+            button->onClickEnded();
+        }
+    }
+}
+
+void Scene::handleKeyDown(SDL_Event event)
+{
+    if (this->focusedTextBox != nullptr)
+    {
+        if ((event.key.mod & SDL_KMOD_CTRL))
+        {
+            if (event.key.key == SDLK_V)
+            {
+                if (this->focusedTextBox->getSelectionAnchor() != -1 &&
+                    this->focusedTextBox->getSelectionAnchor() != this->focusedTextBox->getCursorPosition())
+                {
+                    this->focusedTextBox->removeAtCursor();
+                }
+                char *clipboardText = SDL_GetClipboardText();
+                if (clipboardText)
+                {
+                    this->focusedTextBox->insertSymbol(clipboardText);
+                    SDL_free(clipboardText);
+                }
+                return;
+            }
+            else if (event.key.key == SDLK_C)
+            {
+                if (this->focusedTextBox->getSelectionAnchor() != -1)
+                {
+                    int selStart =
+                        std::min(this->focusedTextBox->getSelectionAnchor(), this->focusedTextBox->getCursorPosition());
+                    int selEnd =
+                        std::max(this->focusedTextBox->getSelectionAnchor(), this->focusedTextBox->getCursorPosition());
+                    if (selStart < selEnd)
+                    {
+                        std::string selectedText = this->focusedTextBox->getText().substr(selStart, selEnd - selStart);
+                        SDL_SetClipboardText(selectedText.c_str());
+                    }
+                }
+                return;
+            }
+            else if (event.key.key == SDLK_X)
+            {
+                if (this->focusedTextBox->getSelectionAnchor() != -1)
+                {
+                    int selStart =
+                        std::min(this->focusedTextBox->getSelectionAnchor(), this->focusedTextBox->getCursorPosition());
+                    int selEnd =
+                        std::max(this->focusedTextBox->getSelectionAnchor(), this->focusedTextBox->getCursorPosition());
+                    if (selStart < selEnd)
+                    {
+                        std::string selectedText = this->focusedTextBox->getText().substr(selStart, selEnd - selStart);
+                        SDL_SetClipboardText(selectedText.c_str());
+                        this->focusedTextBox->removeAtCursor();
+                    }
+                }
+                return;
+            }
+            else if (event.key.key == SDLK_A)
+            {
+                this->focusedTextBox->setSelectionAnchor(0);
+                this->focusedTextBox->setCursorPosition(this->focusedTextBox->getTextLength());
+                return;
+            }
+        }
+
+        bool shiftPressed = (event.key.mod & SDL_KMOD_SHIFT) != 0;
+        switch (event.key.key)
+        {
+        case SDLK_HOME:
+            if (shiftPressed && this->focusedTextBox->getSelectionAnchor() == -1)
+                this->focusedTextBox->setSelectionAnchor(this->focusedTextBox->getCursorPosition());
+            else if (!shiftPressed)
+                this->focusedTextBox->setSelectionAnchor(-1);
+            this->focusedTextBox->setCursorPosition(0);
+            break;
+        case SDLK_END:
+            if (shiftPressed && this->focusedTextBox->getSelectionAnchor() == -1)
+                this->focusedTextBox->setSelectionAnchor(this->focusedTextBox->getCursorPosition());
+            else if (!shiftPressed)
+                this->focusedTextBox->setSelectionAnchor(-1);
+            this->focusedTextBox->setCursorPosition(this->focusedTextBox->getTextLength());
+            break;
+        case SDLK_LEFT:
+            if (shiftPressed && this->focusedTextBox->getSelectionAnchor() == -1)
+                this->focusedTextBox->setSelectionAnchor(this->focusedTextBox->getCursorPosition());
+            else if (!shiftPressed)
+                this->focusedTextBox->setSelectionAnchor(-1);
+            this->focusedTextBox->appendCursorLeft();
+            break;
+        case SDLK_RIGHT:
+            if (shiftPressed && this->focusedTextBox->getSelectionAnchor() == -1)
+                this->focusedTextBox->setSelectionAnchor(this->focusedTextBox->getCursorPosition());
+            else if (!shiftPressed)
+                this->focusedTextBox->setSelectionAnchor(-1);
+            this->focusedTextBox->appendCursorRight();
+            break;
+        case SDLK_BACKSPACE:
+            this->focusedTextBox->removeAtCursor();
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+void Scene::handleMouseDrag(int mX, int mY)
+{
+    if (this->focusedTextBox)
+    {
+        if (this->focusedTextBox->getSelectionAnchor() == -1)
+        {
+            this->focusedTextBox->setSelectionAnchor(this->focusedTextBox->getCursorPosition());
+        }
+
+        int relativeX = static_cast<int>(static_cast<float>(mX) - focusedTextBox->getX());
+        if (relativeX < 0)
+        {
+            focusedTextBox->setCursorPosition(0);
+        }
+        else if (relativeX > focusedTextBox->getW())
+        {
+            focusedTextBox->setCursorPosition(focusedTextBox->getTextLength());
+        }
+        else
+        {
+            int charIndex = focusedTextBox->getCharIndexAt(relativeX);
+            focusedTextBox->setCursorPosition(charIndex);
+        }
+    }
+}
+
+void Scene::handleTextInput(SDL_Event event)
+{
+    if (this->focusedTextBox != nullptr)
+    {
+        this->focusedTextBox->insertSymbol(event.text.text);
+    }
+}
+
+void Scene::addBody(PhysicsBody *body) { this->physicsBodies.push_back(body); }
+
+auto Scene::getPhysicsBodies() -> std::vector<PhysicsBody *> { return this->physicsBodies; }
+
+auto Scene::getBackgroundColor() const -> Color { return this->background; }
+
+void Scene::destroyObjectMassive()
+{
+    for (Shape *shape : this->objects)
+    {
+        delete shape;
+    }
+    this->objects.clear();
+
+    for (Audio *audio : this->audios)
+    {
+        delete audio;
+    }
+    this->audios.clear();
+
+    for (PhysicsBody *body : physicsBodies)
+    {
+        delete body;
+    }
+    physicsBodies.clear();
+}
+}; // namespace Proton
+
+---
+./src/proton/shapes/buttonarea.cc
+---
+#include "proton/shapes/buttonarea.hh"
+
+namespace Proton
+{
+ButtonArea::ButtonArea(const float x, const float y, const float w, const float h)
+{
+    this->position.x = x;
+    this->position.y = y;
+    this->w = w;
+    this->h = h;
+}
+
+void ButtonArea::setPosition(const float x, const float y)
+{
+    this->position.x = x;
+    this->position.y = y;
+}
+
+void ButtonArea::resize(const float w, const float h)
+{
+    this->w = w;
+    this->h = h;
+}
+
+void ButtonArea::onClick() const
+{
+    if (clickListener)
+        clickListener();
+}
+
+void ButtonArea::onClickEnded() const
+{
+    if (unclickListener)
+        unclickListener();
+}
+
+void ButtonArea::setClickListener(const std::function<void()> &f) { this->clickListener = f; }
+
+void ButtonArea::setClickEndedListener(const std::function<void()> &f) { this->unclickListener = f; }
+} // namespace Proton
+
+---
+./src/proton/shapes/circle.cc
+---
+#include "proton/shapes/circle.hh"
+#include <cmath>
+
+namespace Proton
+{
+Circle::Circle(float x, float y, int radius, Color fillColor, Style style)
+    : radius(radius), color(fillColor), style(style), texture(nullptr), dirty(true)
+{
+    this->position.x = x;
+    this->position.y = y;
+}
+
+Circle::~Circle()
+{
+    if (texture)
+        SDL_DestroyTexture(texture);
+}
+
+void Circle::setFillColor(Color newColor)
+{
+    color = newColor;
+    dirty = true;
+}
+
+void Circle::paint(SDL_Renderer *render, float rX, float rY)
+{
+    if (!texture || dirty)
+        rebuildTexture(render);
+
+    if (!texture)
+        return;
+
+    SDL_FRect dst = {this->position.x + rX, this->position.y + rY, static_cast<float>(2 * radius),
+                     static_cast<float>(2 * radius)};
+    SDL_RenderTextureRotated(render, texture, nullptr, &dst, getRotation(), nullptr, SDL_FLIP_NONE);
+}
+
+void Circle::setStyle(Style s)
+{
+    if (s != style)
+    {
+        style = s;
+        dirty = true;
+    }
+}
+
+void Circle::rebuildTexture(SDL_Renderer *render)
+{
+    if (texture)
+    {
+        SDL_DestroyTexture(texture);
+        texture = nullptr;
+    }
+
+    const int diameter = 2 * radius;
+    texture = SDL_CreateTexture(render, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, diameter, diameter);
+    if (!texture)
+        return;
+
+    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+    // SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_LINEAR);
+    SDL_SetRenderTarget(render, texture);
+    SDL_SetRenderDrawColor(render, 0, 0, 0, 0);
+    SDL_RenderClear(render);
+
+    SDL_SetRenderDrawColor(render, color.getR(), color.getG(), color.getB(), color.getA());
+
+    switch (style)
+    {
+    case Bevel:
+        for (int angle = 0; angle < 360; ++angle)
+        {
+            const float rad = angle * M_PI / 180.0f;
+            const float dx = radius + radius * std::cos(rad);
+            const float dy = radius + radius * std::sin(rad);
+            SDL_RenderPoint(render, dx, dy);
+        }
+        break;
+
+    case Fill:
+    default:
+        for (int dy = -radius; dy <= radius; ++dy)
+        {
+            const double dx = std::sqrt(radius * radius - dy * dy);
+            SDL_RenderLine(render, radius - dx, radius + dy, radius + dx, radius + dy);
+        }
+        break;
+    }
+
+    SDL_SetRenderTarget(render, nullptr);
+    dirty = false;
+}
+} // namespace Proton
+
+---
+./src/proton/shapes/container.cc
+---
+#include "proton/shapes/container.hh"
+
+namespace Proton
+{
+Container::Container(const float x, const float y, const int width, const int height)
+{
+    this->position.x = x;
+    this->position.y = y;
+
+    this->containerRect = {x, y, static_cast<float>(width), static_cast<float>(height)};
+}
+Container::~Container() { this->clear(); }
+
+void Container::paint(SDL_Renderer *render, const float rX, const float rY)
+{
+    const SDL_Rect absoluteClipRect = {static_cast<int>(this->position.x + rX), static_cast<int>(this->position.y + rY),
+                                       static_cast<int>(this->containerRect.w),
+                                       static_cast<int>(this->containerRect.h)};
+
+    SDL_SetRenderClipRect(render, &absoluteClipRect);
+    for (Shape *shape : this->shapes)
+    {
+        shape->setRotation(this->rotation);
+        shape->paint(render, this->position.x + rX, this->position.y + rY);
+    }
+    SDL_SetRenderClipRect(render, nullptr);
+}
+
+void Container::clear()
+{
+    for (const Shape *shape : this->shapes)
+    {
+        delete shape;
+    }
+    shapes.clear();
+    buttons.clear();
+}
+
+void Container::setPosition(float x, float y)
+{
+    this->position.x = x;
+    this->position.y = y;
+    this->containerRect = {x, y, this->containerRect.w, this->containerRect.h};
+}
+
+void Container::update(const float dt)
+{
+    for (Shape *shape : this->shapes)
+    {
+        shape->update(dt);
+    }
+
+    for (ButtonArea *button : this->buttons)
+    {
+        button->update(dt);
+    }
+}
+} // namespace Proton
+
+---
+./src/proton/shapes/group.cc
+---
+#include "proton/shapes/group.hh"
+
+namespace Proton
+{
+Group::Group(const float x, const float y)
+{
+    this->position.x = x;
+    this->position.y = y;
+}
+Group::~Group() { this->clear(); }
+
+void Group::paint(SDL_Renderer *render, const float gX, const float gY)
+{
+    for (Shape *shape : this->shapes)
+    {
+        const float originalRotation = shape->getRotation();
+        shape->setRotation(originalRotation + this->rotation);
+        shape->paint(render, this->position.x + gX, this->position.y + gY);
+        shape->setRotation(originalRotation);
+    }
+}
+
+void Group::update(const float dt)
+{
+    for (Shape *shape : this->shapes)
+    {
+        shape->update(dt);
+    }
+}
+
+void Group::clear() const
+{
+    for (const Shape *shape : this->shapes)
+    {
+        delete shape;
+    }
+}
+} // namespace Proton
+
+---
+./src/proton/shapes/image.cc
+---
+#include "proton/shapes/image.hh"
+#include "SDL3/SDL_render.h"
+#include "proton/logman.hh"
+
+namespace Proton
+{
+Image::Image(SDL_Texture *texture, const float x, const float y, const float width, const float height)
+{
+    if (texture == nullptr)
+    {
+        Log("Invalid texture or didn't loaded successfully");
+        return;
+    }
+    this->imageTexture = texture;
+    SDL_SetTextureBlendMode(this->imageTexture, SDL_BLENDMODE_BLEND);
+
+    this->width = width;
+    this->height = height;
+    this->position.x = x;
+    this->position.y = y;
+
+    if (width == 0)
+        this->width = static_cast<float>(this->imageTexture->w);
+    if (height == 0)
+        this->height = static_cast<float>(this->imageTexture->h);
+}
+
+void Image::resize(const float width, const float height)
+{
+    this->width = width;
+    this->height = height;
+}
+
+void Image::paint(SDL_Renderer *render, const float rX, const float rY)
+{
+    const float drawX = rX + this->position.x;
+    const float drawY = rY + this->position.y;
+
+    const SDL_FRect rectToRender = {drawX, drawY, this->width, this->height};
+
+    SDL_SetTextureAlphaModFloat(this->imageTexture, this->alpha);
+    SDL_RenderTextureRotated(render, imageTexture, nullptr, &rectToRender, rotation, nullptr, SDL_FLIP_NONE);
+    SDL_SetTextureAlphaModFloat(this->imageTexture, 1);
+}
+
+void Image::setTexture(SDL_Texture *texture)
+{
+    this->imageTexture = texture;
+    this->width = static_cast<float>(this->imageTexture->w);
+    this->height = static_cast<float>(this->imageTexture->h);
+    SDL_SetTextureBlendMode(this->imageTexture, SDL_BLENDMODE_BLEND);
+}
+
+void Image::setAlpha(float alpha)
+{
+    if (!this->imageTexture) return;
+    this->alpha = alpha;
+}
+
+auto Image::getAlpha() -> float
+{
+    return this->alpha;
+}
+} // namespace Proton
+
+---
+./src/proton/shapes/imagebutton.cc
+---
+#include "proton/shapes/imagebutton.hh"
+
+namespace Proton
+{
+ImageButton::ImageButton(SDL_Texture *texture, const float x, const float y, const float w, const float h)
+    : ButtonArea(x, y, w, h)
+{
+    this->image = new Image(texture, x, y, w, h);
+}
+ImageButton::~ImageButton() { delete this->image; }
+
+void ImageButton::setRotation(const float angle) { this->image->setRotation(angle); }
+
+void ImageButton::setPosition(const float x, const float y)
+{
+    this->position.x = x;
+    this->position.y = y;
+    image->setPosition(x, y);
+}
+
+void ImageButton::resize(const float w, const float h)
+{
+    this->w = w;
+    this->h = h;
+    image->resize(w, h);
+}
+
+void ImageButton::paint(SDL_Renderer *render, const float rX, const float rY) { image->paint(render, rX, rY); }
+
+void ImageButton::setAlpha(float alpha)
+{
+    if (!this->image) return;
+    this->image->setAlpha(alpha);
+}
+
+auto ImageButton::getAlpha() -> float
+{
+    return this->image->getAlpha();
+}
+} // namespace Proton
+
+---
+./src/proton/shapes/line.cc
+---
+#include "proton/shapes/line.hh"
+#include <cmath>
+
+namespace Proton
+{
+Line::Line(float x1, float y1, float x2, float y2, Color color) : endX(x2), endY(y2), fillColor(color)
+{
+    this->position.x = x1;
+    this->position.y = y1;
+}
+
+void Line::setPosition(const float x, const float y)
+{
+    float dx = endX - this->position.x;
+    float dy = endY - this->position.y;
+    this->position.x = x;
+    this->position.y = y;
+    this->endX = x + dx;
+    this->endY = y + dy;
+}
+
+void Line::paint(SDL_Renderer *render, float rX, float rY)
+{
+    SDL_SetRenderDrawColor(render, fillColor.getR(), fillColor.getG(), fillColor.getB(), fillColor.getA());
+
+    const float dx = endX - this->position.x;
+    const float dy = endY - this->position.y;
+
+    const float rad = rotation * (static_cast<float>(M_PI) / 180.0f);
+    const float rotatedDX = dx * std::cos(rad) - dy * std::sin(rad);
+    const float rotatedDY = dx * std::sin(rad) + dy * std::cos(rad);
+
+    const float startX = this->position.x + rX;
+    const float startY = this->position.y + rY;
+    const float endRotatedX = this->position.x + rotatedDX + rX;
+    const float endRotatedY = this->position.y + rotatedDY + rY;
+
+    SDL_RenderLine(render, startX, startY, endRotatedX, endRotatedY);
+}
+
+[[nodiscard]] auto Line::getW() const -> float { return std::abs(this->endX - this->position.x); }
+
+[[nodiscard]] auto Line::getH() const -> float { return std::abs(this->endY - this->position.y); }
+} // namespace Proton
+
+---
+./src/proton/shapes/progressbar.cc
+---
+#include "proton/shapes/progressbar.hh"
+#include "proton/logman.hh"
+
+namespace Proton
+{
+ProgressBar::ProgressBar(float x, float y, float width, float height, float defaultProgress)
+    : width(width), height(height), progress(defaultProgress), texture(nullptr), dirty(true)
+{
+    this->position.x = x;
+    this->position.y = y;
+}
+ProgressBar::~ProgressBar()
+{
+    if (texture)
+        SDL_DestroyTexture(texture);
+}
+
+void ProgressBar::setFillColor(const Color newColor)
+{
+    progressBarColor = newColor;
+    dirty = true;
+}
+
+void ProgressBar::setProgress(float value)
+{
+    if (value >= 0 && value <= 100)
+    {
+        if (progress != value)
+        {
+            progress = value;
+            dirty = true;
+        }
+    }
+    else
+    {
+        Log("Progress value can't be lower than 0.0 or greater than 100.0! You're trying to set value: ", value);
+    }
+}
+auto ProgressBar::getProgress() const -> float { return this->progress; }
+
+void ProgressBar::setRotation(const float angle) { this->rotation = angle; }
+
+void ProgressBar::paint(SDL_Renderer *render, float pX, float pY)
+{
+    if (!texture || dirty)
+        rebuildTexture(render);
+
+    if (!texture)
+        return;
+
+    const SDL_FRect dst = {this->position.x + pX, this->position.y + pY, width,
+                           height};
+    SDL_RenderTextureRotated(render, texture, nullptr, &dst, rotation, nullptr, SDL_FLIP_NONE);
+}
+
+void ProgressBar::rebuildTexture(SDL_Renderer *render)
+    {
+        if (texture)
+        {
+            SDL_DestroyTexture(texture);
+            texture = nullptr;
+        }
+
+        texture = SDL_CreateTexture(render, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, static_cast<int>(width), static_cast<int>(height));
+        if (!texture)
+            return;
+
+        SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+        SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_LINEAR);
+        SDL_SetRenderTarget(render, texture);
+        SDL_SetRenderDrawColor(render, progressBarColor.getR() > 50 ? progressBarColor.getR() - 50 : 0,
+                               progressBarColor.getG() > 50 ? progressBarColor.getG() - 50 : 0,
+                               progressBarColor.getB() > 50 ? progressBarColor.getB() - 50 : 0,
+                               progressBarColor.getA());
+        SDL_FRect bgRect = {0, 0, width, height};
+        SDL_RenderFillRect(render, &bgRect);
+        float progressWidth = (progress / 100.0f) * (width - 4);
+        SDL_FRect barRect = {2, 2, progressWidth, height - 4};
+        SDL_SetRenderDrawColor(render, progressBarColor.getR(), progressBarColor.getG(), progressBarColor.getB(),
+                               progressBarColor.getA());
+        SDL_RenderFillRect(render, &barRect);
+
+        SDL_SetRenderTarget(render, nullptr);
+        dirty = false;
+    }
+} // namespace Proton
+
+---
+./src/proton/shapes/rectangle.cc
+---
+#include "proton/shapes/rectangle.hh"
+
+namespace Proton
+{
+Rectangle::Rectangle(const float x, float y, float w, float h, const Color color, Style style)
+    : w(w), h(h), color(color), style(style)
+{
+    this->position.x = x;
+    this->position.y = y;
+}
+
+Rectangle::~Rectangle()
+{
+    if (texture)
+        SDL_DestroyTexture(texture);
+}
+
+void Rectangle::setFillColor(const Color newColor)
+{
+    color = newColor;
+    dirty = true;
+}
+
+void Rectangle::resize(const float width, const float height)
+{
+    if (w != width || h != height)
+    {
+        w = width;
+        h = height;
+        dirty = true;
+    }
+}
+
+void Rectangle::setStyle(const Style newStyle)
+{
+    if (style != newStyle)
+    {
+        style = newStyle;
+        dirty = true;
+    }
+}
+
+void Rectangle::paint(SDL_Renderer *renderer, const float rX, const float rY)
+{
+    if (!texture || dirty)
+        this->rebuildTexture(renderer);
+
+    if (!texture)
+        return;
+
+    const SDL_FRect dst = {rX + this->position.x, rY + this->position.y, w, h};
+    SDL_RenderTextureRotated(renderer, texture, nullptr, &dst, rotation, nullptr, SDL_FLIP_NONE);
+}
+void Rectangle::rebuildTexture(SDL_Renderer *renderer)
+{
+    if (texture)
+    {
+        SDL_DestroyTexture(texture);
+        texture = nullptr;
+    }
+
+    texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, static_cast<int>(this->w),
+                                static_cast<int>(this->h));
+    if (!texture)
+        return;
+
+    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+    SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_LINEAR);
+
+    SDL_SetRenderTarget(renderer, texture);
+    SDL_SetRenderDrawColor(renderer, color.getR(), color.getG(), color.getB(), color.getA());
+
+    const SDL_FRect rect = {0, 0, w, h};
+    switch (style)
+    {
+    case Fill:
+        SDL_RenderFillRect(renderer, &rect);
+        break;
+    case Bevel:
+        SDL_RenderRect(renderer, &rect);
+        break;
+    }
+
+    SDL_SetRenderTarget(renderer, nullptr);
+    dirty = false;
+}
+} // namespace Proton
+
+---
+./src/proton/shapes/rectanglebutton.cc
+---
+#include "proton/shapes/rectanglebutton.hh"
+
+namespace Proton
+{
+RectangleButton::RectangleButton(float X, float Y, float W, float H, Color color)
+    : ButtonArea(X, Y, W, H)
+{
+    this->rectangle = new Rectangle(X, Y, W, H, color);
+}
+
+void RectangleButton::setPosition(const float x, const float y)
+{
+    this->position.x = x;
+    this->position.y = y;
+    rectangle->setPosition(x, y);
+}
+
+void RectangleButton::resize(const float w, const float h)
+{
+    this->w = w;
+    this->h = h;
+    rectangle->resize(w, h);
+}
+} // namespace Proton
+
+---
+./src/proton/shapes/shape.cc
+---
+//
+// Created by Monsler on 10.07.2025.
+//
+
+#include "proton/shapes/shape.hh"
+#include "proton/physics.hh"
+#include "proton/logman.hh"
+
+namespace Proton {
+    void Shape::setPosition(const float x, const float y) {
+        this->position.x = x;
+        this->position.y = y;
+    }
+
+    void Shape::setRotation(const float angle) { this->rotation = angle; }
+
+    void Shape::setBody(PhysicsBody* body) {
+      Log("Body is set");
+      this->body = body;
+    }
+}
+
+
+---
+./src/proton/shapes/text.cc
+---
+#include "proton/shapes/text.hh"
+#include "proton/logman.hh"
+#include "proton/resourcemanager.hh"
+#include <utility>
+
+namespace Proton
+{
+Text::Text(std::string text, const float x, const float y, std::string fontPath, const int fontSize, const Color color)
+    : labelText(std::move(text)), path(std::move(fontPath)), fontSize(fontSize), fillColor(color)
+{
+    this->Text::setPosition(x, y);
+}
+
+Text::~Text()
+{
+    if (this->textTexture)
+        SDL_DestroyTexture(textTexture);
+}
+
+void Text::resize(const int w, const int h)
+{
+    this->w = w;
+    this->h = h;
+}
+
+void Text::setFillColor(const Color newColor)
+{
+    this->fillColor = newColor;
+    this->isDirty = true;
+}
+
+void Text::setText(const std::string &text)
+{
+    this->labelText = text;
+    this->isDirty = true;
+}
+
+void Text::paint(SDL_Renderer *render, const float rX, const float rY)
+{
+    if (this->isDirty)
+    {
+        this->createTexture(render);
+    }
+
+    if (textTexture)
+    {
+        const auto drawX = rX + this->position.x;
+        const auto drawY = rY + this->position.y;
+
+        const SDL_FRect rectToRender = {drawX, drawY, static_cast<float>(this->w), static_cast<float>(this->h)};
+
+        SDL_RenderTextureRotated(render, textTexture, nullptr, &rectToRender, this->rotation, nullptr, SDL_FLIP_NONE);
+    }
+}
+
+void Text::createTexture(SDL_Renderer *render)
+{
+    if (textTexture)
+    {
+        SDL_DestroyTexture(textTexture);
+        textTexture = nullptr;
+    }
+
+    this->w = 0;
+    this->h = 0;
+
+    if (this->labelText.empty())
+    {
+        this->isDirty = false;
+        return;
+    }
+
+    TTF_Font *font = ResourceManager::getInstance().getFont(this->path, fontSize);
+    if (!font)
+        return;
+
+    const SDL_Color sdlColor = {(fillColor.getR()), (fillColor.getG()), (fillColor.getB()), (fillColor.getA())};
+
+    SDL_Surface *surface = TTF_RenderText_Blended(font, labelText.c_str(), labelText.length(), sdlColor);
+    if (!surface)
+    {
+        Log("TTF_RenderText_Blended error: ", SDL_GetError());
+        return;
+    }
+
+    textTexture = SDL_CreateTextureFromSurface(render, surface);
+    SDL_SetTextureScaleMode(textTexture, SDL_SCALEMODE_NEAREST);
+    if (!textTexture)
+    {
+        Log("SDL_CreateTextureFromSurface error: ", SDL_GetError());
+    }
+
+    this->w = surface->w;
+    this->h = surface->h;
+
+    SDL_DestroySurface(surface);
+    this->isDirty = false;
+}
+
+[[nodiscard]] auto Text::getFontHeight() const -> int
+{
+    if (const TTF_Font *font = ResourceManager::getInstance().getFont(this->path, this->fontSize))
+    {
+        return TTF_GetFontHeight(font);
+    }
+    return 0;
+}
+} // namespace Proton
+
+---
+./src/proton/shapes/textbox.cc
+---
+#include "proton/shapes/textbox.hh"
+#include "proton/resourcemanager.hh"
+
+namespace Proton
+{
+TextBox::TextBox(SDL_Window *window, const int boxW, const std::string &text, const float x, const float y,
+                 const std::string &fontPath, const int fontSize, const Color color)
+    : Text(text, x, y, fontPath, fontSize, color)
+{
+    this->window = window;
+    this->boxW = boxW;
+    this->scrollX = 0;
+}
+
+void TextBox::setFocused(const bool v)
+{
+    if (this->focused == v)
+        return;
+
+    this->focused = v;
+    if (v)
+    {
+        SDL_StartTextInput(this->window);
+        this->cursorVisible = true;
+    }
+    else
+    {
+        SDL_StopTextInput(this->window);
+        this->cursorVisible = false;
+    }
+
+    this->currentBlinkTime = 0;
+}
+
+void TextBox::setCursorPosition(const unsigned int v)
+{
+    if (v > this->labelText.length())
+    {
+        Log("attempt to set cursor position > than label text length");
+    }
+    else
+    {
+        this->currentBlinkTime = 0;
+        this->cursorVisible = true;
+        this->cursorPosition = static_cast<int>(v);
+        this->adjustScrollX();
+    }
+}
+
+void TextBox::setSelectionAnchor(const int v)
+{
+    if (v == -1)
+    {
+        this->selectionAnchor = -1;
+        return;
+    }
+
+    if (v < 0 || v > static_cast<int>(this->labelText.length()))
+    {
+        Log("attempt to set selection anchor position > than label text length");
+    }
+    else
+    {
+        this->selectionAnchor = v;
+    }
+}
+
+void TextBox::appendCursorLeft()
+{
+    if (this->cursorPosition > 0)
+    {
+        size_t currentPos = this->cursorPosition;
+        while (currentPos > 0)
+        {
+            currentPos--;
+            if (const auto firstByte = static_cast<unsigned char>(this->labelText[currentPos]);
+                (firstByte & 0xC0) != 0x80)
+            {
+                if (const int char_len = getCharLength(firstByte);
+                    char_len > 0 && (currentPos + char_len <= this->cursorPosition))
+                {
+                    this->setCursorPosition(currentPos);
+                    return;
+                }
+            }
+        }
+        this->setCursorPosition(0);
+    }
+}
+
+void TextBox::appendCursorRight()
+{
+    if (this->cursorPosition < this->labelText.length())
+    {
+        const auto firstByte = static_cast<unsigned char>(this->labelText[this->cursorPosition]);
+        if (const int char_len = getCharLength(firstByte); char_len > 0)
+        {
+            this->setCursorPosition(this->cursorPosition + char_len);
+        }
+    }
+}
+
+void TextBox::setText(const std::string &text, const bool dontUpdateCursor)
+{
+    Text::setText(text);
+    if (!dontUpdateCursor)
+    {
+        this->setCursorPosition(this->getTextLength());
+    }
+    else
+    {
+        this->adjustScrollX();
+    }
+}
+
+void TextBox::insertSymbol(const char *symbol)
+{
+    if (this->selectionAnchor != -1 && this->selectionAnchor != this->cursorPosition)
+    {
+        const int selStart = std::min(this->selectionAnchor, this->cursorPosition);
+        const int selEnd = std::max(this->selectionAnchor, this->cursorPosition);
+        this->labelText.erase(selStart, selEnd - selStart);
+        this->cursorPosition = selStart;
+        this->selectionAnchor = -1;
+    }
+    this->labelText.insert(this->cursorPosition, symbol);
+    size_t sizeNewBytes = strlen(symbol);
+    this->setCursorPosition(this->cursorPosition + sizeNewBytes);
+    this->setText(this->labelText, true);
+}
+
+void TextBox::removeAtCursor()
+{
+    if (this->selectionAnchor != -1 && this->selectionAnchor != this->cursorPosition)
+    {
+        const int selStart = std::min(this->selectionAnchor, this->cursorPosition);
+        const int selEnd = std::max(this->selectionAnchor, this->cursorPosition);
+        this->labelText.erase(selStart, selEnd - selStart);
+        this->setCursorPosition(selStart);
+        this->selectionAnchor = -1;
+    }
+    else if (this->cursorPosition > 0 && !this->labelText.empty())
+    {
+        size_t charStartPos = 0;
+        size_t scanPos = 0;
+        while (scanPos < this->cursorPosition)
+        {
+            if (scanPos >= this->labelText.length())
+                return;
+            charStartPos = scanPos;
+            const auto firstByte = static_cast<unsigned char>(this->labelText[scanPos]);
+            const int charLen = getCharLength(firstByte);
+            if (charLen <= 0)
+                return;
+            scanPos += charLen;
+        }
+        if (charStartPos < this->cursorPosition)
+        {
+            if (const int charLen = getCharLength(static_cast<unsigned char>(this->labelText[charStartPos]));
+                charLen > 0 && charStartPos + charLen <= this->labelText.length() && charStartPos + charLen == scanPos)
+            {
+                this->labelText.erase(charStartPos, charLen);
+                this->setCursorPosition(charStartPos);
+            }
+        }
+    }
+    this->setText(this->labelText, true);
+}
+
+[[nodiscard]] auto TextBox::getCharIndexAt(const int pX) const -> int
+{
+    const int targetPixelX = pX + this->scrollX;
+
+    TTF_Font *font = ResourceManager::getInstance().getFont(this->path, this->fontSize);
+    if (!font)
+    {
+        return 0;
+    }
+
+    if (targetPixelX <= 0)
+    {
+        return 0;
+    }
+
+    if (this->labelText.empty())
+    {
+        return 0;
+    }
+
+    int currentWidth = 0;
+    int prevWidth = 0;
+
+    for (size_t charIndex = 0; charIndex < this->labelText.length();)
+    {
+        prevWidth = currentWidth;
+
+        int charLen = getCharLength(static_cast<unsigned char>(this->labelText[charIndex]));
+        if (charLen == 0)
+        {
+            charLen = 1;
+        }
+
+        std::string sub = this->labelText.substr(0, charIndex + charLen);
+        TTF_GetStringSize(font, sub.c_str(), sub.length(), &currentWidth, nullptr);
+
+        if (targetPixelX >= prevWidth && targetPixelX <= currentWidth)
+        {
+            if (targetPixelX - prevWidth < currentWidth - targetPixelX)
+            {
+                return static_cast<int>(charIndex);
+            }
+            else
+            {
+                return static_cast<int>(charIndex) + charLen;
+            }
+        }
+
+        charIndex += charLen;
+    }
+
+    return static_cast<int>(this->labelText.length());
+}
+
+void TextBox::update(const float dt)
+{
+    this->currentBlinkTime += dt;
+    if (this->currentBlinkTime >= this->requiredBlinkTime && this->focused)
+    {
+        this->currentBlinkTime = 0;
+        this->cursorVisible = !this->cursorVisible;
+    }
+}
+
+void TextBox::paint(SDL_Renderer *render, const float rX, const float rY)
+{
+    if (this->isDirty)
+        this->createTexture(render);
+    if (!this->isVisible)
+        return;
+
+    const auto box_width = static_cast<float>(this->boxW);
+    const auto box_height = static_cast<float>(this->getH());
+
+    SDL_SetRenderDrawColor(render, 200, 200, 200, 255);
+    const SDL_FRect bgRect = {this->position.x + rX, this->position.y + rY, box_width, box_height};
+    SDL_RenderFillRect(render, &bgRect);
+
+    if (this->textTexture)
+    {
+        const auto fullTextWidth = static_cast<float>(this->w);
+        const auto fullTextHeight = static_cast<float>(this->h);
+
+        SDL_FRect srcRect = {static_cast<float>(this->scrollX), 0.0f, box_width, fullTextHeight};
+        if (fullTextWidth - srcRect.x < box_width)
+        {
+            srcRect.w = fullTextWidth - srcRect.x;
+        }
+        if (srcRect.w < 0)
+            srcRect.w = 0;
+
+        const SDL_FRect destRect = {this->position.x + rX, this->position.y + rY, srcRect.w, srcRect.h};
+
+        if (this->selectionAnchor != -1)
+        {
+            const int selStart = std::min(this->selectionAnchor, this->cursorPosition);
+            if (const int selEnd = std::max(this->selectionAnchor, this->cursorPosition); selStart < selEnd)
+            {
+                const int selStartPixel = getPixelPosition(selStart);
+                const int selEndPixel = getPixelPosition(selEnd);
+                const float visibleSelStart = std::max(static_cast<float>(selStartPixel), static_cast<float>(scrollX));
+                const float visibleSelEnd =
+                    std::min(static_cast<float>(selEndPixel), static_cast<float>(scrollX + boxW));
+                if (visibleSelStart < visibleSelEnd)
+                {
+                    const float drawX = this->position.x + rX + (visibleSelStart - scrollX);
+                    const auto drawY = this->position.y + rY;
+                    const float drawW = visibleSelEnd - visibleSelStart;
+                    const auto drawH = static_cast<float>(this->h);
+                    const SDL_FRect selRect = {drawX, drawY, drawW, drawH};
+                    SDL_SetRenderDrawColor(render, 173, 216, 230, 255);
+                    SDL_RenderFillRect(render, &selRect);
+                }
+            }
+        }
+
+        SDL_RenderTexture(render, this->textTexture, &srcRect, &destRect);
+    }
+
+    if (this->focused && this->cursorVisible)
+    {
+        if (const TTF_Font *font = ResourceManager::getInstance().getFont(this->path, this->fontSize))
+        {
+            const int fontHeight = TTF_GetFontHeight(font);
+            const int cursorPixelX = getCursorPixelPosition();
+
+            if (const auto cursorDrawX = static_cast<float>(this->position.x + rX + cursorPixelX - this->scrollX);
+                cursorDrawX >= (this->position.x + rX) && cursorDrawX <= (this->position.x + rX + this->boxW))
+            {
+                SDL_SetRenderDrawColor(render, this->fillColor.getR(), this->fillColor.getG(), this->fillColor.getB(),
+                                       this->fillColor.getA());
+                SDL_RenderLine(render, cursorDrawX, static_cast<float>(this->position.y + rY), cursorDrawX,
+                               static_cast<float>(this->position.y + rY + fontHeight));
+            }
+        }
+    }
+}
+
+void TextBox::adjustScrollX()
+{
+    TTF_Font *font = ResourceManager::getInstance().getFont(this->path, this->fontSize);
+    if (!font)
+    {
+        this->scrollX = 0;
+        return;
+    }
+
+    int fullTextWidth = 0;
+    TTF_GetStringSize(font, this->labelText.c_str(), this->labelText.length(), &fullTextWidth, nullptr);
+
+    const int cursorPixelX = getCursorPixelPosition();
+
+    if (fullTextWidth <= this->boxW)
+    {
+        this->scrollX = 0;
+        return;
+    }
+
+    if (cursorPixelX < this->scrollX)
+    {
+        this->scrollX = cursorPixelX;
+    }
+    else if (cursorPixelX > this->scrollX + this->boxW)
+    {
+        this->scrollX = cursorPixelX - this->boxW;
+    }
+
+    if (this->scrollX < 0)
+    {
+        this->scrollX = 0;
+    }
+
+    if (this->scrollX > fullTextWidth - this->boxW)
+    {
+        this->scrollX = fullTextWidth - this->boxW;
+    }
+}
+
+auto TextBox::getCursorPixelPosition() const -> int
+{
+    if (this->cursorPosition == 0)
+        return 0;
+
+    TTF_Font *font = ResourceManager::getInstance().getFont(this->path, this->fontSize);
+    if (!font)
+    {
+        Log("какого хуя у тебя cursorPosition больше 0, если шрифта нет");
+        return 0;
+    }
+
+    const std::string textBeforeCursor = this->labelText.substr(0, this->cursorPosition);
+    int width, height;
+    if (TTF_GetStringSize(font, textBeforeCursor.c_str(), textBeforeCursor.length(), &width, &height))
+    {
+        return width;
+    }
+    return 0;
+}
+
+auto TextBox::getPixelPosition(const int charIndex) -> int
+{
+    if (charIndex == 0)
+        return 0;
+    if (charIndex > static_cast<int>(labelText.length()))
+        return getPixelPosition(static_cast<int>(labelText.length()));
+    TTF_Font *font = ResourceManager::getInstance().getFont(this->path, this->fontSize);
+    if (!font)
+        return 0;
+    const std::string textBefore = this->labelText.substr(0, charIndex);
+    int width;
+    TTF_GetStringSize(font, textBefore.c_str(), textBefore.length(), &width, nullptr);
+    return width;
+}
+} // namespace Proton
+
+---
+./src/jni/JNIBindings.cpp
+---
+#if defined(__ANDROID__)
+#include "proton/resourcemanager.hh"
+#include <android/asset_manager_jni.h>
+#include <jni.h>
+
+
+extern "C" JNIEXPORT void JNICALL Java_org_libsdl_app_SDLActivity_nativeInit(JNIEnv *env, jobject /* this */,
+                                                                             jobject assetManager)
+{
+    AAssetManager *nativeAssetManager = AAssetManager_fromJava(env, assetManager);
+
+    Proton::ResourceManager::getInstance().setAssetManager(nativeAssetManager);
+}
+#endif
+
+---

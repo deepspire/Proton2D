@@ -4,7 +4,11 @@
 
 #include "proton/proton.hh"
 
+#include "SDL3/SDL_timer.h"
 #include "box2d/box2d.h"
+#include "imgui.h"
+#include "imgui_impl_sdl3.h"
+#include "imgui_impl_sdlrenderer3.h"
 #include "proton/logman.hh"
 #include "proton/physics.hh"
 #include "proton/resourcemanager.hh"
@@ -12,23 +16,22 @@
 namespace Proton
 {
 Display::Display(const std::string &title, const int w, const int h)
-    : pointerX(0), pointerY(0), windowWidth(w), windowHeight(h)
+    : pointerX(0), pointerY(0), windowWidth(w), windowHeight(h), imguiio(nullptr)
 {
+    Proton::LogNew(LogInfo::Info, "Initing display..");
     this->title = title;
     SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "wayland,x11,windows,android");
     SDL_SetHint(SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "1");
     SDL_SetHint(SDL_HINT_RENDER_LINE_METHOD, "1");
     SDL_SetHint(SDL_HINT_ORIENTATIONS, "LandscapeLeft LandscapeRight");
 
-    const int ret = SDL_Init(SDL_INIT_VIDEO);
-    TTF_Init();
-
-    Log("SDL Video Driver: ", SDL_GetCurrentVideoDriver());
-    if (ret < 0)
+    if (!SDL_Init(SDL_INIT_VIDEO))
     {
         Log("Error initializing SDL: ", SDL_GetError());
         return;
     }
+
+    TTF_Init();
 
     int window_flags = 0;
 #ifdef __ANDROID__
@@ -40,7 +43,7 @@ Display::Display(const std::string &title, const int w, const int h)
     this->handle = SDL_CreateWindow(this->title.c_str(), w, h, window_flags);
     if (!this->handle)
     {
-        Log("Error creating window: ", SDL_GetError());
+        Proton::Log("Error creating window: ", SDL_GetError());
         return;
     }
 
@@ -52,15 +55,19 @@ Display::Display(const std::string &title, const int w, const int h)
     }
 
     SDL_SetRenderVSync(this->render, 1);
-    /*if (!SDL_SetRenderLogicalPresentation(this->render, w, h, SDL_LOGICAL_PRESENTATION_LETTERBOX))
-    {
-      Log("Unable to set SDL_SetRenderLogicalPresentation", SDL_GetError());
-    }*/
-
-    Log("display init is successful");
 
     ResourceManager::getInstance().initAudioEngine();
     Physics::initPhysicsDevice(-9.8f);
+
+    // imgui
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    this->imguiio = &ImGui::GetIO();
+    (void)this->imguiio;
+    ImGui::StyleColorsDark();
+    ImGui_ImplSDL3_InitForSDLRenderer(this->handle, this->render);
+    ImGui_ImplSDLRenderer3_Init(this->render);
+
     this->isInit = true;
     this->currentScene = nullptr;
 }
@@ -70,11 +77,9 @@ void Display::setScene(Scene *newScene)
     if (this->currentScene != nullptr)
     {
         delete currentScene;
-        Log("Deleting previous scene...");
     }
 
     this->currentScene = newScene;
-    Log("bodies ", this->currentScene->getPhysicsBodies().size());
 }
 
 void Display::startRendering()
@@ -82,6 +87,8 @@ void Display::startRendering()
     if (this->isInit)
     {
         this->renderStart();
+
+        // on end
         delete this->currentScene;
         SDL_DestroyWindow(this->handle);
         SDL_DestroyRenderer(this->render);
@@ -127,11 +134,23 @@ void Display::renderStart()
     Uint64 lastFrameTime = SDL_GetTicks();
     float deltaTime = 0.0f;
 
+    Proton::LogNew(LogInfo::Info, "Render started!");
+    Proton::LogNew(LogInfo::Warn, "this is a warn");
+    Proton::LogNew(LogInfo::Error, "this is some of error");
+
+    const Uint64 perfFrequency = SDL_GetPerformanceFrequency();
+    const ImVec4 color_ok = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
+    const ImVec4 color_warn = ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
+    const ImVec4 color_bad = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+    const ImVec4 color_info = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+
     while (!isDone)
     {
+        const Uint64 eventMeterC_Start = SDL_GetPerformanceCounter();
         while (SDL_PollEvent(&e))
         {
             SDL_ConvertEventToRenderCoordinates(render, &e);
+            ImGui_ImplSDL3_ProcessEvent(&e);
 
             switch (e.type)
             {
@@ -144,6 +163,8 @@ void Display::renderStart()
             {
                 if (!this->currentScene)
                     break;
+                if (this->imguiio->WantCaptureMouse)
+                    break;
                 Point mousePoint{e.button.x, e.button.y};
                 this->currentScene->handleButtonClickEnd(mousePoint);
                 break;
@@ -151,6 +172,8 @@ void Display::renderStart()
             case SDL_EVENT_MOUSE_BUTTON_DOWN:
             {
                 if (!this->currentScene)
+                    break;
+                if (this->imguiio->WantCaptureMouse)
                     break;
                 Point mousePoint{e.button.x, e.button.y};
                 this->currentScene->mouseDown(mousePoint);
@@ -171,6 +194,8 @@ void Display::renderStart()
             {
                 if (!this->currentScene)
                     break;
+                if (this->imguiio->WantCaptureKeyboard)
+                    break;
                 this->currentScene->handleKeyDown(e);
                 this->currentScene->keyPressed(e.key.key);
                 break;
@@ -179,6 +204,8 @@ void Display::renderStart()
             {
                 if (!this->currentScene)
                     break;
+                if (this->imguiio->WantCaptureKeyboard)
+                    break;
                 this->currentScene->handleTextInput(e);
                 break;
             }
@@ -186,11 +213,37 @@ void Display::renderStart()
                 break;
             }
         }
+        const double eventMeterC_Time =
+            (double)(SDL_GetPerformanceCounter() - eventMeterC_Start) * 1000.0 / (double)perfFrequency;
 
         if (!this->currentScene)
         {
             continue;
         }
+
+        const auto currentTime = static_cast<float>(SDL_GetTicks());
+        deltaTime = (currentTime - static_cast<float>(lastFrameTime)) / 1000.0f;
+        lastFrameTime = static_cast<Uint64>(currentTime);
+
+        const Uint64 physicMeterC_Start = SDL_GetPerformanceCounter();
+        Physics::update(deltaTime);
+        for (const PhysicsBody *body : currentScene->getPhysicsBodies())
+        {
+            const b2BodyId bodyId = body->getBody();
+            if (Shape *shape = body->getUsedShape())
+            {
+                const auto [x, y] = b2Body_GetPosition(bodyId);
+                const double angle = b2Rot_GetAngle(b2Body_GetRotation(bodyId));
+                shape->setRotation(static_cast<float>(-(angle * (180 / M_PI))));
+
+                const float pixelX = x * PIXELS_PER_METER;
+                const float pixelY = -y * PIXELS_PER_METER;
+
+                shape->setPosition(pixelX - shape->getW() / 2.0f, pixelY - shape->getH() / 2.0f);
+            }
+        }
+        const double physicMeterC_Time =
+            (double)(SDL_GetPerformanceCounter() - physicMeterC_Start) * 1000.0 / (double)perfFrequency;
 
         SDL_SetRenderDrawColor(this->render, this->currentScene->getBackgroundColor().getR(),
                                this->currentScene->getBackgroundColor().getG(),
@@ -210,36 +263,100 @@ void Display::renderStart()
             this->setScene(nextScene);
         }
 
+        const Uint64 renderMeterC_Start = SDL_GetPerformanceCounter();
         if (this->currentScene)
         {
             this->currentScene->paint();
         }
+        const double renderMeterC_Time =
+            (double)(SDL_GetPerformanceCounter() - physicMeterC_Start) * 1000.0 / (double)perfFrequency;
 
-        SDL_RenderPresent(this->render);
+        ImGui_ImplSDLRenderer3_NewFrame();
+        ImGui_ImplSDL3_NewFrame();
+        ImGui::NewFrame();
 
-        const auto currentTime = static_cast<float>(SDL_GetTicks());
-        deltaTime = (currentTime - static_cast<float>(lastFrameTime)) / 1000.0f;
-        lastFrameTime = static_cast<Uint64>(currentTime);
-        Physics::update(deltaTime);
-        // Log("Body count ", physicsBodies.size());
-        for (const PhysicsBody *body : currentScene->getPhysicsBodies())
+        if (ImGui::Begin("Proton2D Engine Developer"))
         {
-            // Log("Body ", bodies);
-            const b2BodyId bodyId = body->getBody();
-            if (Shape *shape = body->getUsedShape())
+            if (ImGui::CollapsingHeader("Performance"))
             {
-                const auto [x, y] = b2Body_GetPosition(bodyId);
-                const double angle = b2Rot_GetAngle(b2Body_GetRotation(bodyId));
-                shape->setRotation(static_cast<float>(-(angle * (180 / M_PI))));
+                if (ImGui::BeginTable("stats", 2, ImGuiTableFlags_BordersInnerV))
+                {
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::Text("FPS");
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%.1f", this->imguiio->Framerate);
 
-                const float pixelX = x * PIXELS_PER_METER;
-                const float pixelY = -y * PIXELS_PER_METER;
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::Text("Physic update");
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%f ms", physicMeterC_Time);
 
-                shape->setPosition(pixelX - shape->getW() / 2.0f, pixelY - shape->getH() / 2.0f);
-                // Log("Setting shape position to ", x, ":",y);
-                // Log("Setting shape angle to ", angle);
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::Text("Render update");
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%f ms", renderMeterC_Time);
+
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::Text("Event polling");
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%f ms", eventMeterC_Time);
+
+                    ImGui::EndTable();
+                }
             }
+
+            ImGui::End();
         }
+
+        if (ImGui::Begin("Proton2D Engine Logging"))
+        {
+            if (ImGui::Button("Clear"))
+            {
+                Proton::_protonLoggedVector.clear();
+            }
+            ImGui::SameLine();
+            static bool auto_scroll = true;
+            ImGui::Checkbox("Auto-scroll", &auto_scroll);
+
+            ImGui::Separator();
+
+            ImGui::BeginChild("ScrollingRegion", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+
+            for (const auto &logged_item : Proton::_protonLoggedVector)
+            {
+                ImVec4 color;
+                switch (logged_item.logLevel)
+                {
+                case Proton::LogInfo::Warn:
+                    color = color_warn;
+                    break;
+                case Proton::LogInfo::Error:
+                    color = color_bad;
+                    break;
+                case Proton::LogInfo::Info:
+                default:
+                    color = color_info;
+                    break;
+                }
+                ImGui::TextColored(color, "%s", logged_item.message.c_str());
+            }
+
+            if (auto_scroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
+            {
+                ImGui::SetScrollHereY(1.0f);
+            }
+
+            ImGui::EndChild();
+            ImGui::End();
+        }
+
+        ImGui::Render();
+        ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), this->render);
+        SDL_RenderPresent(this->render);
     }
     SDL_GetWindowSize(this->handle, &this->windowWidth, &this->windowHeight);
 }

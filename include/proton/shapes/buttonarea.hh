@@ -1,5 +1,7 @@
 #pragma once
+
 #include "shape.hh"
+#include <functional>
 
 namespace Proton
 {
@@ -21,12 +23,12 @@ class ButtonArea : public Shape
 
     void onClick() const;
     void onClickEnded() const;
-    void setClickListener(void (*f)());
-    void setClickEndedListener(void (*f)());
+    void setClickListener(const std::function<void()>& f);
+    void setClickEndedListener(const std::function<void()>& f);
 
   protected:
     float w, h;
-    void (*clickListener)() = nullptr;
-    void (*unclickListener)() = nullptr;
+    std::function<void()> clickListener;
+    std::function<void()> unclickListener;
 };
 }; // namespace Proton

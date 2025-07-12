@@ -26,4 +26,15 @@ void ImageButton::resize(const float w, const float h)
 }
 
 void ImageButton::paint(SDL_Renderer *render, const float rX, const float rY) { image->paint(render, rX, rY); }
+
+void ImageButton::setAlpha(float alpha)
+{
+    if (!this->image) return;
+    this->image->setAlpha(alpha);
+}
+
+auto ImageButton::getAlpha() -> float
+{
+    return this->image->getAlpha();
+}
 } // namespace Proton

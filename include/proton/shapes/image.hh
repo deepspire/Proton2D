@@ -25,8 +25,12 @@ class Image : public Shape
 
     void setTexture(SDL_Texture *texture);
 
+    void setAlpha(float alpha);
+    auto getAlpha() -> float;
+
   private:
     float width, height;
     SDL_Texture *imageTexture;
+    float alpha = 1;
 };
 } // namespace Proton

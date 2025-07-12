@@ -1,7 +1,5 @@
 #include "proton/scene.hh"
-
-#include "proton/physics.hh"
-#include "proton/shapes/shape.hh"
+#include "proton/shapes/container.hh"
 
 namespace Proton
 {
@@ -19,17 +17,20 @@ Scene::~Scene()
 }
 
 void Scene::addObject(Shape *shape) { this->objects.push_back(shape); }
-
 void Scene::addButton(ButtonArea *button)
 {
     this->buttons.push_back(button);
-    addObject(button);
+    this->addObject(button);
 }
-
 void Scene::addTextBox(TextBox *textbox)
 {
     this->textboxes.push_back(textbox);
-    addObject(textbox);
+    this->addObject(textbox);
+}
+void Scene::addContainer(Container *container)
+{
+    this->containers.push_back(container);
+    this->addObject(container);
 }
 
 // только для того, чтобы после сцены очистить звуки
@@ -59,6 +60,25 @@ void Scene::handleButtonClick(const Point &mPos)
             (button->getY() <= mY && mY <= button->getY() + button->getH()))
         {
             button->onClick();
+        }
+    }
+
+    for (Container *container : this->containers)
+    {
+        if ((container->getX() <= mX && mX <= container->getX() + container->getW()) &&
+            (container->getY() <= mY && mY <= container->getY() + container->getH()))
+        {
+            for (ButtonArea *button : container->getButtons())
+            {
+                const float buttonAbsX = container->getX() + button->getX();
+                const float buttonAbsY = container->getY() + button->getY();
+
+                if ((buttonAbsX <= mX && mX <= buttonAbsX + button->getW()) &&
+                    (buttonAbsY <= mY && mY <= buttonAbsY + button->getH()))
+                {
+                    button->onClick();
+                }
+            }
         }
     }
 
@@ -107,7 +127,8 @@ void Scene::handleButtonClick(const Point &mPos)
     }
 }
 
-void Scene::handleButtonClickEnd(const Point &mPos) const {
+void Scene::handleButtonClickEnd(const Point &mPos) const
+{
     const float mX = mPos.x;
     const float mY = mPos.y;
 
@@ -117,6 +138,25 @@ void Scene::handleButtonClickEnd(const Point &mPos) const {
             (button->getY() <= mY && mY <= button->getY() + button->getH()))
         {
             button->onClickEnded();
+        }
+    }
+
+    for (Container *container : this->containers)
+    {
+        if ((container->getX() <= mX && mX <= container->getX() + container->getW()) &&
+            (container->getY() <= mY && mY <= container->getY() + container->getH()))
+        {
+            for (ButtonArea *button : container->getButtons())
+            {
+                const float buttonAbsX = container->getX() + button->getX();
+                const float buttonAbsY = container->getY() + button->getY();
+
+                if ((buttonAbsX <= mX && mX <= buttonAbsX + button->getW()) &&
+                    (buttonAbsY <= mY && mY <= buttonAbsY + button->getH()))
+                {
+                    button->onClickEnded();
+                }
+            }
         }
     }
 }
@@ -257,17 +297,11 @@ void Scene::handleTextInput(SDL_Event event)
     }
 }
 
-void Scene::addBody(PhysicsBody *body)
-{
-    this->physicsBodies.push_back(body);
-}
+void Scene::addBody(PhysicsBody *body) { this->physicsBodies.push_back(body); }
 
-std::vector<PhysicsBody *> Scene::getPhysicsBodies()
-{
-    return this->physicsBodies;
-}
+auto Scene::getPhysicsBodies() -> std::vector<PhysicsBody *> { return this->physicsBodies; }
 
-Color Scene::getBackgroundColor() const { return this->background; }
+auto Scene::getBackgroundColor() const -> Color { return this->background; }
 
 void Scene::destroyObjectMassive()
 {
@@ -283,7 +317,7 @@ void Scene::destroyObjectMassive()
     }
     this->audios.clear();
 
-    for (PhysicsBody* body : physicsBodies)
+    for (PhysicsBody *body : physicsBodies)
     {
         delete body;
     }

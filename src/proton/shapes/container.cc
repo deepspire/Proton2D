@@ -9,6 +9,7 @@ Container::Container(const float x, const float y, const int width, const int he
 
     this->containerRect = {x, y, static_cast<float>(width), static_cast<float>(height)};
 }
+Container::~Container() { this->clear(); }
 
 void Container::paint(SDL_Renderer *render, const float rX, const float rY)
 {
@@ -32,6 +33,7 @@ void Container::clear()
         delete shape;
     }
     shapes.clear();
+    buttons.clear();
 }
 
 void Container::setPosition(float x, float y)
@@ -42,10 +44,15 @@ void Container::setPosition(float x, float y)
 }
 
 void Container::update(const float dt)
+{
+    for (Shape *shape : this->shapes)
     {
-        for (Shape *shape : this->shapes)
-        {
-            shape->update(dt);
-        }
+        shape->update(dt);
     }
+
+    for (ButtonArea *button : this->buttons)
+    {
+        button->update(dt);
+    }
+}
 } // namespace Proton

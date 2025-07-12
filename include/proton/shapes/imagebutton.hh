@@ -21,6 +21,9 @@ class ImageButton : public ButtonArea
 
     void setFillColor([[maybe_unused]] Color color) override {}
 
+    void setAlpha(float alpha);
+    auto getAlpha() -> float;
+
   protected:
     Image *image;
 };
