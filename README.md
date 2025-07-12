@@ -8,7 +8,7 @@
 <p align="center">
 <img alt="Windows support" src="https://img.shields.io/badge/Windows-works-green">
 <img alt="Linux support" src="https://img.shields.io/badge/Linux-works-green">
-<img alt="Android support" src="https://img.shields.io/badge/Android-works-green">
+<img alt="Android support" src="https://img.shields.io/badge/Android-TODO-red">
 </p>
 
 ## Cloning
@@ -25,7 +25,7 @@ git submodule update --remote --recursive
 
 for VSCode, use [Clangd](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd) extension instead of default Microsoft one.
 
-## Android building
+## Android building (not working with static build)
 you can do it the same way as on arch, any other linux distro or even windows, because it's almost same
 
 You'll need to install android-sdk, jdk-17, jdk-8 and android-ndk (jdk8 is needed for sdkmanager licenses)
