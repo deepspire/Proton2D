@@ -36,7 +36,7 @@ void TextBox::setCursorPosition(const unsigned int v)
 {
     if (v > this->labelText.length())
     {
-        Log("attempt to set cursor position > than label text length");
+        LogNew(Warn, "attempt to set cursor position > than label text length");
     }
     else
     {
@@ -57,7 +57,7 @@ void TextBox::setSelectionAnchor(const int v)
 
     if (v < 0 || v > static_cast<int>(this->labelText.length()))
     {
-        Log("attempt to set selection anchor position > than label text length");
+        LogNew(Warn, "attempt to set selection anchor position > than label text length");
     }
     else
     {
@@ -353,7 +353,7 @@ auto TextBox::getCursorPixelPosition() const -> int
     TTF_Font *font = ResourceManager::getInstance().getFont(this->path, this->fontSize);
     if (!font)
     {
-        Log("какого хуя у тебя cursorPosition больше 0, если шрифта нет");
+        LogNew(Error, "какого хуя у тебя cursorPosition больше 0, если шрифта нет");
         return 0;
     }
 

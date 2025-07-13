@@ -15,7 +15,7 @@ namespace Proton {
     void Shape::setRotation(const float angle) { this->rotation = angle; }
 
     void Shape::setBody(PhysicsBody* body) {
-      Log("Body is set");
+      LogNew(Info, "Physics body is set");
       this->body = body;
     }
 }

@@ -48,10 +48,17 @@ void Text::paint(SDL_Renderer *render, const float rX, const float rY)
         const auto drawY = rY + this->position.y;
 
         const SDL_FRect rectToRender = {drawX, drawY, static_cast<float>(this->w), static_cast<float>(this->h)};
-
+        SDL_SetTextureAlphaModFloat(this->textTexture, this->alpha);
         SDL_RenderTextureRotated(render, textTexture, nullptr, &rectToRender, this->rotation, nullptr, SDL_FLIP_NONE);
+        SDL_SetTextureAlphaModFloat(this->textTexture, 1);
     }
 }
+
+void Text::setAlpha(const float alpha)
+{
+    this->alpha = alpha;
+}
+
 
 void Text::createTexture(SDL_Renderer *render)
 {
@@ -79,7 +86,7 @@ void Text::createTexture(SDL_Renderer *render)
     SDL_Surface *surface = TTF_RenderText_Blended(font, labelText.c_str(), labelText.length(), sdlColor);
     if (!surface)
     {
-        Log("TTF_RenderText_Blended error: ", SDL_GetError());
+        LogNew(Error, "TTF_RenderText_Blended error: ", SDL_GetError());
         return;
     }
 
@@ -87,7 +94,7 @@ void Text::createTexture(SDL_Renderer *render)
     SDL_SetTextureScaleMode(textTexture, SDL_SCALEMODE_NEAREST);
     if (!textTexture)
     {
-        Log("SDL_CreateTextureFromSurface error: ", SDL_GetError());
+        LogNew(Error, "SDL_CreateTextureFromSurface error: ", SDL_GetError());
     }
 
     this->w = surface->w;

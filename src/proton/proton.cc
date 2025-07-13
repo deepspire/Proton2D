@@ -18,7 +18,7 @@ namespace Proton
 Display::Display(const std::string &title, const int w, const int h)
     : pointerX(0), pointerY(0), windowWidth(w), windowHeight(h), imguiio(nullptr)
 {
-    Proton::LogNew(LogInfo::Info, "Initing display..");
+    Proton::LogNew(LogInfo::Info, "Initializing display...");
     this->title = title;
     SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "wayland,x11,windows,android");
     SDL_SetHint(SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "1");
@@ -135,7 +135,7 @@ void Display::renderStart()
     Uint64 lastFrameTime = SDL_GetTicks();
     float deltaTime = 0.0f;
 
-    Proton::LogNew(LogInfo::Info, "Render started!");
+    LogNew(Info, "Render started!");
 
     const Uint64 perfFrequency = SDL_GetPerformanceFrequency();
     constexpr auto color_ok = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
@@ -278,8 +278,10 @@ void Display::renderStart()
 
         if (showDebug)
         {
+            ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Once);
+            ImGui::SetNextWindowSize(ImVec2(300, 200), ImGuiCond_Once);
             ImGui::Begin("Proton2D Debugger");
-            if (ImGui::CollapsingHeader("Performance"))
+            if (ImGui::CollapsingHeader("Performance", ImGuiTreeNodeFlags_DefaultOpen))
             {
                 if (ImGui::BeginTable("stats", 2, ImGuiTableFlags_BordersInnerV))
                 {
@@ -291,7 +293,7 @@ void Display::renderStart()
 
                     ImGui::TableNextRow();
                     ImGui::TableNextColumn();
-                    ImGui::Text("Physic update");
+                    ImGui::Text("Physics update");
                     ImGui::TableNextColumn();
                     ImGui::Text("%f ms", physicMeterC_Time);
 
@@ -316,6 +318,8 @@ void Display::renderStart()
 
         if (showDebug)
         {
+            ImGui::SetNextWindowPos(ImVec2(300, 0), ImGuiCond_Once);
+            ImGui::SetNextWindowSize(ImVec2(300, 200), ImGuiCond_Once);
             ImGui::Begin("Proton2D Engine Output");
             if (ImGui::Button("Clear"))
             {
@@ -334,13 +338,13 @@ void Display::renderStart()
                 ImVec4 color;
                 switch (logged_item.logLevel)
                 {
-                case Proton::LogInfo::Warn:
+                case Warn:
                     color = color_warn;
                     break;
-                case Proton::LogInfo::Error:
+                case Error:
                     color = color_bad;
                     break;
-                case Proton::LogInfo::Info:
+                case Info:
                 default:
                     color = color_info;
                     break;

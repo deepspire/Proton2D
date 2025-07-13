@@ -8,7 +8,7 @@ Image::Image(SDL_Texture *texture, const float x, const float y, const float wid
 {
     if (texture == nullptr)
     {
-        Log("Invalid texture or didn't loaded successfully");
+        LogNew(Error, "Invalid texture or didn't loaded successfully");
         return;
     }
     this->imageTexture = texture;

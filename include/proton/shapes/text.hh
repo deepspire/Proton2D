@@ -28,6 +28,7 @@ class Text : public Shape
     [[nodiscard]] auto getTextLength() const -> int { return static_cast<int>(this->labelText.length()); }
 
     void paint(SDL_Renderer *render, const float rX, const float rY) override;
+    void setAlpha(float alpha);
 
   protected:
     std::string labelText;
@@ -37,6 +38,7 @@ class Text : public Shape
     SDL_Texture *textTexture = nullptr;
     bool isDirty = true;
     int w{}, h{};
+    float alpha = 1;
 
     void createTexture(SDL_Renderer *render);
 

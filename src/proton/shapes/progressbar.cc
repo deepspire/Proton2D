@@ -33,7 +33,7 @@ void ProgressBar::setProgress(float value)
     }
     else
     {
-        Log("Progress value can't be lower than 0.0 or greater than 100.0! You're trying to set value: ", value);
+        LogNew(Warn, "Progress value can't be lower than 0.0 or greater than 100.0! You're trying to set value: ", value);
     }
 }
 auto ProgressBar::getProgress() const -> float { return this->progress; }
