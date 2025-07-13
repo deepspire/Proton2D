@@ -15,12 +15,11 @@
 ```bash
 git clone --recurse-submodules https://github.com/deepspire/Proton2D.git
 cd Proton2D
-git submodule update --init --recursive
 ```
 
-if external submodule updated:
+if external submodule updated/first time clone:
 ```bash
-git submodule update --remote --recursive
+git submodule update --init --recursive
 ```
 
 for VSCode, use [Clangd](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd) extension instead of default Microsoft one.
