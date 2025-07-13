@@ -22,7 +22,7 @@ void ResourceManager::initAudioEngine()
     {
         if (ma_engine_init(nullptr, &this->currentAudioEngine) != MA_SUCCESS)
         {
-            Proton::Log("Unable to init sound engine");
+            Log(Error, "Unable to init sound engine");
             return;
         }
 
@@ -31,7 +31,7 @@ void ResourceManager::initAudioEngine()
         return;
     }
 
-    Log("Audio engine is defined already!!");
+    LogNew(Warn, "Audio engine is defined already!!");
 }
 
 ma_engine *ResourceManager::getAudioEngine()
@@ -47,7 +47,7 @@ SDL_Texture *ResourceManager::getTexture(SDL_Renderer *render, const std::string
 {
     if (!render)
     {
-        Proton::Log("Attempt to get texture without renderer..");
+        Proton::LogNew(Warn, "Attempt to get texture without renderer..");
         return nullptr;
     }
 
@@ -66,7 +66,7 @@ SDL_Texture *ResourceManager::getTexture(SDL_Renderer *render, const std::string
     SDL_Surface *surface = IMG_Load(fullPath.c_str());
     if (!surface)
     {
-        Log("Failed to load image: ", fullPath, ". error: ", SDL_GetError(), "; Falling back to error texture");
+        LogNew(Error, "Failed to load image: ", fullPath, ". error: ", SDL_GetError(), "; Falling back to error texture");
 
         constexpr int width = __WIDTH;
         constexpr int height = __HEIGHT;
@@ -84,14 +84,14 @@ SDL_Texture *ResourceManager::getTexture(SDL_Renderer *render, const std::string
         }
         SDL_Surface* surface = SDL_CreateSurfaceFrom(width, height,  SDL_PIXELFORMAT_RGB24, pixels.data(), width*3);
         if (!surface) {
-            Log("Error creating ERROR surface: ", SDL_GetError());
+            LogNew(Error, "Error creating ERROR surface: ", SDL_GetError());
             return nullptr;
         }
         SDL_Texture *texture = SDL_CreateTextureFromSurface(render, surface);
         SDL_DestroySurface(surface);
         if (!texture)
         {
-            Log("Failed to create texture from surface: ", fullPath, ". error: ", SDL_GetError());
+            LogNew(Error, "Failed to create texture from surface: ", fullPath, ". error: ", SDL_GetError());
             SDL_DestroyTexture(texture);
             return nullptr;
         }
@@ -105,7 +105,7 @@ SDL_Texture *ResourceManager::getTexture(SDL_Renderer *render, const std::string
 
     if (!texture)
     {
-        Proton::Log("Failed to create texture from surface: ", fullPath, ". error: ", SDL_GetError());
+        Proton::LogNew(Error, "Failed to create texture from surface: ", fullPath, ". error: ", SDL_GetError());
         return nullptr;
     }
 
@@ -129,7 +129,7 @@ SDL_Surface *ResourceManager::getIcon(const std::string &path)
     currentIcon = IMG_Load(fullPath.c_str());
     if (!currentIcon)
     {
-        Log("Failed to load icon: ", fullPath);
+        LogNew(Error, "Failed to load icon: ", fullPath);
         return nullptr;
     }
 
@@ -153,7 +153,7 @@ TTF_Font *ResourceManager::getFont(const std::string &path, int fontSize)
     TTF_Font *font = TTF_OpenFont(fullPath.c_str(), static_cast<float>(fontSize)); // TODO font size float too?
     if (!font)
     {
-        Log("Failed to load font: ", SDL_GetError());
+        LogNew(Error, "Failed to load font: ", SDL_GetError());
         return nullptr;
     }
 

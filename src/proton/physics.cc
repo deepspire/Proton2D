@@ -30,14 +30,14 @@ void Physics::initPhysicsDevice(float gravityY)
     world.gravity = gravity;
     worldGame = b2CreateWorld(&world);
 
-    Log("[PHYSICS] Box2D initialization is successful");
+    LogNew(Info, "[PHYSICS] Box2D initialization is successful");
 }
 
 void Physics::destroyPhysicsDevice()
 {
     b2DestroyWorld(worldGame);
     worldGame = b2_nullWorldId;
-    Log("[PHYSICS] Box2D uninitialization is successful");
+    LogNew(Info, "[PHYSICS] Box2D uninitialization is successful");
 }
 
 void Physics::simulationStep() { b2World_Step(worldGame, Physics::physicsTimeStep, 6); }
@@ -96,7 +96,7 @@ void PhysicsBody::bindShape(Shape *shape)
 
 PhysicsBody::~PhysicsBody()
 {
-    Log("PhysicsBody destroyed");
+    LogNew(Warn, "PhysicsBody destroyed");
     b2DestroyBody(this->bodyId);
     this->bodyId = b2_nullBodyId;
     this->shapeId = b2_nullShapeId;

@@ -60,6 +60,7 @@ void Scene::handleButtonClick(const Point &mPos)
             (button->getY() <= mY && mY <= button->getY() + button->getH()))
         {
             button->onClick();
+            button->setIsFocused(true);
         }
     }
 
@@ -77,6 +78,7 @@ void Scene::handleButtonClick(const Point &mPos)
                     (buttonAbsY <= mY && mY <= buttonAbsY + button->getH()))
                 {
                     button->onClick();
+                    button->setIsFocused(true);
                 }
             }
         }
@@ -135,7 +137,7 @@ void Scene::handleButtonClickEnd(const Point &mPos) const
     for (const ButtonArea *button : this->buttons)
     {
         if ((button->getX() <= mX && mX <= button->getX() + button->getW()) &&
-            (button->getY() <= mY && mY <= button->getY() + button->getH()))
+            (button->getY() <= mY && mY <= button->getY() + button->getH()) || button->getIsFocused())
         {
             button->onClickEnded();
         }
@@ -152,7 +154,7 @@ void Scene::handleButtonClickEnd(const Point &mPos) const
                 const float buttonAbsY = container->getY() + button->getY();
 
                 if ((buttonAbsX <= mX && mX <= buttonAbsX + button->getW()) &&
-                    (buttonAbsY <= mY && mY <= buttonAbsY + button->getH()))
+                    (buttonAbsY <= mY && mY <= buttonAbsY + button->getH()) || button->getIsFocused())
                 {
                     button->onClickEnded();
                 }

@@ -37,4 +37,11 @@ void ButtonArea::onClickEnded() const
 void ButtonArea::setClickListener(const std::function<void()> &f) { this->clickListener = f; }
 
 void ButtonArea::setClickEndedListener(const std::function<void()> &f) { this->unclickListener = f; }
+auto ButtonArea::getIsFocused() const -> bool {
+    return this->isFocused;
+}
+void ButtonArea::setIsFocused(const bool a)
+{
+    this->isFocused = a;
+}
 } // namespace Proton

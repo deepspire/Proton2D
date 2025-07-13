@@ -23,7 +23,7 @@ Audio::~Audio()
         ma_sound_uninit(sound);
         delete sound;
         sound = nullptr;
-        Proton::Log("Audio ", audioPath, " destroyed");
+        LogNew(Warn,"Audio ", audioPath, " destroyed");
     }
 }
 
@@ -112,7 +112,7 @@ void Audio::play()
 
     if (result != MA_SUCCESS)
     {
-        Proton::Log("Failed to init DECODER from file ", this->audioPath);
+        LogNew(Error, "Failed to init DECODER from file ", this->audioPath);
         delete this->decoder;
         this->decoder = nullptr;
         return;
@@ -128,7 +128,7 @@ void Audio::play()
     }
     else
     {
-        Proton::Log("Failed to init sound from data source for file ", this->audioPath);
+        LogNew(Error, "Failed to init sound from data source for file ", this->audioPath);
         ma_decoder_uninit(this->decoder);
         delete this->decoder;
         this->decoder = nullptr;

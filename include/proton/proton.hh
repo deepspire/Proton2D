@@ -47,5 +47,6 @@ class Display
     bool isInit = false;
     int windowWidth, windowHeight;
     ImGuiIO* imguiio;
+    bool showDebug = false;
 };
 } // namespace Proton

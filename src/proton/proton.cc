@@ -43,7 +43,7 @@ Display::Display(const std::string &title, const int w, const int h)
     this->handle = SDL_CreateWindow(this->title.c_str(), w, h, window_flags);
     if (!this->handle)
     {
-        Proton::Log("Error creating window: ", SDL_GetError());
+        Log("Error creating window: ", SDL_GetError());
         return;
     }
 
@@ -58,6 +58,7 @@ Display::Display(const std::string &title, const int w, const int h)
 
     ResourceManager::getInstance().initAudioEngine();
     Physics::initPhysicsDevice(-9.8f);
+    LogNew(LogInfo::Info, "Initializing is successful");
 
     // imgui
     IMGUI_CHECKVERSION();
@@ -135,14 +136,12 @@ void Display::renderStart()
     float deltaTime = 0.0f;
 
     Proton::LogNew(LogInfo::Info, "Render started!");
-    Proton::LogNew(LogInfo::Warn, "this is a warn");
-    Proton::LogNew(LogInfo::Error, "this is some of error");
 
     const Uint64 perfFrequency = SDL_GetPerformanceFrequency();
-    const ImVec4 color_ok = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
-    const ImVec4 color_warn = ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
-    const ImVec4 color_bad = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
-    const ImVec4 color_info = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+    constexpr auto color_ok = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
+    constexpr auto color_warn = ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
+    constexpr auto color_bad = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+    constexpr auto color_info = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 
     while (!isDone)
     {
@@ -196,6 +195,8 @@ void Display::renderStart()
                     break;
                 if (this->imguiio->WantCaptureKeyboard)
                     break;
+                if (e.key.key == SDLK_F12)
+                    this->showDebug = !this->showDebug;
                 this->currentScene->handleKeyDown(e);
                 this->currentScene->keyPressed(e.key.key);
                 break;
@@ -275,8 +276,9 @@ void Display::renderStart()
         ImGui_ImplSDL3_NewFrame();
         ImGui::NewFrame();
 
-        if (ImGui::Begin("Proton2D Engine Developer"))
+        if (showDebug)
         {
+            ImGui::Begin("Proton2D Debugger");
             if (ImGui::CollapsingHeader("Performance"))
             {
                 if (ImGui::BeginTable("stats", 2, ImGuiTableFlags_BordersInnerV))
@@ -312,11 +314,12 @@ void Display::renderStart()
             ImGui::End();
         }
 
-        if (ImGui::Begin("Proton2D Engine Logging"))
+        if (showDebug)
         {
+            ImGui::Begin("Proton2D Engine Output");
             if (ImGui::Button("Clear"))
             {
-                Proton::_protonLoggedVector.clear();
+                _protonLoggedVector.clear();
             }
             ImGui::SameLine();
             static bool auto_scroll = true;
@@ -326,7 +329,7 @@ void Display::renderStart()
 
             ImGui::BeginChild("ScrollingRegion", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
 
-            for (const auto &logged_item : Proton::_protonLoggedVector)
+            for (const auto &logged_item : _protonLoggedVector)
             {
                 ImVec4 color;
                 switch (logged_item.logLevel)

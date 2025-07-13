@@ -25,10 +25,14 @@ class ButtonArea : public Shape
     void onClickEnded() const;
     void setClickListener(const std::function<void()>& f);
     void setClickEndedListener(const std::function<void()>& f);
+    bool getIsFocused() const;
+    void setIsFocused(bool a);
 
   protected:
     float w, h;
     std::function<void()> clickListener;
     std::function<void()> unclickListener;
+    bool isFocused = false;
+
 };
 }; // namespace Proton
