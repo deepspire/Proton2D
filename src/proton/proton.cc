@@ -187,6 +187,41 @@ void Display::renderStart()
                 }
                 break;
             }
+            case SDL_EVENT_FINGER_DOWN:
+            {
+                fingerDown = true;
+                fingerId = e.tfinger.fingerID;
+                lastFingerY = e.tfinger.y;
+                break;
+            }
+            case SDL_EVENT_FINGER_UP:
+            {
+                if (fingerDown && e.tfinger.fingerID == fingerId)
+                    fingerDown = false;
+                break;
+            }
+            case SDL_EVENT_FINGER_MOTION:
+            {
+
+                if (fingerDown && e.tfinger.fingerID == fingerId)
+                {
+                    const float newY = e.tfinger.y;
+                    const float deltaY  = (newY - lastFingerY) * this->windowHeight;
+                    lastFingerY   = newY;
+                    const float px = e.tfinger.x * this->windowWidth;
+                    const float py = e.tfinger.y * this->windowHeight;
+                    for (Container *c : this->currentScene->getContainers())
+                    {
+                        if (c->getX() <= px && px <= c->getX() + c->getW() &&
+                            c->getY() <= py && py <= c->getY() + c->getH())
+                        {
+                            c->scrollBy(0, deltaY * 15.0f);
+                            break;
+                        }
+                    }
+                }
+                break;
+            }
             case SDL_EVENT_KEY_DOWN:
             {
                 if (!this->currentScene)
@@ -278,7 +313,7 @@ void Display::renderStart()
             this->currentScene->paint();
         }
         const double renderMeterC_Time =
-            (double)(SDL_GetPerformanceCounter() - renderMeterC_Start) * 1000.0 / (double)perfFrequency;
+            static_cast<double>(SDL_GetPerformanceCounter() - renderMeterC_Start) * 1000.0 / static_cast<double>(perfFrequency);
 
         ImGui_ImplSDLRenderer3_NewFrame();
         ImGui_ImplSDL3_NewFrame();
@@ -372,8 +407,8 @@ void Display::renderStart()
         ImGui::Render();
         ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), this->render);
         SDL_RenderPresent(this->render);
+        SDL_GetWindowSize(this->handle, &this->windowWidth, &this->windowHeight);
     }
-    SDL_GetWindowSize(this->handle, &this->windowWidth, &this->windowHeight);
 }
 
 void Display::summonError() { Log("Init display first!"); }

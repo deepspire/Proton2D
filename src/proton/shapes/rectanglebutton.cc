@@ -2,10 +2,12 @@
 
 namespace Proton
 {
-RectangleButton::RectangleButton(float X, float Y, float W, float H, Color color)
-    : ButtonArea(X, Y, W, H)
+RectangleButton::RectangleButton(float x, float y, float w, float h, Color color)
+    : ButtonArea(x, y, w, h)
 {
-    this->rectangle = new Rectangle(X, Y, W, H, color);
+    this->position.x = x;
+    this->position.y = y;
+    this->rectangle = new Rectangle(x, y, w, h, color);
 }
 
 void RectangleButton::setPosition(const float x, const float y)

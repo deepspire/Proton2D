@@ -30,6 +30,7 @@ class ButtonArea : public Shape
 
   protected:
     float w, h;
+    float x, y;
     std::function<void()> clickListener;
     std::function<void()> unclickListener;
     bool isFocused = false;

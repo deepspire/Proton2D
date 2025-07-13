@@ -48,5 +48,8 @@ class Display
     int windowWidth, windowHeight;
     ImGuiIO* imguiio;
     bool showDebug = false;
+    bool fingerDown       = false;
+    SDL_FingerID fingerId = 0;
+    float lastFingerY     = 0.0f;
 };
 } // namespace Proton

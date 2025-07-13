@@ -163,7 +163,7 @@ void Scene::handleButtonClickEnd(const Point &mPos) const
     }
 }
 
-void Scene::handleKeyDown(SDL_Event event)
+void Scene::handleKeyDown(SDL_Event event) const
 {
     if (this->focusedTextBox != nullptr)
     {
@@ -278,12 +278,15 @@ void Scene::handleMouseWheel(SDL_Event event)
         if ((container->getX() <= mX && mX <= container->getX() + container->getW()) &&
             (container->getY() <= mY && mY <= container->getY() + container->getH()))
         {
-            container->scrollBy(0, -wheelY * scrollSpeed); 
+            container->scrollBy(0, -wheelY * scrollSpeed);
             break;
         }
     }
 }
-
+std::vector<Container *> Scene::getContainers()
+{
+    return containers;
+}
 void Scene::handleMouseDrag(int mX, int mY)
 {
     if (this->focusedTextBox)

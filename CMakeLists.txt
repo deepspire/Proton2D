@@ -41,11 +41,13 @@ set(SOURCE_FILES
 )
 
 if(ANDROID)
-    add_library(main SHARED ${SOURCE_FILES})
+    add_library(main SHARED ${SOURCE_FILES}
+            include/proton/shapes/circlebutton.hh)
     set(TARGET_NAME main)
     set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries" FORCE)
 else()
-    add_library(Proton2D STATIC ${SOURCE_FILES})
+    add_library(Proton2D STATIC ${SOURCE_FILES}
+            src/proton/shapes/circlebutton.cc)
     set(TARGET_NAME Proton2D)
     set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries" FORCE)
 endif()
