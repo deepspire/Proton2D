@@ -39,8 +39,8 @@ class Scene
     void handleButtonClickEnd(const Point &mPos) const;
 
     void handleKeyDown(SDL_Event event);
-
     void handleMouseDrag(int mX, int mY);
+    void handleMouseWheel(SDL_Event event);
 
     void handleTextInput(SDL_Event event);
     void addBody(PhysicsBody *body);

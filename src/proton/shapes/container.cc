@@ -1,4 +1,5 @@
 #include "proton/shapes/container.hh"
+#include <algorithm>
 
 namespace Proton
 {
@@ -8,6 +9,7 @@ Container::Container(const float x, const float y, const int width, const int he
     this->position.y = y;
 
     this->containerRect = {x, y, static_cast<float>(width), static_cast<float>(height)};
+    this->calculateContentBounds();
 }
 Container::~Container() { this->clear(); }
 
@@ -21,7 +23,7 @@ void Container::paint(SDL_Renderer *render, const float rX, const float rY)
     for (Shape *shape : this->shapes)
     {
         shape->setRotation(this->rotation);
-        shape->paint(render, this->position.x + rX, this->position.y + rY);
+        shape->paint(render, this->position.x + rX - this->scrollX, this->position.y + rY - this->scrollY);
     }
     SDL_SetRenderClipRect(render, nullptr);
 }
@@ -34,6 +36,7 @@ void Container::clear()
     }
     shapes.clear();
     buttons.clear();
+    this->calculateContentBounds();
 }
 
 void Container::setPosition(float x, float y)
@@ -53,6 +56,39 @@ void Container::update(const float dt)
     for (ButtonArea *button : this->buttons)
     {
         button->update(dt);
+    }
+}
+
+void Container::scrollBy(float dx, float dy)
+{
+    this->scrollX += dx;
+    this->scrollY += dy;
+
+    float maxScrollX = /* std::max(0.0f, contentWidth - this->containerRect.w); */ 1000;
+    float maxScrollY = /* std::max(0.0f, contentHeight - this->containerRect.h); */ 1000;
+
+    if (this->scrollX < 0)
+        this->scrollX = 0;
+    if (this->scrollX > maxScrollX)
+        this->scrollX = maxScrollX;
+
+    if (this->scrollY < 0)
+        this->scrollY = 0;
+    if (this->scrollY > maxScrollY)
+        this->scrollY = maxScrollY;
+}
+
+void Container::calculateContentBounds()
+{
+    contentWidth = 0.0f;
+    contentHeight = 0.0f;
+
+    if (shapes.empty()) return;
+
+    for (const auto& shape : shapes)
+    {
+        contentWidth = std::max(contentWidth, shape->getX() + shape->getW());
+        contentHeight = std::max(contentHeight, shape->getY() + shape->getH());
     }
 }
 } // namespace Proton

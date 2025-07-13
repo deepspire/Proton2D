@@ -53,7 +53,6 @@ Display::Display(const std::string &title, const int w, const int h)
         Log("Error initializing display: ", SDL_GetError());
         return;
     }
-
     SDL_SetRenderVSync(this->render, 1);
 
     ResourceManager::getInstance().initAudioEngine();
@@ -132,12 +131,11 @@ void Display::renderStart()
     SDL_Event e;
     bool isDone = false;
 
-    Uint64 lastFrameTime = SDL_GetTicks();
+    const Uint64 perfFrequency = SDL_GetPerformanceFrequency();
+    Uint64 lastFrameTime = SDL_GetPerformanceCounter();
     float deltaTime = 0.0f;
 
     LogNew(Info, "Render started!");
-
-    const Uint64 perfFrequency = SDL_GetPerformanceFrequency();
     constexpr auto color_ok = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
     constexpr auto color_warn = ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
     constexpr auto color_bad = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
@@ -210,6 +208,15 @@ void Display::renderStart()
                 this->currentScene->handleTextInput(e);
                 break;
             }
+            case SDL_EVENT_MOUSE_WHEEL:
+            {
+                if (!this->currentScene)
+                    break;
+                if (this->imguiio->WantCaptureMouse)
+                    break;
+                this->currentScene->handleMouseWheel(e);
+                break;
+            }
             default:
                 break;
             }
@@ -222,9 +229,10 @@ void Display::renderStart()
             continue;
         }
 
-        const auto currentTime = static_cast<float>(SDL_GetTicks());
-        deltaTime = (currentTime - static_cast<float>(lastFrameTime)) / 1000.0f;
-        lastFrameTime = static_cast<Uint64>(currentTime);
+        const Uint64 currentTime = SDL_GetPerformanceCounter();
+        const double deltaTimeSec = (double)(currentTime - lastFrameTime) / (double)perfFrequency;
+        lastFrameTime = currentTime;
+        deltaTime = static_cast<float>(deltaTimeSec);
 
         const Uint64 physicMeterC_Start = SDL_GetPerformanceCounter();
         Physics::update(deltaTime);
@@ -270,7 +278,7 @@ void Display::renderStart()
             this->currentScene->paint();
         }
         const double renderMeterC_Time =
-            (double)(SDL_GetPerformanceCounter() - physicMeterC_Start) * 1000.0 / (double)perfFrequency;
+            (double)(SDL_GetPerformanceCounter() - renderMeterC_Start) * 1000.0 / (double)perfFrequency;
 
         ImGui_ImplSDLRenderer3_NewFrame();
         ImGui_ImplSDL3_NewFrame();

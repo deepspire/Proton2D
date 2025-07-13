@@ -69,13 +69,13 @@ void Scene::handleButtonClick(const Point &mPos)
         if ((container->getX() <= mX && mX <= container->getX() + container->getW()) &&
             (container->getY() <= mY && mY <= container->getY() + container->getH()))
         {
+            const float mouseInContentX = mX - container->getX() + container->getScrollX();
+            const float mouseInContentY = mY - container->getY() + container->getScrollY();
+
             for (ButtonArea *button : container->getButtons())
             {
-                const float buttonAbsX = container->getX() + button->getX();
-                const float buttonAbsY = container->getY() + button->getY();
-
-                if ((buttonAbsX <= mX && mX <= buttonAbsX + button->getW()) &&
-                    (buttonAbsY <= mY && mY <= buttonAbsY + button->getH()))
+                if ((button->getX() <= mouseInContentX && mouseInContentX <= button->getX() + button->getW()) &&
+                    (button->getY() <= mouseInContentY && mouseInContentY <= button->getY() + button->getH()))
                 {
                     button->onClick();
                     button->setIsFocused(true);
@@ -260,6 +260,25 @@ void Scene::handleKeyDown(SDL_Event event)
             this->focusedTextBox->removeAtCursor();
             break;
         default:
+            break;
+        }
+    }
+}
+
+void Scene::handleMouseWheel(SDL_Event event)
+{
+    float mX, mY;
+    SDL_GetMouseState(&mX, &mY);
+
+    const float scrollSpeed = 15.0f;
+    auto wheelY = static_cast<float>(event.wheel.y);
+
+    for (Container *container : this->containers)
+    {
+        if ((container->getX() <= mX && mX <= container->getX() + container->getW()) &&
+            (container->getY() <= mY && mY <= container->getY() + container->getH()))
+        {
+            container->scrollBy(0, -wheelY * scrollSpeed); 
             break;
         }
     }
