@@ -28,6 +28,11 @@ void Container::paint(SDL_Renderer *render, const float rX, const float rY)
     SDL_SetRenderClipRect(render, nullptr);
 }
 
+auto Container::containsPoint(const float x, const float y) const -> bool {
+    return (this->getX() <= x && x <= this->getX() + this->getW()) &&
+            (this->getY() <= y && y <= this->getY() + this->getH());
+}
+
 void Container::clear()
 {
     for (const Shape *shape : this->shapes)

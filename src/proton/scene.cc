@@ -51,13 +51,12 @@ void Scene::paint()
 
 void Scene::handleButtonClick(const Point &mPos)
 {
-    float mX = mPos.x;
-    float mY = mPos.y;
+    const float mX = mPos.x;
+    const float mY = mPos.y;
 
     for (ButtonArea *button : this->buttons)
     {
-        if ((button->getX() <= mX && mX <= button->getX() + button->getW()) &&
-            (button->getY() <= mY && mY <= button->getY() + button->getH()))
+        if (button->containsPoint(mPos.x, mPos.y))
         {
             button->onClick();
             button->setIsFocused(true);
@@ -66,23 +65,9 @@ void Scene::handleButtonClick(const Point &mPos)
 
     for (Container *container : this->containers)
     {
-        if ((container->getX() <= mX && mX <= container->getX() + container->getW()) &&
-            (container->getY() <= mY && mY <= container->getY() + container->getH()))
-        {
-            const float mouseInContentX = mX - container->getX() + container->getScrollX();
-            const float mouseInContentY = mY - container->getY() + container->getScrollY();
-
-            for (ButtonArea *button : container->getButtons())
-            {
-                if ((button->getX() <= mouseInContentX && mouseInContentX <= button->getX() + button->getW()) &&
-                    (button->getY() <= mouseInContentY && mouseInContentY <= button->getY() + button->getH()))
-                {
-                    button->onClick();
-                    button->setIsFocused(true);
-                }
-            }
-        }
+        handleClickRecursive(container, mPos.x, mPos.y, false);
     }
+
 
     TextBox *clickedTextBox = nullptr;
     for (TextBox *textbox : this->textboxes)
@@ -129,41 +114,27 @@ void Scene::handleButtonClick(const Point &mPos)
     }
 }
 
-void Scene::handleButtonClickEnd(const Point &mPos) const
+void Scene::handleButtonClickEnd(const Point &mPos)
 {
     const float mX = mPos.x;
     const float mY = mPos.y;
 
-    for (const ButtonArea *button : this->buttons)
+    for (ButtonArea *button : this->buttons)
     {
-        if ((button->getX() <= mX && mX <= button->getX() + button->getW()) &&
-            (button->getY() <= mY && mY <= button->getY() + button->getH()) || button->getIsFocused())
+        if (button->containsPoint(mX, mY))
         {
             button->onClickEnded();
+            button->setIsFocused(true);
         }
     }
 
     for (Container *container : this->containers)
     {
-        if ((container->getX() <= mX && mX <= container->getX() + container->getW()) &&
-            (container->getY() <= mY && mY <= container->getY() + container->getH()))
-        {
-            for (ButtonArea *button : container->getButtons())
-            {
-                const float buttonAbsX = container->getX() + button->getX();
-                const float buttonAbsY = container->getY() + button->getY();
-
-                if ((buttonAbsX <= mX && mX <= buttonAbsX + button->getW()) &&
-                    (buttonAbsY <= mY && mY <= buttonAbsY + button->getH()) || button->getIsFocused())
-                {
-                    button->onClickEnded();
-                }
-            }
-        }
+        handleClickRecursive(container, mPos.x, mPos.y, true);
     }
 }
 
-void Scene::handleKeyDown(SDL_Event event) const
+void Scene::handleKeyDown(const SDL_Event &event) const
 {
     if (this->focusedTextBox != nullptr)
     {
@@ -184,14 +155,14 @@ void Scene::handleKeyDown(SDL_Event event) const
                 }
                 return;
             }
-            else if (event.key.key == SDLK_C)
+            if (event.key.key == SDLK_C)
             {
                 if (this->focusedTextBox->getSelectionAnchor() != -1)
                 {
                     int selStart =
-                        std::min(this->focusedTextBox->getSelectionAnchor(), this->focusedTextBox->getCursorPosition());
+                            std::min(this->focusedTextBox->getSelectionAnchor(), this->focusedTextBox->getCursorPosition());
                     int selEnd =
-                        std::max(this->focusedTextBox->getSelectionAnchor(), this->focusedTextBox->getCursorPosition());
+                            std::max(this->focusedTextBox->getSelectionAnchor(), this->focusedTextBox->getCursorPosition());
                     if (selStart < selEnd)
                     {
                         std::string selectedText = this->focusedTextBox->getText().substr(selStart, selEnd - selStart);
@@ -200,14 +171,14 @@ void Scene::handleKeyDown(SDL_Event event) const
                 }
                 return;
             }
-            else if (event.key.key == SDLK_X)
+            if (event.key.key == SDLK_X)
             {
                 if (this->focusedTextBox->getSelectionAnchor() != -1)
                 {
                     int selStart =
-                        std::min(this->focusedTextBox->getSelectionAnchor(), this->focusedTextBox->getCursorPosition());
+                            std::min(this->focusedTextBox->getSelectionAnchor(), this->focusedTextBox->getCursorPosition());
                     int selEnd =
-                        std::max(this->focusedTextBox->getSelectionAnchor(), this->focusedTextBox->getCursorPosition());
+                            std::max(this->focusedTextBox->getSelectionAnchor(), this->focusedTextBox->getCursorPosition());
                     if (selStart < selEnd)
                     {
                         std::string selectedText = this->focusedTextBox->getText().substr(selStart, selEnd - selStart);
@@ -217,7 +188,7 @@ void Scene::handleKeyDown(SDL_Event event) const
                 }
                 return;
             }
-            else if (event.key.key == SDLK_A)
+            if (event.key.key == SDLK_A)
             {
                 this->focusedTextBox->setSelectionAnchor(0);
                 this->focusedTextBox->setCursorPosition(this->focusedTextBox->getTextLength());
@@ -265,19 +236,18 @@ void Scene::handleKeyDown(SDL_Event event) const
     }
 }
 
-void Scene::handleMouseWheel(SDL_Event event)
-{
+void Scene::handleMouseWheel(const SDL_Event &event) const {
     float mX, mY;
     SDL_GetMouseState(&mX, &mY);
 
-    const float scrollSpeed = 15.0f;
-    auto wheelY = static_cast<float>(event.wheel.y);
+    const auto wheelY = event.wheel.y;
 
     for (Container *container : this->containers)
     {
         if ((container->getX() <= mX && mX <= container->getX() + container->getW()) &&
             (container->getY() <= mY && mY <= container->getY() + container->getH()))
         {
+            constexpr float scrollSpeed = 15.0f;
             container->scrollBy(0, -wheelY * scrollSpeed);
             break;
         }
@@ -287,8 +257,7 @@ std::vector<Container *> Scene::getContainers()
 {
     return containers;
 }
-void Scene::handleMouseDrag(int mX, int mY)
-{
+void Scene::handleMouseDrag(const int mX, int mY) const {
     if (this->focusedTextBox)
     {
         if (this->focusedTextBox->getSelectionAnchor() == -1)
@@ -296,8 +265,7 @@ void Scene::handleMouseDrag(int mX, int mY)
             this->focusedTextBox->setSelectionAnchor(this->focusedTextBox->getCursorPosition());
         }
 
-        int relativeX = static_cast<int>(static_cast<float>(mX) - focusedTextBox->getX());
-        if (relativeX < 0)
+        if (const int relativeX = static_cast<int>(static_cast<float>(mX) - focusedTextBox->getX()); relativeX < 0)
         {
             focusedTextBox->setCursorPosition(0);
         }
@@ -307,14 +275,13 @@ void Scene::handleMouseDrag(int mX, int mY)
         }
         else
         {
-            int charIndex = focusedTextBox->getCharIndexAt(relativeX);
+            const int charIndex = focusedTextBox->getCharIndexAt(relativeX);
             focusedTextBox->setCursorPosition(charIndex);
         }
     }
 }
 
-void Scene::handleTextInput(SDL_Event event)
-{
+void Scene::handleTextInput(const SDL_Event &event) const {
     if (this->focusedTextBox != nullptr)
     {
         this->focusedTextBox->insertSymbol(event.text.text);
@@ -322,6 +289,38 @@ void Scene::handleTextInput(SDL_Event event)
 }
 
 void Scene::addBody(PhysicsBody *body) { this->physicsBodies.push_back(body); }
+
+    auto Scene::handleClickRecursive(Container *container, const float x, const float y, const bool isEndClick) -> bool {
+    if (!container->containsPoint(x, y))
+        return false;
+
+    const Point localPos = {
+        x - container->getX() + container->getScrollX(),
+        y - container->getY() + container->getScrollY()
+    };
+
+    for (Container* child : container->getContainers())
+    {
+        if (handleClickRecursive(child, localPos.x, localPos.y, isEndClick))
+            return true;
+    }
+
+    for (ButtonArea* button : container->getButtons())
+    {
+        if (button->containsPoint(x, y))
+        {
+            if (!isEndClick)
+                button->onClick();
+            if (isEndClick)
+                button->onClickEnded();
+            button->setIsFocused(true);
+            return true;
+        }
+    }
+
+    return false;
+}
+
 
 auto Scene::getPhysicsBodies() -> std::vector<PhysicsBody *> { return this->physicsBodies; }
 

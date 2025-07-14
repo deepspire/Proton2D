@@ -36,15 +36,16 @@ class Scene
     void paint();
 
     void handleButtonClick(const Point &mPos);
-    void handleButtonClickEnd(const Point &mPos) const;
+    void handleButtonClickEnd(const Point &mPos);
 
-    void handleKeyDown(SDL_Event event) const;
-    void handleMouseDrag(int mX, int mY);
-    void handleMouseWheel(SDL_Event event);
+    void handleKeyDown(const SDL_Event &event) const;
+    void handleMouseDrag(int mX, int mY) const;
+    void handleMouseWheel(const SDL_Event &event) const;
     std::vector<Container*> getContainers();
 
-    void handleTextInput(SDL_Event event);
+    void handleTextInput(const SDL_Event &event) const;
     void addBody(PhysicsBody *body);
+    bool handleClickRecursive(Container* container, float x, float y, bool isEndClick=false);
     auto getPhysicsBodies() -> std::vector<PhysicsBody *>;
 
     [[nodiscard]] auto getBackgroundColor() const -> Color;

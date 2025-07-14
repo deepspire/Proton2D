@@ -26,8 +26,7 @@ set(SOURCE_FILES
     src/proton/shapes/rectanglebutton.cc
     src/proton/shapes/container.cc
     src/proton/shapes/buttonarea.cc
-    src/proton/shapes/group.cc
-    src/proton/shapes/image.cc
+        src/proton/shapes/image.cc
     src/proton/shapes/imagebutton.cc
     src/proton/shapes/progressbar.cc
 

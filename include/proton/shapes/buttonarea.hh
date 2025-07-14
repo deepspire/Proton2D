@@ -23,9 +23,10 @@ class ButtonArea : public Shape
 
     void onClick() const;
     void onClickEnded() const;
+    [[nodiscard]] virtual auto containsPoint(float x, float y) const -> bool;
     void setClickListener(const std::function<void()>& f);
     void setClickEndedListener(const std::function<void()>& f);
-    bool getIsFocused() const;
+    [[nodiscard]] auto getIsFocused() const -> bool;
     void setIsFocused(bool a);
 
   protected:

@@ -16,6 +16,7 @@ void ButtonArea::setPosition(const float x, const float y)
     this->position.y = y;
 }
 
+
 void ButtonArea::resize(const float w, const float h)
 {
     this->w = w;
@@ -32,6 +33,11 @@ void ButtonArea::onClickEnded() const
 {
     if (unclickListener)
         unclickListener();
+}
+
+auto ButtonArea::containsPoint(const float x, const float y) const -> bool {
+    return (this->getX() <= x && x <= this->getX() + this->getW()) &&
+            (this->getY() <= y && y <= this->getY() + this->getH());
 }
 
 void ButtonArea::setClickListener(const std::function<void()> &f) { this->clickListener = f; }

@@ -15,6 +15,7 @@ class Container : public Shape
     void paint(SDL_Renderer *render, const float rX, const float rY) override;
 
     void setFillColor(Color /*unused*/) override {}
+    [[nodiscard]] auto containsPoint(float x, float y) const -> bool;
 
     void addObject(Shape *shape)
     {
@@ -23,16 +24,25 @@ class Container : public Shape
     }
     void addButton(ButtonArea *button)
     {
-        buttons.push_back(button);
-        shapes.push_back(button);
+        buttons.emplace_back(button);
+        shapes.emplace_back(button);
         this->calculateContentBounds();
+    }
+
+    void addContainer(Container* container)
+    {
+        containers.emplace_back(container);
+    }
+    auto getContainers() -> std::vector<Container*>
+    {
+        return containers;
     }
 
     void clear();
 
     void setPosition(float x, float y) override;
 
-    void update(const float dt) override;
+    void update(float dt) override;
 
     [[nodiscard]] auto getW() const -> float override { return this->containerRect.w; }
     [[nodiscard]] auto getH() const -> float override { return this->containerRect.h; }
@@ -51,6 +61,7 @@ class Container : public Shape
 
     std::vector<Shape *> shapes;
     std::vector<ButtonArea *> buttons;
+    std::vector<Container *> containers;
 
     float scrollX = 0.0f;
     float scrollY = 0.0f;
